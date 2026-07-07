@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>らくらくモニタリング</title>
+<style>
+  :root{
+    --ink:#22304a;
+    --indigo:#3a5ba0;
+    --indigo-deep:#2b4577;
+    --paper:#f6f7f9;
+    --card:#ffffff;
+    --line:#d9dfe9;
+    --muted:#6b7891;
+    --danger:#c0392b;
+    --danger-bg:#fdf0ee;
+    --ok:#2e7d5b;
+    --warn-bg:#fff8e6;
+    --warn-line:#e0c060;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic Medium","Yu Gothic",Meiryo,sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.7;
+    padding:24px 12px 80px;
+  }
+  .wrap{max-width:760px;margin:0 auto;}
+  header{margin-bottom:4px;}
+  h1{
+    font-size:1.25rem;
+    letter-spacing:.12em;
+    color:var(--indigo-deep);
+    border-left:6px solid var(--indigo);
+    padding-left:12px;
+  }
+  .sub{font-size:.8rem;color:var(--muted);margin:6px 0 18px 18px;}
+
+  /* 帳票インデックス風タブ */
+  .tabs{display:flex;gap:4px;margin-bottom:0;padding-left:8px;}
+  .tab{
+    border:1px solid var(--line);
+    border-bottom:none;
+    background:#e9edf4;
+    color:var(--muted);
+    padding:10px 22px 8px;
+    border-radius:8px 8px 0 0;
+    cursor:pointer;
+    font-size:.95rem;
+    font-weight:600;
+    letter-spacing:.06em;
+    transition:background .15s;
+  }
+  .tab.active{
+    background:var(--card);
+    color:var(--indigo-deep);
+    border-top:3px solid var(--indigo);
+    padding-top:8px;
+  }
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:0 10px 10px 10px;
+    padding:22px 20px;
+  }
+
+  fieldset{border:none;margin-bottom:22px;}
+  legend{
+    font-weight:700;
+    font-size:.95rem;
+    color:var(--indigo-deep);
+    letter-spacing:.08em;
+    margin-bottom:8px;
+    display:flex;align-items:center;gap:6px;
+  }
+  .req{
+    font-size:.68rem;color:#fff;background:var(--danger);
+    border-radius:3px;padding:1px 6px;font-weight:600;letter-spacing:.05em;
+  }
+  .opt{
+    font-size:.68rem;color:var(--muted);border:1px solid var(--line);
+    border-radius:3px;padding:1px 6px;font-weight:600;
+  }
+  label{font-size:.85rem;color:var(--muted);display:block;margin-bottom:2px;}
+  input[type="text"],input[type="date"],select,textarea{
+    width:100%;
+    font:inherit;
+    font-size:.95rem;
+    padding:8px 10px;
+    border:1px solid var(--line);
+    border-radius:6px;
+    background:#fff;
+    color:var(--ink);
+  }
+  textarea{min-height:88px;resize:vertical;}
+  input:focus,select:focus,textarea:focus,button:focus{
+    outline:2px solid var(--indigo);
+    outline-offset:1px;
+  }
+  .row{display:flex;gap:10px;flex-wrap:wrap;}
+  .row > div{flex:1;min-width:150px;}
+  .invalid{border-color:var(--danger)!important;background:var(--danger-bg)!important;}
+
+  .check-inline{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:4px;}
+  .check-inline label{display:flex;align-items:center;gap:6px;margin:0;color:var(--ink);font-size:.95rem;cursor:pointer;}
+  .check-inline input[type="checkbox"]{width:18px;height:18px;accent-color:var(--indigo);}
+
+  .svc-row{display:flex;gap:8px;margin-bottom:8px;align-items:flex-start;}
+  .svc-row input.svc-name{flex:0 0 34%;}
+  .svc-row input.svc-status{flex:1;}
+  .svc-del{
+    flex:0 0 auto;border:1px solid var(--line);background:#fff;color:var(--muted);
+    border-radius:6px;width:34px;height:38px;cursor:pointer;font-size:1rem;
+  }
+  .svc-del:hover{color:var(--danger);border-color:var(--danger);}
+  .add-btn{
+    border:1px dashed var(--indigo);background:#f2f5fb;color:var(--indigo-deep);
+    border-radius:6px;padding:6px 14px;cursor:pointer;font:inherit;font-size:.85rem;
+  }
+
+  .notice{
+    display:none;
+    background:var(--warn-bg);
+    border:1px solid var(--warn-line);
+    border-radius:6px;
+    padding:8px 12px;
+    font-size:.83rem;
+    margin-top:8px;
+  }
+  .notice.show{display:block;}
+
+  .tail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  @media(max-width:560px){.tail-grid{grid-template-columns:1fr;}}
+
+  .actions{margin-top:6px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;}
+  .generate{
+    background:var(--indigo);
+    color:#fff;border:none;border-radius:8px;
+    padding:12px 30px;font:inherit;font-size:1rem;font-weight:700;
+    letter-spacing:.1em;cursor:pointer;
+  }
+  .generate:hover{background:var(--indigo-deep);}
+  .error-msg{color:var(--danger);font-size:.85rem;display:none;}
+  .error-msg.show{display:block;}
+
+  .output-sec{margin-top:26px;display:none;}
+  .output-sec.show{display:block;}
+  .output-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+  .output-head h2{font-size:.95rem;color:var(--indigo-deep);letter-spacing:.08em;}
+  .copy-btn{
+    background:#fff;border:2px solid var(--indigo);color:var(--indigo-deep);
+    border-radius:8px;padding:8px 22px;font:inherit;font-weight:700;cursor:pointer;
+  }
+  .copy-btn.copied{border-color:var(--ok);color:var(--ok);}
+  #output{
+    width:100%;min-height:300px;
+    font-family:inherit;font-size:.92rem;line-height:1.8;
+    background:#fff;
+    border:1px solid var(--line);border-radius:8px;padding:14px;
+    background-image:repeating-linear-gradient(transparent,transparent 1.72em,#eef1f6 1.72em,#eef1f6 calc(1.72em + 1px));
+  }
+  footer{margin-top:30px;font-size:.75rem;color:var(--muted);text-align:center;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>らくらくモニタリング</h1>
+  <p class="sub">必須欄を埋める → 生成 → コピーして経過記録へ貼り付け。入力内容はこのブラウザ内だけで処理され、どこにも送信されません。</p>
+</header>
+
+<div class="tabs" role="tablist">
+  <button class="tab active" id="tab-kaigo" role="tab" aria-selected="true" onclick="setMode('kaigo')">要介護（居宅）</button>
+  <button class="tab" id="tab-yoshien" role="tab" aria-selected="false" onclick="setMode('yoshien')">要支援（介護予防）</button>
+</div>
+
+<div class="card">
+
+  <fieldset>
+    <legend>基本情報 <span class="req">必須</span></legend>
+    <div class="row">
+      <div>
+        <label for="date">実施日</label>
+        <input type="date" id="date">
+      </div>
+      <div>
+        <label for="method">実施方法</label>
+        <select id="method">
+          <option value="自宅訪問">自宅訪問</option>
+          <option value="住宅型有料老人ホーム訪問">住宅型有料老人ホーム訪問</option>
+          <option value="サービス事業所訪問">サービス事業所訪問</option>
+          <option value="入院先訪問">入院先訪問</option>
+          <option value="電話">電話</option>
+          <option value="オンライン面接">オンライン面接</option>
+        </select>
+      </div>
+    </div>
+    <div style="margin-top:10px;">
+      <label>面接相手（本人チェック または 家族欄の入力が必須）</label>
+      <div class="check-inline">
+        <label><input type="checkbox" id="honnin" checked>本人</label>
+        <div style="flex:1;min-width:180px;">
+          <input type="text" id="family" placeholder="家族（例：長女、夫）※同席なしなら空欄">
+        </div>
+      </div>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>心身の状況・生活状況 <span class="req">必須</span></legend>
+    <div class="row">
+      <div style="flex:0 0 180px;">
+        <label for="henka">前回との比較</label>
+        <select id="henka" onchange="toggleHenkaNote()">
+          <option value="none">変化なし</option>
+          <option value="change">変化あり</option>
+        </select>
+      </div>
+      <div>
+        <label for="shinshin">具体的な状況（バイタル・ADL・生活の様子など）</label>
+        <textarea id="shinshin" placeholder="例：血圧安定。食欲あり。屋内は伝い歩きで移動できている。"></textarea>
+      </div>
+    </div>
+    <div class="notice" id="henka-note">⚠ 状態変化あり月：短期目標の評価は現実に合わせて必ず手入れ。前月コピペ禁止ゾーンです。</div>
+  </fieldset>
+
+  <fieldset>
+    <legend>サービスの実施状況 <span class="req">必須</span></legend>
+    <div id="services"></div>
+    <button type="button" class="add-btn" onclick="addService()">＋ サービスを追加</button>
+  </fieldset>
+
+  <fieldset>
+    <legend><span id="tanki-label">短期目標の達成状況（詳細）</span> <span class="opt" id="tanki-badge">任意（変化あり月は必須）</span></legend>
+    <textarea id="tanki" placeholder="通常月はまとめの「目標達成度」だけでOK。状態変化があった月はここに現実に合わせた評価を記載。&#10;例：短期目標「週2回のデイ利用を継続できる」→ 入院により今月は未実施。退院後に再評価予定。"></textarea>
+  </fieldset>
+
+  <fieldset>
+    <legend>本人・家族の意向、満足度に関する発言 <span class="req">必須</span></legend>
+    <textarea id="ikou" placeholder="例：本人「デイに行くと楽しい」と発言あり。長女「安心して仕事に行ける」とのこと。"></textarea>
+  </fieldset>
+
+  <fieldset>
+    <legend>特記事項 <span class="opt">任意</span></legend>
+    <textarea id="tokki" placeholder="連絡調整、次回への申し送りなどがあれば"></textarea>
+  </fieldset>
+
+  <fieldset>
+    <legend>定型文言（該当にチェック） <span class="opt">任意・複数可</span></legend>
+    <div class="check-inline" style="flex-direction:column;align-items:flex-start;gap:8px;">
+      <label><input type="checkbox" id="tw-riyohyo">翌月分利用票の配布・署名（○月は実施日から自動計算）</label>
+      <label><input type="checkbox" id="tw-assess">アセスメント実施</label>
+      <label><input type="checkbox" id="tw-hyoka">評価実施（要介護＝短期目標評価／要支援＝サービス評価）</label>
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>まとめ（末尾定型）</legend>
+    <div class="tail-grid">
+      <div>
+        <label for="tail1" id="tail1-label">目標達成度</label>
+        <select id="tail1">
+          <option>ほぼ達成</option>
+          <option>達成</option>
+          <option>一部達成</option>
+          <option>未達成</option>
+        </select>
+      </div>
+      <div>
+        <label for="tail2" id="tail2-label">プランの実施状況</label>
+        <select id="tail2">
+          <option>計画通り実施</option>
+          <option>概ね計画通り実施</option>
+          <option>一部未実施</option>
+        </select>
+      </div>
+      <div>
+        <label for="tail3">利用者満足度</label>
+        <select id="tail3">
+          <option>ほぼ満足</option>
+          <option>満足</option>
+          <option>やや不満</option>
+        </select>
+      </div>
+      <div>
+        <label for="tail4" id="tail4-label">プランの修正箇所</label>
+        <select id="tail4" onchange="toggleTail4Text()">
+          <option value="なし">なし</option>
+          <option value="あり">あり</option>
+        </select>
+        <input type="text" id="tail4-text" placeholder="修正内容を記載" style="display:none;margin-top:6px;">
+      </div>
+    </div>
+  </fieldset>
+
+  <div class="actions">
+    <button type="button" class="generate" onclick="generate()">記録文を生成</button>
+    <span class="error-msg" id="error-msg">必須項目が空欄です。赤い欄を確認してください。</span>
+  </div>
+
+  <div class="output-sec" id="output-sec">
+    <div class="output-head">
+      <h2>生成結果（そのままコピペできます）</h2>
+      <button type="button" class="copy-btn" id="copy-btn" onclick="copyOutput()">コピー</button>
+    </div>
+    <textarea id="output" readonly></textarea>
+  </div>
+
+</div>
+
+<footer>
+  <p style="margin-bottom:6px;font-size:.85rem;color:var(--indigo-deep);font-weight:600;">らくらくモニタリング｜ケアマネによる、ケアマネのためのツールです。みんなの仕事が「らくらく」になりますように。</p>
+  <p style="margin-bottom:6px;">作成：innercore_yuu（Threads）　使い方のご質問・不具合・ご要望は、フォローのうえコメントまたはDMでどうぞ。</p>
+  <p>※本ツールは記録作成の補助を目的としたものであり、運営指導への対応を保証するものではありません。書式・運用は保険者や事業所の定めに従ってください。<br>※入力内容はどこにも送信されず、お使いのPC内で完結します。ブラウザを閉じる／再読み込みすると入力内容は消えます。</p>
+</footer>
+</div>
+
+<script>
+let mode = 'kaigo';
+
+const LABELS = {
+  kaigo: {
+    tanki: '短期目標の達成状況',
+    tail1: '目標達成度',
+    tail2: 'プランの実施状況',
+    tail4: 'プランの修正箇所',
+    docTitle: 'モニタリング記録'
+  },
+  yoshien: {
+    tanki: '目標の達成状況',
+    tail1: '目標達成状況',
+    tail2: 'サービス実施状況',
+    tail4: '計画変更の必要性',
+    docTitle: 'モニタリング記録（介護予防）'
+  }
+};
+
+function setMode(m){
+  mode = m;
+  document.getElementById('tab-kaigo').classList.toggle('active', m==='kaigo');
+  document.getElementById('tab-yoshien').classList.toggle('active', m==='yoshien');
+  document.getElementById('tab-kaigo').setAttribute('aria-selected', m==='kaigo');
+  document.getElementById('tab-yoshien').setAttribute('aria-selected', m==='yoshien');
+  const L = LABELS[m];
+  document.getElementById('tanki-label').textContent = L.tanki + '（詳細）';
+  document.getElementById('tail1-label').textContent = L.tail1;
+  document.getElementById('tail2-label').textContent = L.tail2;
+  document.getElementById('tail4-label').textContent = L.tail4;
+}
+
+function toggleHenkaNote(){
+  const isChange = document.getElementById('henka').value === 'change';
+  document.getElementById('henka-note').classList.toggle('show', isChange);
+  const badge = document.getElementById('tanki-badge');
+  if(isChange){
+    badge.className = 'req';
+    badge.textContent = '必須（変化あり月）';
+  } else {
+    badge.className = 'opt';
+    badge.textContent = '任意（変化あり月は必須）';
+  }
+}
+
+function toggleTail4Text(){
+  const isAri = document.getElementById('tail4').value === 'あり';
+  document.getElementById('tail4-text').style.display = isAri ? 'block' : 'none';
+}
+
+function addService(name, status){
+  const wrap = document.getElementById('services');
+  const row = document.createElement('div');
+  row.className = 'svc-row';
+  row.innerHTML =
+    '<input type="text" class="svc-name" placeholder="サービス種別（例：訪問介護）">' +
+    '<input type="text" class="svc-status" value="計画通り実施されている。">' +
+    '<button type="button" class="svc-del" title="この行を削除" onclick="this.parentNode.remove()">×</button>';
+  if(typeof name === 'string') row.querySelector('.svc-name').value = name;
+  if(typeof status === 'string') row.querySelector('.svc-status').value = status;
+  wrap.appendChild(row);
+}
+
+function clearInvalid(){
+  document.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
+  document.getElementById('error-msg').classList.remove('show');
+}
+
+function markInvalid(el){
+  el.classList.add('invalid');
+}
+
+function formatDate(v){
+  const d = new Date(v + 'T00:00:00');
+  const youbi = ['日','月','火','水','木','金','土'][d.getDay()];
+  return d.getFullYear() + '年' + (d.getMonth()+1) + '月' + d.getDate() + '日（' + youbi + '）';
+}
+
+function generate(){
+  clearInvalid();
+  let ok = true;
+
+  const dateEl = document.getElementById('date');
+  if(!dateEl.value){ markInvalid(dateEl); ok = false; }
+
+  const honnin = document.getElementById('honnin').checked;
+  const familyEl = document.getElementById('family');
+  const family = familyEl.value.trim();
+  if(!honnin && !family){ markInvalid(familyEl); ok = false; }
+
+  const shinshinEl = document.getElementById('shinshin');
+  if(!shinshinEl.value.trim()){ markInvalid(shinshinEl); ok = false; }
+
+  const svcRows = Array.from(document.querySelectorAll('.svc-row'));
+  const services = [];
+  let svcFilled = false;
+  svcRows.forEach(row => {
+    const name = row.querySelector('.svc-name').value.trim();
+    const status = row.querySelector('.svc-status').value.trim();
+    if(name){ svcFilled = true; services.push({name, status: status || '計画通り実施されている。'}); }
+  });
+  if(!svcFilled){
+    if(svcRows.length){ markInvalid(svcRows[0].querySelector('.svc-name')); }
+    ok = false;
+  }
+
+  const tankiEl = document.getElementById('tanki');
+  const isChange = document.getElementById('henka').value === 'change';
+  if(isChange && !tankiEl.value.trim()){ markInvalid(tankiEl); ok = false; }
+
+  const ikouEl = document.getElementById('ikou');
+  if(!ikouEl.value.trim()){ markInvalid(ikouEl); ok = false; }
+
+  const tail4 = document.getElementById('tail4').value;
+  const tail4TextEl = document.getElementById('tail4-text');
+  if(tail4 === 'あり' && !tail4TextEl.value.trim()){ markInvalid(tail4TextEl); ok = false; }
+
+  if(!ok){
+    document.getElementById('error-msg').classList.add('show');
+    document.getElementById('output-sec').classList.remove('show');
+    return;
+  }
+
+  const L = LABELS[mode];
+
+  // 面接相手
+  const people = [];
+  if(honnin) people.push('本人');
+  if(family) people.push(family);
+
+  // 心身状況
+  const henka = document.getElementById('henka').value;
+  let shinshinText = '';
+  if(henka === 'none'){
+    shinshinText = '前回モニタリング時と比較し、心身状況・生活状況に大きな変化はみられない。';
+    const detail = shinshinEl.value.trim();
+    if(detail) shinshinText += '\n' + detail;
+  } else {
+    shinshinText = shinshinEl.value.trim();
+  }
+
+  // サービス実施状況
+  const svcText = services.map(s => '・' + s.name + '：' + s.status).join('\n');
+
+  // 末尾定型（箇条書き）
+  const tail4Value = tail4 === 'あり' ? 'あり（' + tail4TextEl.value.trim() + '）' : 'なし';
+  const tailLine =
+    L.tail1 + '：' + document.getElementById('tail1').value + '\n' +
+    L.tail2 + '：' + document.getElementById('tail2').value + '\n' +
+    '利用者満足度：' + document.getElementById('tail3').value + '\n' +
+    L.tail4 + '：' + tail4Value;
+
+  let text = '';
+  text += '＜' + L.docTitle + '＞\n';
+  text += '実施日：' + formatDate(dateEl.value) + '\n';
+  text += '実施方法：' + document.getElementById('method').value + '\n';
+  text += '面接相手：' + people.join('、') + '\n';
+  text += '\n【心身の状況・生活状況】\n' + shinshinText + '\n';
+  text += '\n【サービスの実施状況】\n' + svcText + '\n';
+  if(tankiEl.value.trim()){
+    text += '\n【' + L.tanki + '】\n' + tankiEl.value.trim() + '\n';
+  }
+  text += '\n【本人・家族の意向】\n' + ikouEl.value.trim() + '\n';
+  const tokki = document.getElementById('tokki').value.trim();
+  if(tokki){
+    text += '\n【特記事項】\n' + tokki + '\n';
+  }
+
+  // 定型文言
+  const phrases = [];
+  if(document.getElementById('tw-riyohyo').checked){
+    const d = new Date(dateEl.value + 'T00:00:00');
+    const nextMonth = (d.getMonth() + 1) % 12 + 1;
+    phrases.push('※' + nextMonth + '月分利用票を確認して頂き同意を得、署名を頂く。一部控えとして交付する。');
+  }
+  if(document.getElementById('tw-assess').checked){
+    phrases.push('※アセスメントを実施した。');
+  }
+  if(document.getElementById('tw-hyoka').checked){
+    phrases.push(mode === 'kaigo'
+      ? '※短期目標の評価を実施した。'
+      : '※サービス評価を実施した。（詳細はサービス評価表参照）');
+  }
+  if(phrases.length){
+    text += '\n' + phrases.join('\n') + '\n';
+  }
+
+  text += '\n' + tailLine + '\n';
+
+  const out = document.getElementById('output');
+  out.value = text;
+  document.getElementById('output-sec').classList.add('show');
+  out.style.height = 'auto';
+  out.style.height = (out.scrollHeight + 10) + 'px';
+  document.getElementById('output-sec').scrollIntoView({behavior:'smooth', block:'start'});
+
+  const copyBtn = document.getElementById('copy-btn');
+  copyBtn.textContent = 'コピー';
+  copyBtn.classList.remove('copied');
+}
+
+function copyOutput(){
+  const out = document.getElementById('output');
+  const btn = document.getElementById('copy-btn');
+  const done = () => {
+    btn.textContent = 'コピーしました ✓';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'コピー'; btn.classList.remove('copied'); }, 2500);
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(out.value).then(done).catch(() => fallbackCopy(out, done));
+  } else {
+    fallbackCopy(out, done);
+  }
+}
+
+function fallbackCopy(out, done){
+  out.removeAttribute('readonly');
+  out.select();
+  document.execCommand('copy');
+  out.setAttribute('readonly','');
+  window.getSelection().removeAllRanges();
+  done();
+}
+
+// 初期化
+(function init(){
+  const today = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  document.getElementById('date').value =
+    today.getFullYear() + '-' + pad(today.getMonth()+1) + '-' + pad(today.getDate());
+  addService();
+  addService();
+})();
+</script>
+</body>
+</html>
