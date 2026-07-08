@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>らくらく月次報告（デイ・施設版）</title>
+<style>
+  :root{
+    --ink:#22304a;
+    --indigo:#3a5ba0;
+    --indigo-deep:#2b4577;
+    --paper:#f6f7f9;
+    --line:#c9d2e0;
+    --muted:#6b7891;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic Medium","Yu Gothic",Meiryo,sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.6;
+    padding:20px 10px 60px;
+    font-size:13px;
+  }
+
+  /* 操作バー（印刷時は消える） */
+  .toolbar{
+    max-width:210mm;margin:0 auto 14px;
+    display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+  }
+  .toolbar button{
+    font:inherit;font-weight:700;letter-spacing:.08em;
+    border-radius:8px;padding:10px 22px;cursor:pointer;
+  }
+  .btn-print{background:var(--indigo);color:#fff;border:none;}
+  .btn-print:hover{background:var(--indigo-deep);}
+  .btn-next{background:#fff;color:var(--indigo-deep);border:2px solid var(--indigo);}
+  .btn-next:hover{background:#eef2fa;}
+  .toolbar .hint{font-size:11px;color:var(--muted);}
+
+  /* 帳票本体 */
+  .sheet{
+    background:#fff;
+    max-width:210mm;
+    margin:0 auto;
+    padding:12mm 14mm;
+    border:1px solid var(--line);
+    box-shadow:0 2px 8px rgba(0,0,0,.06);
+  }
+  h1{
+    text-align:center;
+    font-size:17px;
+    letter-spacing:.35em;
+    margin-bottom:2mm;
+  }
+  .head-line{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    margin-bottom:3mm;font-size:12px;
+  }
+  .head-line .to{display:flex;align-items:baseline;gap:4px;}
+
+  table{width:100%;border-collapse:collapse;table-layout:fixed;}
+  th,td{
+    border:1px solid #444;
+    padding:1.6mm 2mm;
+    vertical-align:middle;
+    font-size:12px;
+  }
+  th{
+    background:#eef1f6;
+    font-weight:700;
+    text-align:left;
+    width:30mm;
+    letter-spacing:.05em;
+  }
+  .sec{
+    text-align:center;
+    font-weight:700;
+    letter-spacing:.3em;
+    padding:1mm;
+    font-size:12px;
+    background:#dde4ee;
+  }
+  .sec-day{background:#e2efdc;}
+  .sec-fac{background:#f7ead7;}
+  .sec-ext{background:#e0e8f6;}
+  .ext-name{font-weight:700;}
+
+  input[type="text"],input[type="month"],input[type="number"]{
+    font:inherit;font-size:12px;color:var(--ink);
+    border:none;border-bottom:1px dotted #999;
+    background:transparent;
+    padding:0 1mm;
+    width:100%;
+  }
+  input:focus,textarea:focus{outline:1.5px solid var(--indigo);}
+  input.short{width:22mm;}
+  input.mid{width:40mm;}
+  textarea{
+    font:inherit;font-size:12px;color:var(--ink);
+    border:none;background:transparent;
+    width:100%;resize:none;line-height:1.7;
+    height:16mm;
+  }
+  textarea.tall{height:24mm;}
+  textarea.xtall{height:46mm;}
+
+  .opts{display:flex;gap:4mm;flex-wrap:wrap;align-items:center;}
+  .opts label{
+    display:flex;align-items:center;gap:1.2mm;
+    font-size:12px;cursor:pointer;white-space:nowrap;
+  }
+  input[type="radio"],input[type="checkbox"]{
+    width:3.6mm;height:3.6mm;accent-color:#222;cursor:pointer;
+  }
+  .inline-note{display:flex;align-items:center;gap:2mm;flex:1;min-width:50mm;}
+  .inline-note span{font-size:11px;color:#555;white-space:nowrap;}
+
+  .weight-diff{font-weight:700;}
+
+  .foot{
+    margin-top:3mm;
+    font-size:10px;color:#666;
+    display:flex;justify-content:space-between;
+  }
+
+  /* 印刷設定 */
+  @page{size:A4;margin:10mm;}
+  @media print{
+    body{background:#fff;padding:0;font-size:12px;}
+    .toolbar{display:none;}
+    .sheet{
+      border:none;box-shadow:none;
+      max-width:none;width:100%;
+      padding:2mm 4mm;
+    }
+    input,textarea{border-bottom-color:#bbb;}
+    .sec,.sec-day,.sec-fac,.sec-ext{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    th{background:#f0f0f0 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button type="button" class="btn-print" onclick="window.print()">印刷 / PDF保存</button>
+  <button type="button" class="btn-next" onclick="nextPerson()">次の利用者へ（利用者情報をクリア）</button>
+  <span class="hint">対象月・事業所・記入者は残ります。印刷画面で「PDFに保存」を選べばPDFになります。</span>
+</div>
+
+<div class="sheet">
+  <h1>利用状況月次報告書</h1>
+
+  <div class="head-line">
+    <div class="to">
+      <input type="text" id="cm-office" class="mid" placeholder="居宅介護支援事業所名">
+      <span>担当ケアマネジャー：</span>
+      <input type="text" id="cm-name" class="short" placeholder="氏名">
+      <span>様</span>
+    </div>
+    <div>
+      対象月：<input type="month" id="month" style="width:34mm;">
+    </div>
+  </div>
+
+  <table>
+    <tr>
+      <th>利用者名</th>
+      <td><input type="text" id="user-name" placeholder="氏名">　様</td>
+      <th>記入者</th>
+      <td><input type="text" id="writer" placeholder="氏名"></td>
+    </tr>
+
+    <tr><td colspan="4" class="sec sec-day">■ デイサービス</td></tr>
+    <tr>
+      <th>通所計画の実施</th>
+      <td colspan="3">
+        <div class="opts">
+          <label><input type="radio" name="plan" value="計画通り実施" checked>計画通り実施</label>
+          <label><input type="radio" name="plan" value="一部変更あり">一部変更あり</label>
+          <label><input type="radio" name="plan" value="中止・欠席あり">中止・欠席あり</label>
+          <div class="inline-note"><span>備考：</span><input type="text" id="plan-note"></div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <th>イベント参加</th>
+      <td colspan="3">
+        <div class="opts">
+          <label><input type="radio" name="event" value="なし" checked>参加なし</label>
+          <label><input type="radio" name="event" value="あり">参加あり</label>
+          <div class="inline-note"><span>内容：</span><input type="text" id="event-note"></div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <th>日中の様子</th>
+      <td colspan="3">
+        <div class="opts">
+          <label><input type="checkbox" class="day" value="活気あり">活気あり</label>
+          <label><input type="checkbox" class="day" value="穏やか">穏やか</label>
+          <label><input type="checkbox" class="day" value="傾眠がち">傾眠がち</label>
+          <label><input type="checkbox" class="day" value="食欲良好">食欲良好</label>
+          <label><input type="checkbox" class="day" value="食欲低下">食欲低下</label>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <th>入浴</th>
+      <td colspan="3">
+        <div class="opts" style="margin-bottom:1mm;">
+          <label><input type="radio" name="bath" value="計画通り実施" checked>計画通り実施</label>
+          <label><input type="radio" name="bath" value="一部中止あり">一部中止あり</label>
+          <label><input type="radio" name="bath" value="拒否あり">拒否あり</label>
+          <label><input type="radio" name="bath" value="実施なし">実施なし</label>
+        </div>
+        <div class="opts">
+          <span style="font-size:11px;color:#555;">介助：</span>
+          <label><input type="radio" name="bathlv" value="見守り・自立">見守り・自立</label>
+          <label><input type="radio" name="bathlv" value="一部介助" checked>一部介助</label>
+          <label><input type="radio" name="bathlv" value="全介助">全介助</label>
+          <div class="inline-note"><span>備考：</span><input type="text" id="bath-note"></div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <th>個別機能訓練</th>
+      <td colspan="3">
+        <div class="opts">
+          <label><input type="radio" name="kunren" value="実施" checked>実施</label>
+          <label><input type="radio" name="kunren" value="一部実施">一部実施</label>
+          <label><input type="radio" name="kunren" value="なし">なし</label>
+          <div class="inline-note"><span>内容：</span><input type="text" id="kunren-note" placeholder="例：下肢筋力訓練、歩行訓練"></div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <th>コミュニケーション</th>
+      <td colspan="3">
+        <div class="opts">
+          <label><input type="radio" name="comm" value="良好" checked>良好</label>
+          <label><input type="radio" name="comm" value="声かけに応答あり">声かけに応答あり</label>
+          <label><input type="radio" name="comm" value="発語・反応が少ない">発語・反応が少ない</label>
+          <div class="inline-note"><span>備考：</span><input type="text" id="comm-note"></div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <th>レク参加状況</th>
+      <td colspan="3">
+        <div class="opts">
+          <label><input type="radio" name="rec" value="積極的に参加" checked>積極的に参加</label>
+          <label><input type="radio" name="rec" value="促しで参加">促しで参加</label>
+          <label><input type="radio" name="rec" value="不参加が多い">不参加が多い</label>
+          <div class="inline-note"><span>備考：</span><input type="text" id="rec-note"></div>
+        </div>
+      </td>
+    </tr>
+
+    <tr>
+      <th>体重（デイ計測）</th>
+      <td colspan="3">
+        <div class="opts">
+          <span>今月：<input type="number" step="0.1" id="w-now" class="short" style="width:16mm;" oninput="calcDiff()"> kg</span>
+          <span>前月：<input type="number" step="0.1" id="w-prev" class="short" style="width:16mm;" oninput="calcDiff()"> kg</span>
+          <span>前月差：<span class="weight-diff" id="w-diff">−</span></span>
+        </div>
+      </td>
+    </tr>
+
+    <tr><td colspan="4" class="sec sec-fac">■ 施設での生活</td></tr>
+    <tr>
+      <th>夜間帯の様子</th>
+      <td colspan="3">
+        <div class="opts">
+          <label><input type="radio" name="night" value="良眠" checked>良眠</label>
+          <label><input type="radio" name="night" value="時々覚醒">時々覚醒</label>
+          <label><input type="radio" name="night" value="不眠傾向">不眠傾向</label>
+          <label><input type="radio" name="night" value="不穏あり">不穏あり</label>
+          <div class="inline-note"><span>備考：</span><input type="text" id="night-note"></div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <th>生活リズム</th>
+      <td colspan="3">
+        <div class="opts">
+          <label><input type="radio" name="rhythm" value="安定" checked>安定</label>
+          <label><input type="radio" name="rhythm" value="やや乱れあり">やや乱れあり</label>
+          <label><input type="radio" name="rhythm" value="昼夜逆転傾向">昼夜逆転傾向</label>
+          <div class="inline-note"><span>備考：</span><input type="text" id="rhythm-note"></div>
+        </div>
+      </td>
+    </tr>
+
+    <tr>
+      <th>往診・受診</th>
+      <td colspan="3">
+        <div class="opts">
+          <label><input type="radio" name="ouushin" value="なし">なし</label>
+          <label><input type="radio" name="ouushin" value="あり" checked>あり</label>
+          <div class="inline-note"><span>日付・内容：</span><input type="text" id="ouushin-note" placeholder="例：7/10 往診（定期）"></div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <th>薬の変更</th>
+      <td colspan="3">
+        <div class="opts">
+          <label><input type="radio" name="med" value="なし" checked>なし</label>
+          <label><input type="radio" name="med" value="あり">あり</label>
+          <div class="inline-note"><span>内容：</span><input type="text" id="med-note"></div>
+        </div>
+      </td>
+    </tr>
+
+    <tr><td colspan="4" class="sec sec-ext">■ 外部サービスの実施状況（施設で把握している範囲）</td></tr>
+    <tr>
+      <th><input type="text" class="ext-name" value="福祉用具"></th>
+      <td colspan="3">
+        <div class="opts">
+          <label><input type="radio" name="ext2" value="予定通り実施" checked>予定通り実施</label>
+          <label><input type="radio" name="ext2" value="変更・中止あり">変更・中止あり</label>
+          <label><input type="radio" name="ext2" value="利用なし">利用なし</label>
+          <div class="inline-note"><span>備考：</span><input type="text" class="ext-note" id="ext2-note"></div>
+        </div>
+      </td>
+    </tr>
+
+    <tr><td colspan="4" class="sec">■ 変更点・特記</td></tr>
+    <tr>
+      <th>前月との変更点</th>
+      <td colspan="3">
+        <div class="opts">
+          <label><input type="radio" name="change" value="なし" checked>なし</label>
+          <label><input type="radio" name="change" value="あり">あり</label>
+          <div class="inline-note"><span>内容：</span><input type="text" id="change-note"></div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <th>特記事項</th>
+      <td colspan="3"><textarea id="tokki" class="xtall" placeholder="自由記述（状態変化、ご家族への連絡事項など）"></textarea></td>
+    </tr>
+  </table>
+
+  <div class="foot">
+    <span>事業所名：<span id="foot-office-wrap"><input type="text" id="office" class="mid" placeholder="事業所名" style="width:60mm;"></span></span>
+    <span>作成日：<input type="text" id="made-date" class="short" style="width:28mm;"></span>
+  </div>
+</div>
+
+<script>
+function calcDiff(){
+  const now = parseFloat(document.getElementById('w-now').value);
+  const prev = parseFloat(document.getElementById('w-prev').value);
+  const el = document.getElementById('w-diff');
+  if(isNaN(now) || isNaN(prev)){ el.textContent = '−'; return; }
+  const d = Math.round((now - prev) * 10) / 10;
+  el.textContent = (d > 0 ? '+' : '') + d + ' kg';
+}
+
+function nextPerson(){
+  if(!confirm('この利用者の入力内容をクリアして、次の利用者に進みますか？\n（印刷がまだの場合は先に印刷してください）')) return;
+
+  // 利用者ごとの項目だけクリア
+  ['user-name','plan-note','event-note','night-note','rhythm-note',
+   'w-now','w-prev','ouushin-note','med-note','change-note','tokki','cm-name','cm-office',
+   'bath-note','kunren-note','comm-note','rec-note']
+    .forEach(id => { document.getElementById(id).value = ''; });
+
+  document.querySelectorAll('.day').forEach(cb => cb.checked = false);
+  document.querySelectorAll('.ext-note').forEach(el => el.value = '');
+
+  // ラジオを初期値に戻す
+  const defaults = {plan:'計画通り実施', event:'なし', night:'良眠', rhythm:'安定', ouushin:'あり', med:'なし', change:'なし',
+                    ext2:'予定通り実施',
+                    bath:'計画通り実施', bathlv:'一部介助', kunren:'実施', comm:'良好', rec:'積極的に参加'};
+  Object.entries(defaults).forEach(([name, val]) => {
+    const r = document.querySelector(`input[name="${name}"][value="${val}"]`);
+    if(r) r.checked = true;
+  });
+
+  document.getElementById('w-diff').textContent = '−';
+  document.getElementById('user-name').focus();
+}
+
+(function init(){
+  const t = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  document.getElementById('month').value = t.getFullYear() + '-' + pad(t.getMonth()+1);
+  document.getElementById('made-date').value = t.getFullYear() + '/' + (t.getMonth()+1) + '/' + t.getDate();
+})();
+</script>
+</body>
+</html>
