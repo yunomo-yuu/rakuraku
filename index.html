@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>結ゆう ｜ you-no-oto.jp</title>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ai:#1b3a5b; --ai-fuka:#12293f; --kin:#b8860b;
+  --usu:#f4f1ea; --sumi:#2a2a2a; --haku:#fbfaf7; --sen:#d8d2c4;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  background:var(--usu); color:var(--sumi); line-height:1.9;
+  min-height:100vh; display:flex; flex-direction:column;
+}
+header{
+  text-align:center; padding:64px 20px 40px;
+}
+.daiji{
+  writing-mode:vertical-rl; display:inline-block;
+  font-size:42px; font-weight:600; letter-spacing:.35em;
+  color:var(--ai); line-height:1;
+  padding:18px 20px; border-left:1px solid var(--sen); border-right:1px solid var(--sen);
+}
+.yomi{font-size:12px; color:#999; letter-spacing:.4em; margin-top:20px}
+.kotoba{
+  font-size:13px; color:#777; letter-spacing:.15em; margin-top:28px; line-height:2.2;
+}
+main{flex:1; max-width:560px; width:100%; margin:0 auto; padding:20px 20px 60px}
+.iriguchi{
+  display:block; text-decoration:none; color:inherit;
+  background:var(--haku); border:1px solid var(--sen); border-radius:2px;
+  padding:30px 28px; margin:18px 0;
+  transition:border-color .25s, transform .25s;
+}
+.iriguchi:hover{border-color:var(--ai); transform:translateY(-2px)}
+.iriguchi .fuda{
+  display:inline-block; font-size:11px; letter-spacing:.3em;
+  padding:3px 12px; margin-bottom:14px; color:var(--haku);
+}
+.iriguchi.ura .fuda{background:var(--ai)}
+.iriguchi.raku .fuda{background:var(--kin)}
+.iriguchi h2{font-size:20px; font-weight:600; letter-spacing:.2em; color:var(--ai); margin-bottom:10px}
+.iriguchi p{font-size:13px; color:#666; letter-spacing:.05em}
+.iriguchi .yajirushi{
+  display:block; text-align:right; font-size:13px; color:var(--kin); margin-top:12px; letter-spacing:.2em;
+}
+footer{
+  text-align:center; font-size:11px; color:#aaa;
+  padding:26px 20px; letter-spacing:.2em; border-top:1px solid var(--sen);
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="daiji">結ゆう</div>
+  <div class="yomi">ゆ う</div>
+  <div class="kotoba">あなたの音を、たしかめる場所。</div>
+</header>
+
+<main>
+  <a class="iriguchi ura" href="uranai.html">
+    <span class="fuda">う ら な い</span>
+    <h2>占いの部屋</h2>
+    <p>セッションのご案内と、星と命の道具箱。<br>タロット・音叉・紫微斗数・西洋占星術・奇門遁甲。</p>
+    <span class="yajirushi">はいる →</span>
+  </a>
+
+  <a class="iriguchi raku" href="rakuraku.html">
+    <span class="fuda">ら く ら く</span>
+    <h2>らくらくの部屋</h2>
+    <p>ケアマネジャーの書類仕事を軽くする無料ツール。<br>介護現場23年の実務から生まれた道具たち。</p>
+    <span class="yajirushi">はいる →</span>
+  </a>
+</main>
+
+<footer>結ゆう ｜ you-no-oto.jp</footer>
+</body>
+</html>
