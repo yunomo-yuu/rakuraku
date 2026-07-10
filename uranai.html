@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>占いの部屋 ｜ 結ゆう</title>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ai:#1b3a5b; --ai-fuka:#12293f; --kin:#b8860b;
+  --usu:#f4f1ea; --sumi:#2a2a2a; --haku:#fbfaf7; --sen:#d8d2c4;
+  --line:#06C755;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  background:var(--usu); color:var(--sumi); line-height:1.9;
+}
+.modori{
+  display:inline-block; font-size:12px; color:#999; text-decoration:none;
+  letter-spacing:.15em; padding:16px 20px;
+}
+.modori:hover{color:var(--ai)}
+header{
+  background:var(--ai); color:var(--haku); text-align:center;
+  padding:38px 20px 34px;
+}
+header h1{font-size:22px; font-weight:600; letter-spacing:.25em}
+header p{font-size:12px; opacity:.72; margin-top:12px; letter-spacing:.12em; line-height:1.8}
+main{max-width:560px; margin:0 auto; padding:10px 20px 60px}
+section{
+  background:var(--haku); border:1px solid var(--sen); border-radius:2px;
+  padding:26px 24px; margin:20px 0;
+}
+section h2{
+  font-size:15px; color:var(--ai); letter-spacing:.2em; font-weight:600;
+  border-bottom:1px solid var(--sen); padding-bottom:10px; margin-bottom:16px;
+}
+section p{font-size:13px; color:#555; letter-spacing:.04em}
+.btn{
+  display:block; text-align:center; text-decoration:none;
+  padding:14px; margin-top:18px; font-size:15px; letter-spacing:.2em;
+  border-radius:2px; transition:opacity .2s;
+}
+.btn:hover{opacity:.85}
+.btn.line{background:var(--line); color:#fff}
+.btn.shiro{background:var(--haku); color:var(--ai); border:1px solid var(--ai)}
+.dogu{
+  display:block; text-decoration:none; color:inherit;
+  border:1px solid var(--sen); border-radius:2px;
+  padding:18px 18px; margin:12px 0;
+  transition:border-color .2s;
+}
+.dogu:hover{border-color:var(--kin)}
+.dogu h3{font-size:15px; color:var(--ai); font-weight:600; letter-spacing:.1em}
+.dogu p{font-size:12px; color:#777; margin-top:6px}
+.dogu .kagi{
+  display:inline-block; font-size:11px; color:var(--kin);
+  border:1px solid var(--kin); border-radius:2px;
+  padding:1px 8px; margin-left:8px; letter-spacing:.1em;
+}
+.soeb{font-size:11px; color:#999; margin-top:14px; line-height:1.8; letter-spacing:.03em}
+footer{
+  text-align:center; font-size:11px; color:#aaa;
+  padding:26px 20px; letter-spacing:.2em; border-top:1px solid var(--sen);
+}
+</style>
+</head>
+<body>
+<a class="modori" href="home.html">← 玄関へもどる</a>
+
+<header>
+  <h1>占いの部屋</h1>
+  <p>困りごとを、その人が扱える形に、組み替える。<br>タロット・音叉・紫微斗数・西洋占星術・奇門遁甲。</p>
+</header>
+
+<main>
+  <section>
+    <h2>セッションのご案内</h2>
+    <p>対面・ビデオ・通話でのセッションを行っています。初めての方は20分のお試しから。詳しいご案内と料金は、紹介ページをご覧ください。</p>
+    <a class="btn shiro" href="yuu.html">結ゆうについて・料金 →</a>
+    <a class="btn line" href="https://lin.ee/sV1Dkxl">公式LINEで相談する</a>
+  </section>
+
+  <section>
+    <h2>星と命の道具箱</h2>
+    <p>結ゆうがセッションで使っている道具を、そのまま置いています。たどり着いた方は、ご自由にどうぞ。</p>
+
+    <a class="dogu" href="horoscope.html">
+      <h3>出生図（ホロスコープ）</h3>
+      <p>生まれた時空の星の配置を写しとる。西洋占星術の出生図と、天体の一覧・アスペクトを表示。AIに読み解いてもらうための発注文つき。</p>
+    </a>
+
+    <a class="dogu" href="kimon.html">
+      <h3>奇門遁甲 時盤</h3>
+      <p>今この時の盤を立てる。日々変わる時間の吉凶をたしかめる道具。AIへの発注文つき。</p>
+    </a>
+
+    <a class="dogu" href="shibi.html">
+      <h3>紫微斗数 命盤<span class="kagi">合言葉</span></h3>
+      <p>東洋占星術の精密な命盤を生成。ご購入いただいた方に、合言葉をお渡ししています。</p>
+    </a>
+
+    <p class="soeb">どの道具も、入力した情報はどこにも送信されません。すべてお使いの端末の中だけで動きます。</p>
+  </section>
+</main>
+
+<footer>結ゆう ｜ you-no-oto.jp</footer>
+</body>
+</html>
