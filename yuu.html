@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>結ゆう｜チューニングセラピー</title>
+<meta name="description" content="介護の現場に23年。困りごとを、その人が扱える形に組み替える。結ゆうのチューニングセラピー。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f4f1ea;
+    --ink:#2a2a2e;
+    --kin:#a67c2e;
+    --kin-deep:#8a6522;
+    --kin-light:#f7f2e6;
+    --muted:#6d6a63;
+    --line:#d8d3c6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN",Meiryo,sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.95;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+  a:focus-visible,button:focus-visible{outline:3px solid var(--kin);outline-offset:3px;}
+  .wrap{max-width:680px;margin:0 auto;padding:0 24px;}
+
+  /* ヘッダー */
+  header{text-align:center;padding:72px 24px 20px;}
+  .eyebrow{font-size:12px;letter-spacing:.35em;color:var(--muted);}
+  h1{
+    font-family:"Shippori Mincho",serif;font-weight:600;
+    font-size:clamp(32px,7vw,46px);letter-spacing:.3em;
+    margin:16px 0 8px;text-indent:.3em;
+  }
+  .sub{font-size:13.5px;color:var(--muted);letter-spacing:.14em;}
+
+  /* リード */
+  .lead{
+    text-align:center;
+    font-family:"Shippori Mincho",serif;
+    font-size:clamp(18px,4.4vw,23px);
+    line-height:2.1;letter-spacing:.06em;
+    color:#38352f;
+    padding:36px 0 8px;
+  }
+  .lead .accent{color:var(--kin);}
+
+  /* セクション見出し */
+  section{padding:34px 0;}
+  h2{
+    font-family:"Shippori Mincho",serif;font-weight:600;
+    font-size:19px;letter-spacing:.16em;
+    text-align:center;color:var(--kin-deep);
+    margin-bottom:20px;
+  }
+  h2::after{
+    content:"";display:block;width:30px;height:1px;
+    background:var(--kin);margin:12px auto 0;
+  }
+  p.body{font-size:14.5px;color:#3c3a34;margin-bottom:16px;}
+
+  /* 引用（お客様の声） */
+  .voice{
+    background:#fff;border:1px solid var(--line);
+    border-left:4px solid var(--kin);
+    padding:26px 26px 22px;margin:8px 0;
+  }
+  .voice .q{
+    font-family:"Shippori Mincho",serif;
+    font-size:clamp(17px,4vw,21px);
+    line-height:1.9;color:#33302a;letter-spacing:.04em;
+  }
+  .voice .who{
+    font-size:12px;color:var(--muted);margin-top:12px;letter-spacing:.1em;
+  }
+
+  /* できること */
+  .cards{display:flex;flex-direction:column;gap:12px;}
+  .card{
+    background:#fdfcf9;border:1px solid var(--line);
+    padding:18px 20px;
+  }
+  .card .t{
+    font-family:"Shippori Mincho",serif;font-weight:600;
+    font-size:15.5px;color:var(--kin-deep);letter-spacing:.06em;margin-bottom:4px;
+  }
+  .card .d{font-size:13.5px;color:#45433d;}
+
+  /* メニュー・料金 */
+  .menu-item{
+    background:#fff;border:1px solid var(--line);
+    padding:18px 20px;
+  }
+  .menu-item + .menu-item{margin-top:12px;}
+  .m-head{
+    display:flex;justify-content:space-between;align-items:baseline;
+    gap:12px;margin-bottom:6px;
+    border-bottom:1px dotted var(--line);padding-bottom:8px;
+  }
+  .m-name{
+    font-family:"Shippori Mincho",serif;font-weight:600;
+    font-size:16px;color:var(--kin-deep);letter-spacing:.06em;
+  }
+  .m-price{
+    font-family:"Shippori Mincho",serif;font-weight:700;
+    font-size:19px;color:var(--ink);white-space:nowrap;
+  }
+  .m-desc{font-size:13px;color:#45433d;line-height:1.85;}
+  .menu-info{
+    margin-top:18px;padding:16px 18px;
+    background:var(--kin-light);border:1px solid var(--line);
+    font-size:13px;color:#3c3a34;
+  }
+  .menu-info p{margin-bottom:8px;}
+  .menu-info p:last-child{margin-bottom:0;}
+  .menu-info .label{
+    display:inline-block;min-width:5.5em;
+    color:var(--kin-deep);font-weight:700;letter-spacing:.08em;
+  }
+
+  /* 使うもの */
+  .tools{
+    display:flex;flex-wrap:wrap;gap:8px;justify-content:center;
+    margin-top:4px;
+  }
+  .tools span{
+    font-size:12.5px;letter-spacing:.08em;color:var(--kin-deep);
+    border:1px solid var(--kin);border-radius:999px;
+    padding:5px 15px;background:var(--kin-light);
+  }
+  .tools-note{text-align:center;font-size:12.5px;color:var(--muted);margin-top:14px;}
+
+  /* プロフィール */
+  .profile{
+    background:var(--kin-light);border:1px solid var(--line);
+    padding:26px 24px;
+  }
+  .profile p{font-size:14px;color:#3c3a34;margin-bottom:12px;}
+  .profile p:last-child{margin-bottom:0;}
+
+  /* CTA */
+  .cta-block{text-align:center;padding:44px 0 20px;}
+  .cta-lead{font-size:14px;color:#45433d;margin-bottom:20px;}
+  .cta-line{
+    display:inline-block;text-decoration:none;
+    font-weight:700;font-size:14.5px;letter-spacing:.12em;
+    padding:16px 40px;color:#fff;background:#06C755;
+    border-radius:6px;transition:opacity .2s;
+  }
+  .cta-line:hover{opacity:.85;}
+  .sub-link{
+    display:block;font-size:12.5px;color:var(--muted);
+    text-decoration:none;letter-spacing:.08em;margin-top:16px;
+  }
+  .sub-link:hover{color:var(--kin);text-decoration:underline;}
+
+  /* フッター */
+  footer{
+    text-align:center;padding:40px 24px 60px;
+    font-size:12px;color:var(--muted);line-height:2;
+    border-top:1px solid var(--line);margin-top:30px;
+  }
+  .home-link{
+    display:inline-block;margin-bottom:14px;
+    font-size:12.5px;color:var(--kin-deep);text-decoration:none;
+    letter-spacing:.1em;
+  }
+  .home-link:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">tuning therapy</p>
+  <h1>結ゆう</h1>
+  <p class="sub">you-no-oto ／ あなたの音</p>
+</header>
+
+<div class="wrap">
+
+  <p class="lead">
+    困りごとを、<br>
+    その人が<span class="accent">扱える形</span>に、<br>
+    組み替える。
+  </p>
+
+  <!-- お客様の声を軸に -->
+  <section>
+    <div class="voice">
+      <p class="q">「占いは、しなくてもいい。<br>ただ、話したい」</p>
+      <p class="who">— 5年通ってくださっている方より</p>
+    </div>
+    <p class="body" style="margin-top:20px;">
+      結ゆうのセッションを続けている方が、あるときこう言いました。占いやカードは、入口にすぎません。話しているうちに、自分でも気づいていなかった答えが、その人の中から立ち上がってくる。わたしがしているのは、その場をつくることです。
+    </p>
+  </section>
+
+  <!-- できること -->
+  <section>
+    <h2>できること</h2>
+    <div class="cards">
+      <div class="card">
+        <div class="t">こんがらがった気持ちを、ほどく</div>
+        <div class="d">頭ではわかっているのに動けない。そのつかえを、一緒に言葉にしていきます。</div>
+      </div>
+      <div class="card">
+        <div class="t">自分を責める握り方を、ゆるめる</div>
+        <div class="d">「こんな自分ではダメ」を、「今のわたしで大丈夫」へ。向きを変えるお手伝いをします。</div>
+      </div>
+      <div class="card">
+        <div class="t">からだと気持ちの、ズレを合わせる</div>
+        <div class="d">考えと感覚がちぐはぐなとき。その人本来の状態へ、静かに調律していきます。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 使うもの -->
+  <section>
+    <h2>使うもの</h2>
+    <div class="tools">
+      <span>タロット</span>
+      <span>音叉</span>
+      <span>直感</span>
+    </div>
+    <p class="tools-note">紫微斗数・西洋占星術などもご希望に応じて。<br>占術は、その人の「今」を映すための道具です。結果を渡して終わりではなく、そこからの見立てと言葉に、わたしが責任を持ちます。</p>
+  </section>
+
+  <!-- 料金 -->
+  <section>
+    <h2>メニューと料金</h2>
+    <div class="cards">
+      <div class="menu-item">
+        <div class="m-head">
+          <span class="m-name">紫微斗数AI鑑定ツール</span>
+          <span class="m-price">1,000円</span>
+        </div>
+        <div class="m-desc">あなたの命盤を読み解く鑑定と、おうちで自分を占うためのツールをまるごとお渡しします。AIと一緒に、いつでも自分を鑑定できるようになります。</div>
+      </div>
+      <div class="menu-item">
+        <div class="m-head">
+          <span class="m-name">初回お試しセッション</span>
+          <span class="m-price">3,000円</span>
+        </div>
+        <div class="m-desc">20分。まずは結ゆうのセッションを体験していただくための時間です。</div>
+      </div>
+      <div class="menu-item">
+        <div class="m-head">
+          <span class="m-name">本セッション</span>
+          <span class="m-price">10,000円</span>
+        </div>
+        <div class="m-desc">お時間は設定していません。必要なメッセージをお届けし終わるまで、心を込めてセッションいたします。</div>
+      </div>
+    </div>
+    <div class="menu-info">
+      <p><span class="label">形式</span>対面（場所は応相談）／ビデオ通話／通話</p>
+      <p><span class="label">お支払い</span>PayPay ／ PayPal（クレジット可）／ 対面のみ現金可</p>
+      <p><span class="label">ご予約</span>その都度調整。平日は夜間の対応となります。</p>
+    </div>
+  </section>
+
+  <!-- プロフィール -->
+  <section>
+    <h2>結ゆうについて</h2>
+    <div class="profile">
+      <p>介護の現場に23年。多くの方の暮らしと、人生の最期のときに立ち会ってきました。「その人が、その人らしく過ごせる形」を現場で探し続けてきた経験が、いまのセッションの土台になっています。</p>
+      <p>現役の介護支援専門員（ケアマネジャー）として働きながら、チューニングセラピスト「結ゆう」として活動しています。飾った言葉より、目の前のあなたにとって本当に役立つことを、正直にお渡しします。</p>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <div class="cta-block">
+    <p class="cta-lead">ご相談・ご予約・メニューのご案内は、<br>公式LINEからどうぞ。</p>
+    <a class="cta-line" href="https://lin.ee/sV1Dkxl">公式LINEで相談・予約する</a>
+    <a class="sub-link" href="https://www.threads.net/@innercore_yuu">日々の発信はThreads @innercore_yuu →</a>
+  </div>
+
+</div>
+
+<footer>
+  <a class="home-link" href="./home.html">← 入口ページにもどる</a>
+  <p>© 結ゆう / you-no-oto</p>
+</footer>
+
+</body>
+</html>
