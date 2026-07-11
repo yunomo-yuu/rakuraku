@@ -126,7 +126,7 @@
 
   /* 印刷設定 */
   @page{size:A4;margin:10mm;}
-  @media print{
+  @media print{ .no-print{display:none!important} 
     body{background:#fff;padding:0;font-size:12px;}
     .toolbar{display:none;}
     .sheet{
@@ -392,5 +392,5 @@ function nextPerson(){
   document.getElementById('made-date').value = t.getFullYear() + '/' + (t.getMonth()+1) + '/' + t.getDate();
 })();
 </script>
-</body>
+<div style="text-align:center;padding:18px 0 26px;font-family:serif;font-size:13px" class="no-print"><a href="rakuraku.html" style="color:#9c7209;text-decoration:none;letter-spacing:.15em">← らくらくの部屋へもどる</a></div></body>
 </html>

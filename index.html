@@ -7,54 +7,90 @@
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ai:#1b3a5b; --ai-fuka:#12293f; --kin:#b8860b;
-  --usu:#f4f1ea; --sumi:#2a2a2a; --haku:#fbfaf7; --sen:#d8d2c4;
+  --yozora1:#0b1626;   /* 深夜の底 */
+  --yozora2:#152944;   /* 宵の藍 */
+  --yozora3:#1b3a5b;   /* 藍 */
+  --gofun:#f2ede1;     /* 胡粉 */
+  --gofun-usu:rgba(242,237,225,.62);
+  --kin:#c9a24b;       /* 金茶（夜向けに少し明るく） */
+  --fuda-ai:#27507a;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{
   font-family:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
-  background:var(--usu); color:var(--sumi); line-height:1.9;
+  color:var(--gofun); line-height:1.9;
   min-height:100vh; display:flex; flex-direction:column;
+  background:linear-gradient(180deg,var(--yozora1) 0%,var(--yozora2) 55%,var(--yozora3) 100%);
+  position:relative; overflow-x:hidden;
 }
-header{
-  text-align:center; padding:64px 20px 40px;
+/* 星空：CSSのみ・静かな星 */
+.hoshi,.hoshi2{position:fixed;inset:0;pointer-events:none;z-index:0}
+.hoshi{
+  background-image:
+    radial-gradient(1px 1px at 12% 18%, rgba(242,237,225,.9) 50%, transparent 51%),
+    radial-gradient(1px 1px at 78% 8%,  rgba(242,237,225,.7) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 55% 25%, rgba(242,237,225,.8) 50%, transparent 51%),
+    radial-gradient(1px 1px at 30% 42%, rgba(242,237,225,.5) 50%, transparent 51%),
+    radial-gradient(1px 1px at 90% 35%, rgba(242,237,225,.6) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 8% 60%,  rgba(242,237,225,.55) 50%, transparent 51%),
+    radial-gradient(1px 1px at 66% 52%, rgba(242,237,225,.45) 50%, transparent 51%),
+    radial-gradient(1px 1px at 42% 70%, rgba(242,237,225,.4) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 85% 68%, rgba(242,237,225,.5) 50%, transparent 51%),
+    radial-gradient(1px 1px at 20% 85%, rgba(242,237,225,.35) 50%, transparent 51%),
+    radial-gradient(1px 1px at 60% 90%, rgba(242,237,225,.3) 50%, transparent 51%);
 }
+.hoshi2{
+  background-image:
+    radial-gradient(2px 2px at 70% 15%, rgba(201,162,75,.75) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 25% 30%, rgba(201,162,75,.5) 50%, transparent 51%),
+    radial-gradient(2px 2px at 15% 72%, rgba(201,162,75,.45) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 88% 80%, rgba(201,162,75,.5) 50%, transparent 51%);
+}
+header{ text-align:center; padding:70px 20px 42px; position:relative; z-index:1; }
 .daiji{
   writing-mode:vertical-rl; display:inline-block;
-  font-size:42px; font-weight:600; letter-spacing:.35em;
-  color:var(--ai); line-height:1;
-  padding:18px 20px; border-left:1px solid var(--sen); border-right:1px solid var(--sen);
+  font-size:44px; font-weight:600; letter-spacing:.35em;
+  color:var(--gofun); line-height:1;
+  padding:20px 22px;
+  border-left:1px solid rgba(242,237,225,.28);
+  border-right:1px solid rgba(242,237,225,.28);
+  text-shadow:0 0 24px rgba(242,237,225,.18);
 }
-.yomi{font-size:12px; color:#999; letter-spacing:.4em; margin-top:20px}
-.kotoba{
-  font-size:13px; color:#777; letter-spacing:.15em; margin-top:28px; line-height:2.2;
-}
-main{flex:1; max-width:560px; width:100%; margin:0 auto; padding:20px 20px 60px}
+.yomi{font-size:12px; color:var(--gofun-usu); letter-spacing:.5em; margin-top:22px}
+.kotoba{ font-size:13px; color:var(--gofun-usu); letter-spacing:.18em; margin-top:30px; line-height:2.2; }
+main{flex:1; max-width:560px; width:100%; margin:0 auto; padding:14px 20px 70px; position:relative; z-index:1}
 .iriguchi{
-  display:block; text-decoration:none; color:inherit;
-  background:var(--haku); border:1px solid var(--sen); border-radius:2px;
-  padding:30px 28px; margin:18px 0;
-  transition:border-color .25s, transform .25s;
+  display:block; text-decoration:none; color:var(--gofun);
+  background:rgba(242,237,225,.045);
+  border:1px solid rgba(242,237,225,.22);
+  border-radius:3px;
+  padding:30px 28px; margin:20px 0;
+  transition:border-color .3s, background .3s, transform .3s;
+  backdrop-filter:blur(2px);
 }
-.iriguchi:hover{border-color:var(--ai); transform:translateY(-2px)}
+.iriguchi:hover{border-color:rgba(201,162,75,.7); background:rgba(242,237,225,.08); transform:translateY(-2px)}
 .iriguchi .fuda{
   display:inline-block; font-size:11px; letter-spacing:.3em;
-  padding:3px 12px; margin-bottom:14px; color:var(--haku);
+  padding:3px 12px; margin-bottom:14px; color:var(--gofun);
+  border-radius:2px;
 }
-.iriguchi.ura .fuda{background:var(--ai)}
-.iriguchi.raku .fuda{background:var(--kin)}
-.iriguchi h2{font-size:20px; font-weight:600; letter-spacing:.2em; color:var(--ai); margin-bottom:10px}
-.iriguchi p{font-size:13px; color:#666; letter-spacing:.05em}
-.iriguchi .yajirushi{
-  display:block; text-align:right; font-size:13px; color:var(--kin); margin-top:12px; letter-spacing:.2em;
-}
+.iriguchi.ura .fuda{background:var(--fuda-ai)}
+.iriguchi.raku .fuda{background:rgba(201,162,75,.85); color:#14233a}
+.iriguchi h2{font-size:20px; font-weight:600; letter-spacing:.22em; color:var(--gofun); margin-bottom:10px}
+.iriguchi p{font-size:13px; color:var(--gofun-usu); letter-spacing:.05em}
+.iriguchi .yajirushi{ display:block; text-align:right; font-size:13px; color:var(--kin); margin-top:12px; letter-spacing:.2em; }
 footer{
-  text-align:center; font-size:11px; color:#aaa;
-  padding:26px 20px; letter-spacing:.2em; border-top:1px solid var(--sen);
+  text-align:center; font-size:11px; color:rgba(242,237,225,.45);
+  padding:28px 20px; letter-spacing:.22em;
+  border-top:1px solid rgba(242,237,225,.14);
+  position:relative; z-index:1;
 }
 </style>
 </head>
 <body>
+<div class="hoshi"></div>
+<div class="hoshi2"></div>
+
 <header>
   <div class="daiji">結ゆう</div>
   <div class="yomi">ゆ う</div>
