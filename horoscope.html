@@ -287,16 +287,18 @@ function buildPrompt(horoscope,y,mo,d,unk,h,mi,city,aspects){
 function copyPrompt(){
   if(!lastResult)return;
   const done=document.getElementById('copied');
-  navigator.clipboard.writeText(lastResult).then(()=>{
-    done.style.display='block';
-    setTimeout(()=>done.style.display='none',2500);
-  }).catch(()=>{
-    // フォールバック
-    const ta=document.createElement('textarea');
-    ta.value=lastResult;document.body.appendChild(ta);ta.select();
-    document.execCommand('copy');document.body.removeChild(ta);
-    done.style.display='block';setTimeout(()=>done.style.display='none',2500);
-  });
+  const ok=()=>{done.style.display='block';setTimeout(()=>done.style.display='none',2500);};
+  const fallback=()=>{
+    try{
+      const ta=document.createElement('textarea');
+      ta.value=lastResult;ta.style.position='fixed';ta.style.opacity='0';
+      document.body.appendChild(ta);ta.focus();ta.select();
+      document.execCommand('copy');document.body.removeChild(ta);ok();
+    }catch(e){alert('コピーできませんでした。お手数ですが手動で選択してコピーしてください。');}
+  };
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(lastResult).then(ok).catch(fallback);
+  }else{fallback();}
 }
 
 window.addEventListener('DOMContentLoaded',function(){
