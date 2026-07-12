@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>らくらく経過記録</title>
+<style>
+  :root{
+    --ink:#22304a;
+    --indigo:#3a5ba0;
+    --indigo-deep:#2b4577;
+    --paper:#f6f7f9;
+    --line:#c9d2e0;
+    --muted:#6b7891;
+    --accent:#9c7209;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic Medium","Yu Gothic",Meiryo,sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.7;
+    padding:18px 10px 50px;
+    font-size:14px;
+  }
+  .wrap{max-width:760px;margin:0 auto;}
+  h1{
+    text-align:center;font-size:18px;letter-spacing:.3em;
+    color:var(--indigo-deep);margin-bottom:4px;
+  }
+  .sub{
+    text-align:center;font-size:11px;color:var(--muted);margin-bottom:14px;
+  }
+
+  .card{
+    background:#fff;border:1px solid var(--line);border-radius:10px;
+    padding:14px;margin-bottom:12px;
+  }
+  .card h2{
+    font-size:13px;color:var(--indigo-deep);letter-spacing:.15em;
+    border-left:4px solid var(--indigo);padding-left:8px;margin-bottom:10px;
+  }
+
+  /* 記録種類チップ */
+  .chips{display:flex;flex-wrap:wrap;gap:8px;}
+  .chips label{
+    border:1.5px solid var(--line);border-radius:20px;
+    padding:6px 14px;font-size:13px;cursor:pointer;
+    background:#fff;user-select:none;
+  }
+  .chips input{display:none;}
+  .chips input:checked + span{font-weight:700;}
+  .chips label:has(input:checked){
+    background:var(--indigo);color:#fff;border-color:var(--indigo);
+  }
+
+  .row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:8px;align-items:flex-end;}
+  .field{display:flex;flex-direction:column;gap:2px;}
+  .field label{font-size:11px;color:var(--muted);}
+  input[type="text"],input[type="date"],input[type="time"],select,textarea{
+    font:inherit;font-size:14px;color:var(--ink);
+    border:1px solid var(--line);border-radius:6px;
+    padding:7px 9px;background:#fff;
+  }
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--indigo);border-color:var(--indigo);}
+  textarea{width:100%;min-height:60px;resize:vertical;line-height:1.7;}
+  .w-s{width:110px;} .w-m{width:170px;} .w-l{width:100%;}
+  .checks{display:flex;flex-wrap:wrap;gap:10px 16px;}
+  .checks label{display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;}
+  .checks input{width:16px;height:16px;accent-color:var(--indigo);}
+  .radios{display:flex;flex-wrap:wrap;gap:10px 16px;}
+  .radios label{display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;}
+  .radios input{accent-color:var(--indigo);}
+
+  .panel{display:none;}
+  .panel.active{display:block;}
+
+  .judge{
+    font-size:13px;font-weight:700;padding:8px 12px;border-radius:8px;
+    background:#eef2fa;color:var(--indigo-deep);display:inline-block;margin-top:4px;
+  }
+  .judge.ok1{background:#e2efdc;color:#33691e;}
+  .judge.ok2{background:#fff3d6;color:#8a6d00;}
+  .judge.ng{background:#fde4e4;color:#a33;}
+  .hint{font-size:11px;color:var(--muted);margin-top:4px;}
+
+  .btnbar{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0;}
+  button{
+    font:inherit;font-weight:700;letter-spacing:.08em;
+    border-radius:8px;padding:11px 22px;cursor:pointer;font-size:14px;
+  }
+  .btn-main{background:var(--indigo);color:#fff;border:none;flex:1;min-width:160px;}
+  .btn-main:hover{background:var(--indigo-deep);}
+  .btn-sub{background:#fff;color:var(--indigo-deep);border:2px solid var(--indigo);}
+  .btn-sub:hover{background:#eef2fa;}
+  #output{min-height:150px;font-size:14px;}
+  .copied{
+    display:none;font-size:12px;color:#33691e;font-weight:700;align-self:center;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>らくらく経過記録</h1>
+  <div class="sub">記録の種類を選ぶと定型文を組み立てます。入力内容はどこにも送信されず、端末の中だけで動きます。</div>
+
+  <div class="card">
+    <h2>記録の種類</h2>
+    <div class="chips" id="type-chips">
+      <label><input type="radio" name="rtype" value="soudan" checked onchange="switchPanel()"><span>初回相談</span></label>
+      <label><input type="radio" name="rtype" value="intake" onchange="switchPanel()"><span>インテーク</span></label>
+      <label><input type="radio" name="rtype" value="keiyaku" onchange="switchPanel()"><span>居宅契約</span></label>
+      <label><input type="radio" name="rtype" value="kaigi" onchange="switchPanel()"><span>担当者会議</span></label>
+      <label><input type="radio" name="rtype" value="renraku" onchange="switchPanel()"><span>連絡記録</span></label>
+      <label><input type="radio" name="rtype" value="nyuin" onchange="switchPanel()"><span>入院時情報連携</span></label>
+      <label><input type="radio" name="rtype" value="tsuin" onchange="switchPanel()"><span>通院時情報連携</span></label>
+      <label><input type="radio" name="rtype" value="kubun" onchange="switchPanel()"><span>区分変更申請</span></label>
+      <label><input type="radio" name="rtype" value="taiin" onchange="switchPanel()"><span>退院・退所連携</span></label>
+      <label><input type="radio" name="rtype" value="sonota" onchange="switchPanel()"><span>その他</span></label>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>日時・場所・手段</h2>
+    <div class="row">
+      <div class="field"><label>日付</label><input type="date" id="c-date"></div>
+      <div class="field"><label>開始</label><input type="time" id="c-start"></div>
+      <div class="field"><label>終了（任意）</label><input type="time" id="c-end"></div>
+      <div class="field"><label>場所</label>
+        <select id="c-place">
+          <option>自宅</option><option>事業所</option><option>病院</option>
+          <option>施設</option><option>包括支援センター</option><option value="">（記載しない）</option>
+        </select>
+      </div>
+      <div class="field"><label>手段</label>
+        <select id="c-how">
+          <option>訪問</option><option>電話</option><option>来所</option>
+          <option>FAX</option><option>メール</option><option>オンライン</option><option value="">（記載しない）</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- 初回相談 -->
+  <div class="card panel active" id="p-soudan">
+    <h2>初回相談受付</h2>
+    <div class="row">
+      <div class="field"><label>相談経路</label>
+        <select id="s-route">
+          <option>地域包括支援センター</option><option>病院（相談員・MSW）</option>
+          <option>家族</option><option>本人</option><option>サービス事業所</option>
+          <option>市町村</option><option>その他</option>
+        </select>
+      </div>
+      <div class="field"><label>相談者（所属・氏名・続柄）</label><input type="text" id="s-who" class="w-m" placeholder="例：〇〇包括 〇〇氏"></div>
+    </div>
+    <div class="field"><label>相談内容・経緯</label><textarea id="s-body" placeholder="例：独居で最近転倒が増え、家族が在宅生活に不安を感じている。介護保険サービスの利用について相談。"></textarea></div>
+    <div class="checks" style="margin-top:8px;">
+      <label><input type="checkbox" id="s-next" checked>「今後、訪問し状況確認・契約について調整予定」を末尾に入れる</label>
+    </div>
+  </div>
+
+  <!-- インテーク -->
+  <div class="card panel" id="p-intake">
+    <h2>インテーク・アセスメント</h2>
+    <div class="row">
+      <div class="field"><label>介護度</label>
+        <select id="i-kaigodo">
+          <option>申請中</option><option>要支援1</option><option>要支援2</option>
+          <option>要介護1</option><option>要介護2</option><option>要介護3</option>
+          <option>要介護4</option><option>要介護5</option><option>未申請</option>
+        </select>
+      </div>
+      <div class="field"><label>認定有効期間（任意）</label><input type="text" id="i-kikan" class="w-m" placeholder="例：R8.4.1〜R9.3.31"></div>
+    </div>
+    <div class="field"><label>主訴・本人家族の意向</label><textarea id="i-shuso" placeholder="本人：／家族："></textarea></div>
+    <div class="field" style="margin-top:8px;"><label>把握した情報（既往歴・生活状況・家族構成・サービス利用状況など）</label><textarea id="i-info" style="min-height:100px;"></textarea></div>
+  </div>
+
+  <!-- 居宅契約 -->
+  <div class="card panel" id="p-keiyaku">
+    <h2>居宅介護支援契約</h2>
+    <div class="checks">
+      <label><input type="checkbox" class="k-item" value="重要事項説明書に基づき説明を行い、同意を得る" checked>重要事項説明</label>
+      <label><input type="checkbox" class="k-item" value="居宅介護支援契約書を取り交わす" checked>契約書締結</label>
+      <label><input type="checkbox" class="k-item" value="個人情報使用同意書に署名を得る" checked>個人情報同意</label>
+      <label><input type="checkbox" id="k-todoke" checked>居宅届（居宅サービス計画作成依頼届出書）</label>
+    </div>
+    <div class="row" style="margin-top:8px;">
+      <div class="field"><label>届出先（市町村）</label><input type="text" id="k-city" class="w-m" placeholder="例：佐賀市"></div>
+      <div class="field"><label>届出</label>
+        <select id="k-teishutsu">
+          <option>提出（代行）する</option><option>提出（代行）済み</option><option>本人・家族が提出予定</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>備考（任意）</label><textarea id="k-biko" style="min-height:50px;"></textarea></div>
+  </div>
+
+  <!-- 担当者会議 -->
+  <div class="card panel" id="p-kaigi">
+    <h2>サービス担当者会議</h2>
+    <div class="row">
+      <div class="field"><label>参加者</label><input type="text" id="g-sanka" class="w-l" style="width:320px;" placeholder="例：〇〇デイ相談員〇〇、〇〇福祉用具〇〇、本人、長女、担当CM"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>開催理由</label>
+        <select id="g-riyu">
+          <option>居宅サービス計画書作成のため</option>
+          <option>更新認定に伴う計画見直しのため</option>
+          <option>区分変更に伴う計画見直しのため</option>
+          <option>退院・退所に伴う計画作成のため</option>
+          <option>状態変化に伴う計画見直しのため</option>
+        </select>
+      </div>
+      <div class="field"><label>利用票の対象月（任意）</label><input type="text" id="g-month" class="w-s" placeholder="例：8"></div>
+    </div>
+    <div class="checks" style="margin-top:8px;">
+      <label><input type="checkbox" class="g-item" value="※評価・アセスメントを行った。" checked>評価・アセスメント実施</label>
+      <label><input type="checkbox" class="g-item" value="※詳細は担当者会議の要点（第4表）参照" checked>第4表参照</label>
+      <label><input type="checkbox" class="g-item" value="※各事業所、主治医へ居宅サービス計画書配布。" checked>計画書配布</label>
+      <label><input type="checkbox" class="g-item" value="※各事業所へ個別計画書の提出を依頼する。" checked>個別計画書提出依頼</label>
+      <label><input type="checkbox" id="g-riyohyo" checked>利用票の確認・同意・署名・交付</label>
+    </div>
+  </div>
+
+  <!-- 連絡記録 -->
+  <div class="card panel" id="p-renraku">
+    <h2>連絡記録</h2>
+    <div class="row">
+      <div class="field"><label>相手</label>
+        <select id="r-aite">
+          <option>本人</option><option>家族</option><option>サービス事業所</option>
+          <option>主治医・医療機関</option><option>地域包括支援センター</option>
+          <option>市町村</option><option>その他</option>
+        </select>
+      </div>
+      <div class="field"><label>氏名・所属（任意）</label><input type="text" id="r-who" class="w-m" placeholder="例：長女／〇〇デイ 〇〇氏"></div>
+      <div class="field"><label>発着</label>
+        <div class="radios" style="padding-top:8px;">
+          <label><input type="radio" name="r-dir" value="in" checked>連絡を受けた</label>
+          <label><input type="radio" name="r-dir" value="out">連絡した</label>
+        </div>
+      </div>
+    </div>
+    <div class="field"><label>内容</label><textarea id="r-body"></textarea></div>
+    <div class="field" style="margin-top:8px;"><label>対応・今後の予定（任意）</label><textarea id="r-taio" style="min-height:50px;"></textarea></div>
+  </div>
+
+  <!-- 入院時情報連携 -->
+  <div class="card panel" id="p-nyuin">
+    <h2>入院時情報連携</h2>
+    <div class="row">
+      <div class="field"><label>入院先医療機関</label><input type="text" id="n-hosp" class="w-m" placeholder="例：〇〇病院"></div>
+      <div class="field"><label>入院日</label><input type="date" id="n-nyuin" onchange="judgeNyuin()"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>一報を受けた日時</label><input type="date" id="n-ippo-d"> <input type="time" id="n-ippo-t"></div>
+      <div class="field"><label>一報の相手（任意）</label><input type="text" id="n-ippo-who" class="w-m" placeholder="例：家族（長女）より"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>情報提供日</label><input type="date" id="n-teikyo-d" onchange="judgeNyuin()"></div>
+      <div class="field"><label>時刻（任意）</label><input type="time" id="n-teikyo-t"></div>
+      <div class="field"><label>連携方法</label>
+        <select id="n-how">
+          <option>ケアプランデータ連携システム</option><option>FAX</option>
+          <option>持参</option><option>メール</option><option>電話＋FAX</option><option>オンライン</option>
+        </select>
+      </div>
+    </div>
+    <div class="checks">
+      <label><input type="checkbox" id="n-gaijikan" onchange="judgeNyuin()">入院が営業時間外・休業日だった</label>
+    </div>
+    <div class="judge" id="n-judge">入院日と提供日を入れると加算区分を判定します</div>
+    <div class="hint">Ⅰ：入院当日中に提供（営業時間外・休業日の入院は翌日提供でもⅠ）／Ⅱ：入院翌日・翌々日。最終判断は最新の算定要件・保険者確認でお願いします。</div>
+    <div class="field" style="margin-top:8px;"><label>提供内容・備考（任意）</label><textarea id="n-biko" style="min-height:50px;" placeholder="例：入院時情報提供書にて心身状況・生活状況・サービス利用状況を提供。"></textarea></div>
+  </div>
+
+  <!-- 通院時情報連携 -->
+  <div class="card panel" id="p-tsuin">
+    <h2>通院時情報連携</h2>
+    <div class="row">
+      <div class="field"><label>医療機関</label><input type="text" id="t-hosp" class="w-m" placeholder="例：〇〇クリニック"></div>
+      <div class="field"><label>医師名</label><input type="text" id="t-dr" class="w-s" placeholder="例：〇〇医師"></div>
+    </div>
+    <div class="field"><label>情報交換の内容</label><textarea id="t-body" placeholder="例：最近の生活状況・服薬状況を伝え、医師より今後の治療方針と生活上の留意点について説明を受ける。"></textarea></div>
+    <div class="checks" style="margin-top:8px;">
+      <label><input type="checkbox" id="t-plan" checked>「得られた情報を居宅サービス計画に記録・反映する」を末尾に入れる</label>
+    </div>
+  </div>
+
+  <!-- 区分変更申請 -->
+  <div class="card panel" id="p-kubun">
+    <h2>要介護認定 区分変更申請</h2>
+    <div class="row">
+      <div class="field"><label>申請先（市町村）</label><input type="text" id="b-city" class="w-m" placeholder="例：佐賀市"></div>
+      <div class="field"><label>申請</label>
+        <select id="b-dairi"><option>申請を代行する</option><option>申請代行済み</option><option>家族が申請予定</option></select>
+      </div>
+    </div>
+    <div class="field"><label>申請理由（状態変化の内容）</label><textarea id="b-riyu" placeholder="例：〇月頃より歩行状態が悪化し、介助量が増加。現在の認定区分では必要なサービス量を確保できないため。"></textarea></div>
+  </div>
+
+  <!-- 退院・退所連携 -->
+  <div class="card panel" id="p-taiin">
+    <h2>退院・退所連携</h2>
+    <div class="row">
+      <div class="field"><label>医療機関・施設名</label><input type="text" id="d-hosp" class="w-m"></div>
+      <div class="field"><label>連携の形</label>
+        <select id="d-form">
+          <option>退院前カンファレンスに参加</option><option>病院相談員と面談</option>
+          <option>電話・FAXで情報収集</option><option>ケアプランデータ連携システムで情報収集</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>内容（退院予定日・心身状況・指導内容など）</label><textarea id="d-body"></textarea></div>
+  </div>
+
+  <!-- その他 -->
+  <div class="card panel" id="p-sonota">
+    <h2>その他の記録</h2>
+    <div class="row">
+      <div class="field"><label>件名【　】内に入る文言</label><input type="text" id="o-title" class="w-m" placeholder="例：安否確認訪問"></div>
+    </div>
+    <div class="field"><label>内容</label><textarea id="o-body" style="min-height:100px;"></textarea></div>
+  </div>
+
+  <div class="btnbar">
+    <button type="button" class="btn-main" onclick="generate()">▼ 文章を作成する</button>
+  </div>
+
+  <div class="card">
+    <h2>できあがり（そのまま編集できます）</h2>
+    <textarea id="output" placeholder="ここに経過記録の文章が入ります。コピーして記録ソフトに貼り付けてください。"></textarea>
+    <div class="btnbar" style="margin-bottom:0;">
+      <button type="button" class="btn-main" onclick="copyOut()">コピーする</button>
+      <span class="copied" id="copied-msg">✓ コピーしました</span>
+      <button type="button" class="btn-sub" onclick="clearAll()">次の記録へ（入力クリア）</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchPanel(){
+  const v = document.querySelector('input[name="rtype"]:checked').value;
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('p-' + v).classList.add('active');
+}
+
+function head(){
+  const s = document.getElementById('c-start').value;
+  const e = document.getElementById('c-end').value;
+  const place = document.getElementById('c-place').value;
+  const how = document.getElementById('c-how').value;
+  let t = s ? s.replace(':', ':') : '';
+  if(s && e) t = s + '〜' + e;
+  const parts = [t, place, how].filter(Boolean);
+  return parts.length ? '＜' + parts.join('　') + '＞' : '';
+}
+
+function judgeNyuin(){
+  const ny = document.getElementById('n-nyuin').value;
+  const tk = document.getElementById('n-teikyo-d').value;
+  const gai = document.getElementById('n-gaijikan').checked;
+  const el = document.getElementById('n-judge');
+  el.className = 'judge';
+  if(!ny || !tk){ el.textContent = '入院日と提供日を入れると加算区分を判定します'; return '';}
+  const diff = Math.round((new Date(tk) - new Date(ny)) / 86400000);
+  let res = '';
+  if(diff < 0){ el.textContent = '提供日が入院日より前になっています'; el.classList.add('ng'); return ''; }
+  else if(diff === 0){ res = '入院時情報連携加算（Ⅰ）該当見込み'; el.classList.add('ok1'); }
+  else if(diff === 1 && gai){ res = '入院時情報連携加算（Ⅰ）該当見込み（営業時間外入院のため）'; el.classList.add('ok1'); }
+  else if(diff <= 2){ res = '入院時情報連携加算（Ⅱ）該当見込み'; el.classList.add('ok2'); }
+  else { res = '入院から' + diff + '日経過：加算対象外の可能性'; el.classList.add('ng'); }
+  el.textContent = res;
+  return res;
+}
+
+function jd(dstr){
+  if(!dstr) return '';
+  const d = new Date(dstr);
+  return (d.getMonth()+1) + '月' + d.getDate() + '日';
+}
+
+function generate(){
+  const v = document.querySelector('input[name="rtype"]:checked').value;
+  const g = id => document.getElementById(id).value.trim();
+  let title = '', body = '';
+
+  if(v === 'soudan'){
+    title = '【初回相談受付】';
+    const route = g('s-route'), who = g('s-who');
+    body = (who ? who : route) + 'より相談を受ける。' + (who && route !== 'その他' ? '（経路：' + route + '）' : '');
+    if(g('s-body')) body += '\n' + g('s-body');
+    if(document.getElementById('s-next').checked) body += '\n今後、訪問し状況確認・契約について調整予定。';
+  }
+  else if(v === 'intake'){
+    title = '【インテーク・アセスメント】';
+    body = '本人・家族と面談し、情報収集を行う。\n介護度：' + g('i-kaigodo');
+    if(g('i-kikan')) body += '（有効期間：' + g('i-kikan') + '）';
+    if(g('i-shuso')) body += '\n主訴・意向：' + g('i-shuso');
+    if(g('i-info')) body += '\n把握情報：' + g('i-info');
+  }
+  else if(v === 'keiyaku'){
+    title = '【居宅介護支援契約】';
+    const items = [...document.querySelectorAll('.k-item:checked')].map(c => c.value);
+    body = '本人・家族に対し、' + (items.length ? items.join('。') + '。' : '契約手続きを行う。');
+    if(document.getElementById('k-todoke').checked){
+      const city = g('k-city') || '市町村';
+      body += '\n居宅サービス計画作成依頼届出書について説明し、' + city + 'へ' + g('k-teishutsu') + '。';
+    }
+    if(g('k-biko')) body += '\n' + g('k-biko');
+  }
+  else if(v === 'kaigi'){
+    title = '【サービス担当者会議実施】';
+    const place = document.getElementById('c-place').value || '〇〇';
+    body = '参加者：' + (g('g-sanka') || '〇〇') + '\n'
+      + g('g-riyu') + 'のサービス担当者会議を' + place + 'にて実施する。'
+      + '利用者の状況等に関する情報を担当者と共有するとともに、ケアプランの原案内容について、担当者から、専門的な見地からの意見を求め調整を図った。';
+    const items = [...document.querySelectorAll('.g-item:checked')].map(c => c.value);
+    if(items.length) body += '\n' + items.join('　');
+    if(document.getElementById('g-riyohyo').checked){
+      const m = g('g-month') || '〇';
+      body += '\n※' + m + '月分利用表を確認して頂き同意を得本人了承のもと署名を頂く。一部控えとして交付する。';
+    }
+  }
+  else if(v === 'renraku'){
+    const dir = document.querySelector('input[name="r-dir"]:checked').value;
+    title = dir === 'in' ? '【連絡受信】' : '【連絡発信】';
+    const who = g('r-who') ? g('r-who') + '（' + g('r-aite') + '）' : g('r-aite');
+    body = dir === 'in' ? who + 'より連絡あり。' : who + 'へ連絡する。';
+    if(g('r-body')) body += '\n' + g('r-body');
+    if(g('r-taio')) body += '\n対応：' + g('r-taio');
+  }
+  else if(v === 'nyuin'){
+    title = '【入院時情報連携】';
+    const hosp = g('n-hosp') || '〇〇病院';
+    body = hosp + 'に入院（入院日：' + (jd(g('n-nyuin')) || '〇月〇日') + '）。';
+    if(g('n-ippo-d')){
+      body += '\n' + jd(g('n-ippo-d')) + (g('n-ippo-t') ? ' ' + g('n-ippo-t') : '') + '、'
+        + (g('n-ippo-who') || '関係者') + '入院の一報を受ける。';
+    }
+    body += '\n' + (jd(g('n-teikyo-d')) || '〇月〇日') + (g('n-teikyo-t') ? ' ' + g('n-teikyo-t') : '')
+      + '、' + g('n-how') + 'にて入院時情報提供書を提供する。';
+    const judge = judgeNyuin();
+    if(judge && !judge.includes('対象外') && !judge.includes('前に')) body += '（' + judge.replace('該当見込み','該当') + '）';
+    if(g('n-biko')) body += '\n' + g('n-biko');
+  }
+  else if(v === 'tsuin'){
+    title = '【通院時情報連携】';
+    body = (g('t-hosp') || '〇〇医院') + ' ' + (g('t-dr') || '主治医') + 'の診察に同席し、情報交換を行う。';
+    if(g('t-body')) body += '\n' + g('t-body');
+    if(document.getElementById('t-plan').checked) body += '\n得られた情報を居宅サービス計画に記録・反映する。';
+  }
+  else if(v === 'kubun'){
+    title = '【要介護認定区分変更申請】';
+    body = (g('b-riyu') ? g('b-riyu') + '\n' : '') + 'このため、' + (g('b-city') || '市町村') + 'へ区分変更' + g('b-dairi') + '。';
+  }
+  else if(v === 'taiin'){
+    title = '【退院・退所連携】';
+    body = (g('d-hosp') || '〇〇病院') + 'について、' + g('d-form') + '。';
+    if(g('d-body')) body += '\n' + g('d-body');
+  }
+  else {
+    title = '【' + (g('o-title') || '記録') + '】';
+    body = g('o-body');
+  }
+
+  document.getElementById('output').value = (head() ? head() : '') + title + '\n' + body;
+}
+
+function copyOut(){
+  const out = document.getElementById('output');
+  out.select();
+  out.setSelectionRange(0, 99999);
+  try{
+    navigator.clipboard.writeText(out.value).then(showCopied).catch(() => { document.execCommand('copy'); showCopied(); });
+  }catch(e){ document.execCommand('copy'); showCopied(); }
+}
+function showCopied(){
+  const m = document.getElementById('copied-msg');
+  m.style.display = 'inline';
+  setTimeout(() => m.style.display = 'none', 2000);
+}
+
+function clearAll(){
+  if(!confirm('入力内容をクリアしますか？（日付と記録の種類は残ります）')) return;
+  document.querySelectorAll('.panel input[type="text"], .panel textarea').forEach(el => el.value = '');
+  document.querySelectorAll('.panel input[type="date"], .panel input[type="time"]').forEach(el => el.value = '');
+  document.getElementById('output').value = '';
+  document.getElementById('c-start').value = '';
+  document.getElementById('c-end').value = '';
+  const j = document.getElementById('n-judge');
+  j.className = 'judge'; j.textContent = '入院日と提供日を入れると加算区分を判定します';
+}
+
+(function init(){
+  const t = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  document.getElementById('c-date').value = t.getFullYear() + '-' + pad(t.getMonth()+1) + '-' + pad(t.getDate());
+})();
+</script>
+<div style="text-align:center;padding:18px 0 26px;font-family:serif;font-size:13px"><a href="rakuraku.html" style="color:#9c7209;text-decoration:none;letter-spacing:.15em">← らくらくの部屋へもどる</a></div>
+</body>
+</html>
