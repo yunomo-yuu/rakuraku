@@ -85,7 +85,24 @@
   .sec-visit{background:#f6e3e6;}
   .sec-fac{background:#f7ead7;}
   .sec-ext{background:#e0e8f6;}
+  .sec-kasan{background:#e9e2f3;}
   .ext-name{font-weight:700;}
+  .kasan-name{font-weight:700;}
+
+  .btn-add{
+    font:inherit;font-size:12px;font-weight:700;
+    color:var(--indigo-deep);background:#fff;
+    border:1.5px dashed var(--indigo);border-radius:6px;
+    padding:1.5mm 4mm;cursor:pointer;
+  }
+  .btn-add:hover{background:#eef2fa;}
+  .del-x{
+    font:inherit;font-size:11px;color:#a33;
+    background:none;border:none;cursor:pointer;
+    white-space:nowrap;padding:0 1mm;
+  }
+  .del-x:hover{text-decoration:underline;}
+  .kasan-th{display:flex;align-items:center;gap:1mm;}
 
   /* 事業種別チェック（表示切替＋帳票にも印字される） */
   .biz-opts{display:flex;gap:4mm;flex-wrap:wrap;align-items:center;}
@@ -96,6 +113,7 @@
 
   /* 非表示セクション */
   tr.hide{display:none!important;}
+  tr.off{display:none!important;}
 
   input[type="text"],input[type="month"],input[type="number"]{
     font:inherit;font-size:12px;color:var(--ink);
@@ -115,6 +133,12 @@
   }
   textarea.tall{height:24mm;}
   textarea.xtall{height:46mm;}
+  textarea.name-area{
+    height:auto;min-height:6mm;
+    border-bottom:1px dotted #999;
+    line-height:1.5;overflow:hidden;
+    vertical-align:bottom;
+  }
 
   .opts{display:flex;gap:4mm;flex-wrap:wrap;align-items:center;}
   .opts label{
@@ -126,6 +150,7 @@
   }
   .inline-note{display:flex;align-items:center;gap:2mm;flex:1;min-width:50mm;}
   .inline-note span{font-size:11px;color:#555;white-space:nowrap;}
+  .inline-note .name-area{flex:1;min-width:0;}
 
   .weight-diff{font-weight:700;}
 
@@ -138,6 +163,7 @@
   /* 印刷設定 */
   @page{size:A4;margin:10mm;}
   @media print{ .no-print{display:none!important}
+    tr{page-break-inside:avoid;break-inside:avoid;}
     body{background:#fff;padding:0;font-size:12px;}
     .toolbar{display:none;}
     .sheet{
@@ -164,7 +190,7 @@
 
   <div class="head-line">
     <div class="to">
-      <input type="text" id="cm-office" class="mid" placeholder="居宅介護支援事業所名">
+      <textarea id="cm-office" class="mid name-area" rows="1" placeholder="居宅介護支援事業所名" oninput="autoGrow(this)"></textarea>
       <span>担当ケアマネジャー：</span>
       <input type="text" id="cm-name" class="short" placeholder="氏名">
       <span>様</span>
@@ -177,7 +203,7 @@
   <table>
     <tr>
       <th>事業所名</th>
-      <td><input type="text" id="office" placeholder="報告する事業所名"></td>
+      <td><textarea id="office" class="name-area" rows="1" placeholder="報告する事業所名" oninput="autoGrow(this)"></textarea></td>
       <th>事業種別</th>
       <td>
         <div class="biz-opts">
@@ -204,7 +230,7 @@
           <label><input type="radio" name="plan" value="計画通り実施" checked>計画通り実施</label>
           <label><input type="radio" name="plan" value="一部変更あり">一部変更あり</label>
           <label><input type="radio" name="plan" value="中止・欠席あり">中止・欠席あり</label>
-          <div class="inline-note"><span>備考：</span><input type="text" id="plan-note"></div>
+          <div class="inline-note"><span>備考：</span><textarea id="plan-note" class="name-area" rows="1" oninput="autoGrow(this)"></textarea></div>
         </div>
       </td>
     </tr>
@@ -214,7 +240,7 @@
         <div class="opts">
           <label><input type="radio" name="event" value="なし" checked>参加なし</label>
           <label><input type="radio" name="event" value="あり">参加あり</label>
-          <div class="inline-note"><span>内容：</span><input type="text" id="event-note"></div>
+          <div class="inline-note"><span>内容：</span><textarea id="event-note" class="name-area" rows="1" oninput="autoGrow(this)"></textarea></div>
         </div>
       </td>
     </tr>
@@ -231,6 +257,16 @@
       </td>
     </tr>
     <tr class="grp-tsusho">
+      <th>算定加算</th>
+      <td colspan="3">
+        <div class="opts">
+          <label><input type="checkbox" id="ka-bath" checked onchange="toggleKasanRows()">入浴介助加算</label>
+          <label><input type="checkbox" id="ka-kunren" checked onchange="toggleKasanRows()">個別機能訓練加算</label>
+          <button type="button" class="btn-add no-print" onclick="addKasan()">＋ その他の加算を追加</button>
+        </div>
+      </td>
+    </tr>
+    <tr class="grp-tsusho" id="row-bath">
       <th>入浴</th>
       <td colspan="3">
         <div class="opts" style="margin-bottom:1mm;">
@@ -244,18 +280,18 @@
           <label><input type="radio" name="bathlv" value="見守り・自立">見守り・自立</label>
           <label><input type="radio" name="bathlv" value="一部介助" checked>一部介助</label>
           <label><input type="radio" name="bathlv" value="全介助">全介助</label>
-          <div class="inline-note"><span>備考：</span><input type="text" id="bath-note"></div>
+          <div class="inline-note"><span>備考：</span><textarea id="bath-note" class="name-area" rows="1" oninput="autoGrow(this)"></textarea></div>
         </div>
       </td>
     </tr>
-    <tr class="grp-tsusho">
+    <tr class="grp-tsusho" id="row-kunren">
       <th>個別機能訓練</th>
       <td colspan="3">
         <div class="opts">
           <label><input type="radio" name="kunren" value="実施" checked>実施</label>
           <label><input type="radio" name="kunren" value="一部実施">一部実施</label>
           <label><input type="radio" name="kunren" value="なし">なし</label>
-          <div class="inline-note"><span>内容：</span><input type="text" id="kunren-note" placeholder="例：下肢筋力訓練、歩行訓練"></div>
+          <div class="inline-note"><span>内容：</span><textarea id="kunren-note" class="name-area" rows="1" placeholder="例：下肢筋力訓練、歩行訓練" oninput="autoGrow(this)"></textarea></div>
         </div>
       </td>
     </tr>
@@ -266,7 +302,7 @@
           <label><input type="radio" name="comm" value="良好" checked>良好</label>
           <label><input type="radio" name="comm" value="声かけに応答あり">声かけに応答あり</label>
           <label><input type="radio" name="comm" value="発語・反応が少ない">発語・反応が少ない</label>
-          <div class="inline-note"><span>備考：</span><input type="text" id="comm-note"></div>
+          <div class="inline-note"><span>備考：</span><textarea id="comm-note" class="name-area" rows="1" oninput="autoGrow(this)"></textarea></div>
         </div>
       </td>
     </tr>
@@ -277,7 +313,7 @@
           <label><input type="radio" name="rec" value="積極的に参加" checked>積極的に参加</label>
           <label><input type="radio" name="rec" value="促しで参加">促しで参加</label>
           <label><input type="radio" name="rec" value="不参加が多い">不参加が多い</label>
-          <div class="inline-note"><span>備考：</span><input type="text" id="rec-note"></div>
+          <div class="inline-note"><span>備考：</span><textarea id="rec-note" class="name-area" rows="1" oninput="autoGrow(this)"></textarea></div>
         </div>
       </td>
     </tr>
@@ -302,7 +338,7 @@
           <label><input type="radio" name="seikatsu" value="一部変更あり">一部変更あり</label>
           <label><input type="radio" name="seikatsu" value="中止あり">中止あり</label>
           <label><input type="radio" name="seikatsu" value="提供なし">提供なし</label>
-          <div class="inline-note"><span>備考：</span><input type="text" id="seikatsu-note"></div>
+          <div class="inline-note"><span>備考：</span><textarea id="seikatsu-note" class="name-area" rows="1" oninput="autoGrow(this)"></textarea></div>
         </div>
       </td>
     </tr>
@@ -314,7 +350,7 @@
           <label><input type="radio" name="shintai" value="一部変更あり">一部変更あり</label>
           <label><input type="radio" name="shintai" value="中止あり">中止あり</label>
           <label><input type="radio" name="shintai" value="提供なし">提供なし</label>
-          <div class="inline-note"><span>備考：</span><input type="text" id="shintai-note"></div>
+          <div class="inline-note"><span>備考：</span><textarea id="shintai-note" class="name-area" rows="1" oninput="autoGrow(this)"></textarea></div>
         </div>
       </td>
     </tr>
@@ -326,7 +362,7 @@
           <label><input type="radio" name="atoshintai" value="一部変更あり">一部変更あり</label>
           <label><input type="radio" name="atoshintai" value="中止あり">中止あり</label>
           <label><input type="radio" name="atoshintai" value="提供なし">提供なし</label>
-          <div class="inline-note"><span>備考：</span><input type="text" id="atoshintai-note"></div>
+          <div class="inline-note"><span>備考：</span><textarea id="atoshintai-note" class="name-area" rows="1" oninput="autoGrow(this)"></textarea></div>
         </div>
       </td>
     </tr>
@@ -336,7 +372,7 @@
         <div class="opts">
           <label><input type="radio" name="jikan" value="なし" checked>なし</label>
           <label><input type="radio" name="jikan" value="あり">あり</label>
-          <div class="inline-note"><span>日付・内容：</span><input type="text" id="jikan-note" placeholder="例：7/15 通院のため時間変更、7/22 お休み"></div>
+          <div class="inline-note"><span>日付・内容：</span><textarea id="jikan-note" class="name-area" rows="1" placeholder="例：7/15 通院のため時間変更、7/22 お休み" oninput="autoGrow(this)"></textarea></div>
         </div>
       </td>
     </tr>
@@ -364,7 +400,7 @@
           <label><input type="radio" name="night" value="時々覚醒">時々覚醒</label>
           <label><input type="radio" name="night" value="不眠傾向">不眠傾向</label>
           <label><input type="radio" name="night" value="不穏あり">不穏あり</label>
-          <div class="inline-note"><span>備考：</span><input type="text" id="night-note"></div>
+          <div class="inline-note"><span>備考：</span><textarea id="night-note" class="name-area" rows="1" oninput="autoGrow(this)"></textarea></div>
         </div>
       </td>
     </tr>
@@ -375,7 +411,7 @@
           <label><input type="radio" name="rhythm" value="安定" checked>安定</label>
           <label><input type="radio" name="rhythm" value="やや乱れあり">やや乱れあり</label>
           <label><input type="radio" name="rhythm" value="昼夜逆転傾向">昼夜逆転傾向</label>
-          <div class="inline-note"><span>備考：</span><input type="text" id="rhythm-note"></div>
+          <div class="inline-note"><span>備考：</span><textarea id="rhythm-note" class="name-area" rows="1" oninput="autoGrow(this)"></textarea></div>
         </div>
       </td>
     </tr>
@@ -385,7 +421,7 @@
         <div class="opts">
           <label><input type="radio" name="ouushin" value="なし">なし</label>
           <label><input type="radio" name="ouushin" value="あり" checked>あり</label>
-          <div class="inline-note"><span>日付・内容：</span><input type="text" id="ouushin-note" placeholder="例：7/10 往診（定期）"></div>
+          <div class="inline-note"><span>日付・内容：</span><textarea id="ouushin-note" class="name-area" rows="1" placeholder="例：7/10 往診（定期）" oninput="autoGrow(this)"></textarea></div>
         </div>
       </td>
     </tr>
@@ -395,7 +431,7 @@
         <div class="opts">
           <label><input type="radio" name="med" value="なし" checked>なし</label>
           <label><input type="radio" name="med" value="あり">あり</label>
-          <div class="inline-note"><span>内容：</span><input type="text" id="med-note"></div>
+          <div class="inline-note"><span>内容：</span><textarea id="med-note" class="name-area" rows="1" oninput="autoGrow(this)"></textarea></div>
         </div>
       </td>
     </tr>
@@ -409,7 +445,7 @@
           <label><input type="radio" name="ext2" value="予定通り実施" checked>予定通り実施</label>
           <label><input type="radio" name="ext2" value="変更・中止あり">変更・中止あり</label>
           <label><input type="radio" name="ext2" value="利用なし">利用なし</label>
-          <div class="inline-note"><span>備考：</span><input type="text" class="ext-note" id="ext2-note"></div>
+          <div class="inline-note"><span>備考：</span><textarea id="ext2-note" class="name-area ext-note" rows="1" oninput="autoGrow(this)"></textarea></div>
         </div>
       </td>
     </tr>
@@ -422,7 +458,7 @@
         <div class="opts">
           <label><input type="radio" name="change" value="なし" checked>なし</label>
           <label><input type="radio" name="change" value="あり">あり</label>
-          <div class="inline-note"><span>内容：</span><input type="text" id="change-note"></div>
+          <div class="inline-note"><span>内容：</span><textarea id="change-note" class="name-area" rows="1" oninput="autoGrow(this)"></textarea></div>
         </div>
       </td>
     </tr>
@@ -445,6 +481,50 @@ function toggleSections(){
       tr.classList.toggle('hide', !cb.checked);
     });
   });
+}
+
+function autoGrow(el){
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}
+
+function toggleKasanRows(){
+  document.getElementById('row-bath').classList.toggle('off', !document.getElementById('ka-bath').checked);
+  document.getElementById('row-kunren').classList.toggle('off', !document.getElementById('ka-kunren').checked);
+}
+
+let kasanCount = 0;
+function addKasan(name){
+  kasanCount++;
+  const n = kasanCount;
+  const tr = document.createElement('tr');
+  tr.className = 'grp-tsusho kasan-row';
+  tr.innerHTML = `
+    <th>
+      <div class="kasan-th">
+        <input type="text" class="kasan-name" placeholder="加算名" value="${name || ''}">
+        <button type="button" class="del-x no-print" title="この加算行を削除" onclick="delKasan(this)">×</button>
+      </div>
+    </th>
+    <td colspan="3">
+      <div class="opts">
+        <label><input type="radio" name="kasan${n}" value="実施" checked>実施</label>
+        <label><input type="radio" name="kasan${n}" value="一部実施">一部実施</label>
+        <label><input type="radio" name="kasan${n}" value="実施なし">実施なし</label>
+        <div class="inline-note"><span>備考：</span><textarea class="name-area kasan-note" rows="1" oninput="autoGrow(this)"></textarea></div>
+      </div>
+    </td>`;
+  // 個別機能訓練の行の直後（既存のカスタム加算行があればその後）に挿入
+  let anchor = document.getElementById('row-kunren');
+  const rows = document.querySelectorAll('.kasan-row');
+  if(rows.length) anchor = rows[rows.length - 1];
+  anchor.insertAdjacentElement('afterend', tr);
+  if(!name) tr.querySelector('.kasan-name').focus();
+}
+
+function delKasan(btn){
+  if(!confirm('この加算行を削除しますか？')) return;
+  btn.closest('tr').remove();
 }
 
 function calcDiff(){
@@ -470,6 +550,14 @@ function nextPerson(){
   document.querySelectorAll('.hm').forEach(cb => cb.checked = false);
   document.querySelectorAll('.ext-note').forEach(el => el.value = '');
 
+  // 加算行：加算名は残し、実施状況と備考だけリセット
+  document.querySelectorAll('.kasan-row').forEach(row => {
+    const noteEl = row.querySelector('.kasan-note');
+    if(noteEl) noteEl.value = '';
+    const r = row.querySelector('input[type="radio"][value="実施"]');
+    if(r) r.checked = true;
+  });
+
   // ラジオを初期値に戻す
   const defaults = {plan:'計画通り実施', event:'なし', night:'良眠', rhythm:'安定', ouushin:'あり', med:'なし', change:'なし',
                     ext2:'予定通り実施',
@@ -481,6 +569,7 @@ function nextPerson(){
   });
 
   document.getElementById('w-diff').textContent = '−';
+  document.querySelectorAll('.name-area').forEach(autoGrow);
   document.getElementById('user-name').focus();
 }
 
@@ -490,6 +579,7 @@ function nextPerson(){
   document.getElementById('month').value = t.getFullYear() + '-' + pad(t.getMonth()+1);
   document.getElementById('made-date').value = t.getFullYear() + '/' + (t.getMonth()+1) + '/' + t.getDate();
   toggleSections();
+  toggleKasanRows();
 })();
 </script>
 <div style="text-align:center;padding:18px 0 26px;font-family:serif;font-size:13px" class="no-print"><a href="rakuraku.html" style="color:#9c7209;text-decoration:none;letter-spacing:.15em">← らくらくの部屋へもどる</a></div></body>
