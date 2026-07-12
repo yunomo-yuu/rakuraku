@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>らくらく月次報告（デイ・施設版）</title>
+<title>らくらく月次報告（通所・訪問・施設対応版）</title>
 <style>
   :root{
     --ink:#22304a;
@@ -82,9 +82,20 @@
     background:#dde4ee;
   }
   .sec-day{background:#e2efdc;}
+  .sec-visit{background:#f6e3e6;}
   .sec-fac{background:#f7ead7;}
   .sec-ext{background:#e0e8f6;}
   .ext-name{font-weight:700;}
+
+  /* 事業種別チェック（表示切替＋帳票にも印字される） */
+  .biz-opts{display:flex;gap:4mm;flex-wrap:wrap;align-items:center;}
+  .biz-opts label{
+    display:flex;align-items:center;gap:1.2mm;
+    font-size:12px;cursor:pointer;white-space:nowrap;font-weight:700;
+  }
+
+  /* 非表示セクション */
+  tr.hide{display:none!important;}
 
   input[type="text"],input[type="month"],input[type="number"]{
     font:inherit;font-size:12px;color:var(--ink);
@@ -121,12 +132,12 @@
   .foot{
     margin-top:3mm;
     font-size:10px;color:#666;
-    display:flex;justify-content:space-between;
+    display:flex;justify-content:flex-end;
   }
 
   /* 印刷設定 */
   @page{size:A4;margin:10mm;}
-  @media print{ .no-print{display:none!important} 
+  @media print{ .no-print{display:none!important}
     body{background:#fff;padding:0;font-size:12px;}
     .toolbar{display:none;}
     .sheet{
@@ -135,7 +146,7 @@
       padding:2mm 4mm;
     }
     input,textarea{border-bottom-color:#bbb;}
-    .sec,.sec-day,.sec-fac,.sec-ext{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .sec,.sec-day,.sec-visit,.sec-fac,.sec-ext{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
     th{background:#f0f0f0 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   }
 </style>
@@ -145,7 +156,7 @@
 <div class="toolbar">
   <button type="button" class="btn-print" onclick="window.print()">印刷 / PDF保存</button>
   <button type="button" class="btn-next" onclick="nextPerson()">次の利用者へ（利用者情報をクリア）</button>
-  <span class="hint">対象月・事業所・記入者は残ります。印刷画面で「PDFに保存」を選べばPDFになります。</span>
+  <span class="hint">「事業種別」にチェックを入れると、その種別の項目が表示されます。対象月・事業所・種別は「次の利用者へ」でも残ります。</span>
 </div>
 
 <div class="sheet">
@@ -165,14 +176,28 @@
 
   <table>
     <tr>
+      <th>事業所名</th>
+      <td><input type="text" id="office" placeholder="報告する事業所名"></td>
+      <th>事業種別</th>
+      <td>
+        <div class="biz-opts">
+          <label><input type="checkbox" class="biz" value="通所" data-grp="tsusho" checked onchange="toggleSections()">通所</label>
+          <label><input type="checkbox" class="biz" value="訪問" data-grp="homon" onchange="toggleSections()">訪問</label>
+          <label><input type="checkbox" class="biz" value="施設" data-grp="shisetsu" checked onchange="toggleSections()">施設</label>
+          <label><input type="checkbox" class="biz" value="外部" data-grp="ext" checked onchange="toggleSections()">外部</label>
+        </div>
+      </td>
+    </tr>
+    <tr>
       <th>利用者名</th>
       <td><input type="text" id="user-name" placeholder="氏名">　様</td>
-      <th>記入者</th>
+      <th>報告者（記入者）</th>
       <td><input type="text" id="writer" placeholder="氏名"></td>
     </tr>
 
-    <tr><td colspan="4" class="sec sec-day">■ デイサービス</td></tr>
-    <tr>
+    <!-- ============ 通所（デイサービス） ============ -->
+    <tr class="grp-tsusho"><td colspan="4" class="sec sec-day">■ デイサービス</td></tr>
+    <tr class="grp-tsusho">
       <th>通所計画の実施</th>
       <td colspan="3">
         <div class="opts">
@@ -183,7 +208,7 @@
         </div>
       </td>
     </tr>
-    <tr>
+    <tr class="grp-tsusho">
       <th>イベント参加</th>
       <td colspan="3">
         <div class="opts">
@@ -193,7 +218,7 @@
         </div>
       </td>
     </tr>
-    <tr>
+    <tr class="grp-tsusho">
       <th>日中の様子</th>
       <td colspan="3">
         <div class="opts">
@@ -205,7 +230,7 @@
         </div>
       </td>
     </tr>
-    <tr>
+    <tr class="grp-tsusho">
       <th>入浴</th>
       <td colspan="3">
         <div class="opts" style="margin-bottom:1mm;">
@@ -223,7 +248,7 @@
         </div>
       </td>
     </tr>
-    <tr>
+    <tr class="grp-tsusho">
       <th>個別機能訓練</th>
       <td colspan="3">
         <div class="opts">
@@ -234,7 +259,7 @@
         </div>
       </td>
     </tr>
-    <tr>
+    <tr class="grp-tsusho">
       <th>コミュニケーション</th>
       <td colspan="3">
         <div class="opts">
@@ -245,7 +270,7 @@
         </div>
       </td>
     </tr>
-    <tr>
+    <tr class="grp-tsusho">
       <th>レク参加状況</th>
       <td colspan="3">
         <div class="opts">
@@ -256,8 +281,7 @@
         </div>
       </td>
     </tr>
-
-    <tr>
+    <tr class="grp-tsusho">
       <th>体重（デイ計測）</th>
       <td colspan="3">
         <div class="opts">
@@ -268,8 +292,71 @@
       </td>
     </tr>
 
-    <tr><td colspan="4" class="sec sec-fac">■ 施設での生活</td></tr>
-    <tr>
+    <!-- ============ 訪問介護 ============ -->
+    <tr class="grp-homon"><td colspan="4" class="sec sec-visit">■ 訪問介護</td></tr>
+    <tr class="grp-homon">
+      <th>生活支援</th>
+      <td colspan="3">
+        <div class="opts">
+          <label><input type="radio" name="seikatsu" value="計画通り実施" checked>計画通り実施</label>
+          <label><input type="radio" name="seikatsu" value="一部変更あり">一部変更あり</label>
+          <label><input type="radio" name="seikatsu" value="中止あり">中止あり</label>
+          <label><input type="radio" name="seikatsu" value="提供なし">提供なし</label>
+          <div class="inline-note"><span>備考：</span><input type="text" id="seikatsu-note"></div>
+        </div>
+      </td>
+    </tr>
+    <tr class="grp-homon">
+      <th>身体介護</th>
+      <td colspan="3">
+        <div class="opts">
+          <label><input type="radio" name="shintai" value="計画通り実施" checked>計画通り実施</label>
+          <label><input type="radio" name="shintai" value="一部変更あり">一部変更あり</label>
+          <label><input type="radio" name="shintai" value="中止あり">中止あり</label>
+          <label><input type="radio" name="shintai" value="提供なし">提供なし</label>
+          <div class="inline-note"><span>備考：</span><input type="text" id="shintai-note"></div>
+        </div>
+      </td>
+    </tr>
+    <tr class="grp-homon">
+      <th>生活支援後の身体介護</th>
+      <td colspan="3">
+        <div class="opts">
+          <label><input type="radio" name="atoshintai" value="計画通り実施" checked>計画通り実施</label>
+          <label><input type="radio" name="atoshintai" value="一部変更あり">一部変更あり</label>
+          <label><input type="radio" name="atoshintai" value="中止あり">中止あり</label>
+          <label><input type="radio" name="atoshintai" value="提供なし">提供なし</label>
+          <div class="inline-note"><span>備考：</span><input type="text" id="atoshintai-note"></div>
+        </div>
+      </td>
+    </tr>
+    <tr class="grp-homon">
+      <th>時間の変更・お休み</th>
+      <td colspan="3">
+        <div class="opts">
+          <label><input type="radio" name="jikan" value="なし" checked>なし</label>
+          <label><input type="radio" name="jikan" value="あり">あり</label>
+          <div class="inline-note"><span>日付・内容：</span><input type="text" id="jikan-note" placeholder="例：7/15 通院のため時間変更、7/22 お休み"></div>
+        </div>
+      </td>
+    </tr>
+    <tr class="grp-homon">
+      <th>訪問時の様子</th>
+      <td colspan="3">
+        <div class="opts" style="margin-bottom:1mm;">
+          <label><input type="checkbox" class="hm" value="体調安定">体調安定</label>
+          <label><input type="checkbox" class="hm" value="表情穏やか">表情穏やか</label>
+          <label><input type="checkbox" class="hm" value="会話良好">会話良好</label>
+          <label><input type="checkbox" class="hm" value="疲労感あり">疲労感あり</label>
+          <label><input type="checkbox" class="hm" value="体調不良の訴えあり">体調不良の訴えあり</label>
+        </div>
+        <textarea id="homon-jiyuu" class="tall" placeholder="自由記述（訪問時に気づいたこと、ご本人の言葉、生活状況の変化など）"></textarea>
+      </td>
+    </tr>
+
+    <!-- ============ 施設での生活 ============ -->
+    <tr class="grp-shisetsu"><td colspan="4" class="sec sec-fac">■ 施設での生活</td></tr>
+    <tr class="grp-shisetsu">
       <th>夜間帯の様子</th>
       <td colspan="3">
         <div class="opts">
@@ -281,7 +368,7 @@
         </div>
       </td>
     </tr>
-    <tr>
+    <tr class="grp-shisetsu">
       <th>生活リズム</th>
       <td colspan="3">
         <div class="opts">
@@ -292,8 +379,7 @@
         </div>
       </td>
     </tr>
-
-    <tr>
+    <tr class="grp-shisetsu">
       <th>往診・受診</th>
       <td colspan="3">
         <div class="opts">
@@ -303,7 +389,7 @@
         </div>
       </td>
     </tr>
-    <tr>
+    <tr class="grp-shisetsu">
       <th>薬の変更</th>
       <td colspan="3">
         <div class="opts">
@@ -314,8 +400,9 @@
       </td>
     </tr>
 
-    <tr><td colspan="4" class="sec sec-ext">■ 外部サービスの実施状況（施設で把握している範囲）</td></tr>
-    <tr>
+    <!-- ============ 外部サービス ============ -->
+    <tr class="grp-ext"><td colspan="4" class="sec sec-ext">■ 外部サービスの実施状況（事業所で把握している範囲）</td></tr>
+    <tr class="grp-ext">
       <th><input type="text" class="ext-name" value="福祉用具"></th>
       <td colspan="3">
         <div class="opts">
@@ -327,6 +414,7 @@
       </td>
     </tr>
 
+    <!-- ============ 共通 ============ -->
     <tr><td colspan="4" class="sec">■ 変更点・特記</td></tr>
     <tr>
       <th>前月との変更点</th>
@@ -345,12 +433,20 @@
   </table>
 
   <div class="foot">
-    <span>事業所名：<span id="foot-office-wrap"><input type="text" id="office" class="mid" placeholder="事業所名" style="width:60mm;"></span></span>
     <span>作成日：<input type="text" id="made-date" class="short" style="width:28mm;"></span>
   </div>
 </div>
 
 <script>
+function toggleSections(){
+  document.querySelectorAll('.biz').forEach(cb => {
+    const grp = cb.dataset.grp;
+    document.querySelectorAll('.grp-' + grp).forEach(tr => {
+      tr.classList.toggle('hide', !cb.checked);
+    });
+  });
+}
+
 function calcDiff(){
   const now = parseFloat(document.getElementById('w-now').value);
   const prev = parseFloat(document.getElementById('w-prev').value);
@@ -363,19 +459,22 @@ function calcDiff(){
 function nextPerson(){
   if(!confirm('この利用者の入力内容をクリアして、次の利用者に進みますか？\n（印刷がまだの場合は先に印刷してください）')) return;
 
-  // 利用者ごとの項目だけクリア
+  // 利用者ごとの項目だけクリア（事業所名・事業種別・対象月は残す）
   ['user-name','plan-note','event-note','night-note','rhythm-note',
    'w-now','w-prev','ouushin-note','med-note','change-note','tokki','cm-name','cm-office',
-   'bath-note','kunren-note','comm-note','rec-note']
-    .forEach(id => { document.getElementById(id).value = ''; });
+   'bath-note','kunren-note','comm-note','rec-note',
+   'seikatsu-note','shintai-note','atoshintai-note','jikan-note','homon-jiyuu']
+    .forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
 
   document.querySelectorAll('.day').forEach(cb => cb.checked = false);
+  document.querySelectorAll('.hm').forEach(cb => cb.checked = false);
   document.querySelectorAll('.ext-note').forEach(el => el.value = '');
 
   // ラジオを初期値に戻す
   const defaults = {plan:'計画通り実施', event:'なし', night:'良眠', rhythm:'安定', ouushin:'あり', med:'なし', change:'なし',
                     ext2:'予定通り実施',
-                    bath:'計画通り実施', bathlv:'一部介助', kunren:'実施', comm:'良好', rec:'積極的に参加'};
+                    bath:'計画通り実施', bathlv:'一部介助', kunren:'実施', comm:'良好', rec:'積極的に参加',
+                    seikatsu:'計画通り実施', shintai:'計画通り実施', atoshintai:'計画通り実施', jikan:'なし'};
   Object.entries(defaults).forEach(([name, val]) => {
     const r = document.querySelector(`input[name="${name}"][value="${val}"]`);
     if(r) r.checked = true;
@@ -390,6 +489,7 @@ function nextPerson(){
   const pad = n => String(n).padStart(2,'0');
   document.getElementById('month').value = t.getFullYear() + '-' + pad(t.getMonth()+1);
   document.getElementById('made-date').value = t.getFullYear() + '/' + (t.getMonth()+1) + '/' + t.getDate();
+  toggleSections();
 })();
 </script>
 <div style="text-align:center;padding:18px 0 26px;font-family:serif;font-size:13px" class="no-print"><a href="rakuraku.html" style="color:#9c7209;text-decoration:none;letter-spacing:.15em">← らくらくの部屋へもどる</a></div></body>
