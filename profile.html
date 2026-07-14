@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>結ゆうについて｜結の音 - you no oto</title>
+<meta name="description" content="チューニングセラピスト結ゆうのプロフィール。音叉・タロット・星読みで、あなたとあなたの本音を結びます。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600&family=Zen+Kaku+Gothic+New:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sky-top:#070b21;
+  --sky-mid:#171c4a;
+  --sky-bot:#312c66;
+  --moon:#f3efe2;
+  --gold:#e6c87d;
+  --gold-dim:rgba(230,200,125,.45);
+  --text:#d9d6cf;
+  --serif:'Shippori Mincho',serif;
+  --sans:'Zen Kaku Gothic New',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--sans);
+  color:var(--text);
+  background:linear-gradient(180deg,var(--sky-top) 0%,var(--sky-mid) 55%,var(--sky-bot) 100%);
+  background-attachment:fixed;
+  min-height:100vh;
+  line-height:1.9;
+  font-weight:300;
+  overflow-x:hidden;
+}
+/* ---- starfield ---- */
+.stars{position:fixed;inset:0;pointer-events:none;z-index:0}
+.stars span{
+  position:absolute;border-radius:50%;
+  background:#fffbee;
+  animation:tw 4s ease-in-out infinite alternate;
+}
+@keyframes tw{from{opacity:.25}to{opacity:.95}}
+@media (prefers-reduced-motion:reduce){.stars span{animation:none;opacity:.6}}
+.wrap{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:0 24px}
+
+/* ---- hero ---- */
+.hero{padding:88px 0 56px;text-align:center}
+.hero .crest{
+  font-size:14px;letter-spacing:.5em;color:var(--gold);
+  text-indent:.5em;margin-bottom:22px;
+}
+.hero h1{
+  font-family:var(--serif);font-weight:500;
+  font-size:clamp(34px,9vw,46px);color:var(--moon);
+  letter-spacing:.14em;line-height:1.5;
+}
+.hero .yomi{font-size:13px;letter-spacing:.35em;color:var(--gold-dim);margin-top:8px}
+.hero .lead{
+  margin-top:34px;font-family:var(--serif);
+  font-size:16px;color:var(--text);letter-spacing:.08em;
+}
+.tuning-line{
+  width:1px;height:56px;margin:44px auto 0;
+  background:linear-gradient(180deg,var(--gold),transparent);
+}
+
+/* ---- sections ---- */
+section{padding:52px 0}
+h2{
+  font-family:var(--serif);font-weight:500;
+  font-size:21px;color:var(--gold);letter-spacing:.24em;
+  text-align:center;margin-bottom:36px;
+}
+h2::after{
+  content:"";display:block;width:36px;height:1px;
+  background:var(--gold-dim);margin:16px auto 0;
+}
+p+p{margin-top:1.4em}
+.em{color:var(--moon);font-family:var(--serif)}
+
+/* ---- cards ---- */
+.tools{display:grid;gap:18px;margin-top:8px}
+.tool{
+  border:1px solid rgba(230,200,125,.22);
+  border-radius:14px;padding:26px 24px;
+  background:rgba(255,255,255,.025);
+  backdrop-filter:blur(2px);
+}
+.tool h3{
+  font-family:var(--serif);font-weight:500;font-size:17px;
+  color:var(--moon);letter-spacing:.14em;margin-bottom:10px;
+}
+.tool h3 .mark{color:var(--gold);margin-right:10px}
+.tool p{font-size:14px;line-height:1.95}
+
+/* ---- history ---- */
+.history{list-style:none}
+.history li{
+  position:relative;padding:0 0 30px 30px;font-size:14.5px;
+}
+.history li::before{
+  content:"";position:absolute;left:6px;top:11px;
+  width:7px;height:7px;border-radius:50%;
+  background:var(--gold);box-shadow:0 0 10px var(--gold-dim);
+}
+.history li::after{
+  content:"";position:absolute;left:9px;top:24px;bottom:2px;
+  width:1px;background:rgba(230,200,125,.2);
+}
+.history li:last-child::after{display:none}
+.history .hl{color:var(--moon);font-family:var(--serif);display:block;margin-bottom:2px;letter-spacing:.06em}
+
+/* ---- message ---- */
+.message{
+  font-family:var(--serif);text-align:center;
+  font-size:16px;letter-spacing:.1em;line-height:2.4;color:var(--moon);
+}
+
+/* ---- CTA ---- */
+.cta{text-align:center;padding:56px 0 40px}
+.btn{
+  display:inline-block;padding:17px 44px;border-radius:999px;
+  font-family:var(--serif);font-size:15.5px;letter-spacing:.18em;
+  text-decoration:none;transition:.3s;
+}
+.btn-gold{
+  color:var(--sky-top);background:linear-gradient(135deg,#f0d99a,var(--gold));
+  box-shadow:0 4px 24px rgba(230,200,125,.35);
+}
+.btn-gold:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(230,200,125,.5)}
+.btn-line{
+  margin-top:16px;color:var(--gold);border:1px solid var(--gold-dim);
+  background:transparent;
+}
+.btn-line:hover{background:rgba(230,200,125,.1)}
+.cta .note{font-size:12.5px;color:var(--gold-dim);margin-top:22px;letter-spacing:.1em}
+
+/* ---- footer ---- */
+footer{
+  text-align:center;padding:36px 0 48px;
+  font-size:12px;letter-spacing:.22em;color:rgba(217,214,207,.5);
+}
+footer a{color:var(--gold-dim);text-decoration:none}
+footer a:hover{color:var(--gold)}
+</style>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+
+<div class="wrap">
+
+  <header class="hero">
+    <p class="crest">結の音 — YOU NO OTO —</p>
+    <h1>結ゆう</h1>
+    <p class="yomi">ゆう ｜ チューニングセラピスト</p>
+    <p class="lead">あなたと、あなたの本音を「結ぶ」。<br>音と言葉で、心の周波数をととのえます。</p>
+    <div class="tuning-line"></div>
+  </header>
+
+  <section>
+    <h2>結ゆうとは</h2>
+    <p>「結」という字には、ふたつの願いを込めています。</p>
+    <p>ひとつは、<span class="em">人と人を結ぶこと</span>。<br>
+    もうひとつは、<span class="em">自分と、自分の本音を結ぶこと</span>。</p>
+    <p>わたしたちは毎日たくさんの言葉を話しているのに、いちばん大切な「自分の本音」とは、意外と話せていないものです。忙しさの中で置いてきた気持ち、言葉にならないまま沈んでいる想い——。</p>
+    <p>結ゆうのセッションは、その声をいっしょに聴きにいく時間です。</p>
+  </section>
+
+  <section>
+    <h2>セッションで使うもの</h2>
+    <div class="tools">
+      <div class="tool">
+        <h3><span class="mark">〰</span>音叉（おんさ）</h3>
+        <p>澄んだ倍音の響きで、緊張した心と身体をゆるめます。思考が静かになると、奥にあった本音が浮かびあがってきます。</p>
+      </div>
+      <div class="tool">
+        <h3><span class="mark">☽</span>星読み・タロット</h3>
+        <p>西洋占星術や紫微斗数、タロットなどの象徴の言葉を借りて、いまのあなたを映す「鏡」として使います。当てるためではなく、気づくために。</p>
+      </div>
+      <div class="tool">
+        <h3><span class="mark">✎</span>書き出し（言語化）</h3>
+        <p>浮かんできた気持ちを、いっしょに言葉にしていきます。モヤモヤに名前がつくと、心はふっと軽くなります。</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>プロフィール</h2>
+    <ul class="history">
+      <li>
+        <span class="hl">介護の現場で23年</span>
+        たくさんの方の人生の声に、耳を澄ませてきました。「言葉にならない想いを聴く」ことが、わたしの原点です。
+      </li>
+      <li>
+        <span class="hl">現在はケアマネジャーとして活動中</span>
+        暮らしと心に寄り添う仕事を続けながら、「聴く」を深めています。
+      </li>
+      <li>
+        <span class="hl">チューニングセラピスト「結ゆう」として</span>
+        音叉・タロット・星読み・書き出しを組み合わせた独自のセッションで、心の調律をお手伝いしています。佐賀を拠点に活動中。
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="message">
+      あなたの本音は、<br>
+      なくなってはいません。<br>
+      すこし奥で、静かに<br>
+      鳴りつづけています。<br><br>
+      その音を、いっしょに<br>
+      聴きにいきませんか。
+    </p>
+  </section>
+
+  <div class="cta">
+    <a class="btn btn-gold" href="https://you-no-oto.jp/yuu.html">鑑定メニューを見る</a><br>
+    <a class="btn btn-line" href="https://lin.ee/wsstwYE">公式LINEで話しかける</a>
+    <p class="note">ご質問・ご相談は公式LINEからお気軽にどうぞ</p>
+  </div>
+
+  <footer>
+    <a href="https://you-no-oto.jp/">← 結の音 トップへ</a><br><br>
+    © 結ゆう — you-no-oto.jp
+  </footer>
+
+</div>
+
+<script>
+// starfield
+const f=document.getElementById('stars');
+for(let i=0;i<110;i++){
+  const s=document.createElement('span');
+  const r=Math.random()*2.2+0.6;
+  s.style.width=s.style.height=r+'px';
+  s.style.left=Math.random()*100+'vw';
+  s.style.top=Math.random()*100+'vh';
+  s.style.animationDelay=(Math.random()*4)+'s';
+  s.style.animationDuration=(3+Math.random()*4)+'s';
+  if(Math.random()<0.15)s.style.background='#e6c87d';
+  f.appendChild(s);
+}
+</script>
+</body>
+</html>
