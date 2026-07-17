@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>結ゆう ｜ you-no-oto.jp</title>
+
 <!-- ファビコン -->
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
@@ -15,10 +19,6 @@
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 
-</head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>結ゆう ｜ you-no-oto.jp</title>
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -100,9 +100,64 @@ footer{
   border-top:1px solid rgba(242,237,225,.14);
   position:relative; z-index:1;
 }
+
+/* ========== オープニング（スプラッシュ） ========== */
+#yu-opening{
+  position:fixed; inset:0; z-index:9999; cursor:pointer;
+  background:radial-gradient(120% 95% at 50% 118%, var(--yozora2) 0%, var(--yozora1) 60%, #060d18 100%);
+  transition:opacity 1.2s ease;
+}
+#yu-opening.done{opacity:0; pointer-events:none}
+#yu-canvas{position:absolute; inset:0; width:100%; height:100%}
+.yu-vignette{position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(85% 70% at 50% 50%, rgba(0,0,0,0) 55%, rgba(4,9,18,.45) 100%)}
+.yu-title-wrap{
+  position:absolute; inset:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; text-align:center;
+  gap:calc(var(--yu-m) * .045);
+}
+.yu-logo{opacity:0; filter:blur(7px); transform:translateY(calc(var(--yu-m) * .015));
+  transition:opacity 1.6s ease, filter 1.6s ease, transform 1.6s ease}
+.yu-logo .yu-yomi{font-size:calc(var(--yu-m) * .028); letter-spacing:.6em; text-indent:.6em;
+  color:var(--kin); margin-bottom:calc(var(--yu-m) * .028)}
+.yu-logo .yu-name{font-size:calc(var(--yu-m) * .135); font-weight:500; letter-spacing:.18em; text-indent:.18em;
+  color:var(--gofun); text-shadow:0 0 calc(var(--yu-m) * .06) rgba(201,162,75,.35)}
+.yu-tag{opacity:0; filter:blur(5px); transform:translateY(calc(var(--yu-m) * .012));
+  display:flex; flex-direction:column; align-items:center; gap:calc(var(--yu-m) * .028);
+  transition:opacity 1.5s ease, filter 1.5s ease, transform 1.5s ease}
+.yu-tag .yu-line{width:0; height:1px; background:var(--kin); opacity:.75; transition:width 1.5s ease}
+.yu-tag .yu-words{font-size:calc(var(--yu-m) * .033); letter-spacing:.32em; text-indent:.32em;
+  color:var(--gofun); opacity:.92}
+.yu-show{opacity:1 !important; filter:blur(0) !important; transform:translateY(0) !important}
+.yu-show .yu-line{width:calc(var(--yu-m) * .16)}
+.yu-skip{position:absolute; bottom:5%; left:50%; transform:translateX(-50%);
+  font-size:12px; letter-spacing:.3em; text-indent:.3em;
+  color:rgba(242,237,225,.35); opacity:0; transition:opacity 1s ease 3s}
+#yu-opening:not(.done) .yu-skip{opacity:1}
+@media (prefers-reduced-motion: reduce){
+  #yu-opening{display:none}
+}
 </style>
 </head>
 <body>
+
+<!-- ========== オープニング ========== -->
+<div id="yu-opening">
+  <canvas id="yu-canvas"></canvas>
+  <div class="yu-vignette"></div>
+  <div class="yu-title-wrap">
+    <div class="yu-logo" id="yu-logo">
+      <div class="yu-yomi">ゆ　う</div>
+      <div class="yu-name">結ゆう</div>
+    </div>
+    <div class="yu-tag" id="yu-tag">
+      <div class="yu-line"></div>
+      <div class="yu-words">あなたの音を、たしかめる場所。</div>
+    </div>
+  </div>
+  <div class="yu-skip">タップでスキップ</div>
+</div>
+
 <div class="hoshi"></div>
 <div class="hoshi2"></div>
 
@@ -129,5 +184,126 @@ footer{
 </main>
 
 <footer>結ゆう ｜ you-no-oto.jp</footer>
+
+<script>
+(function(){
+  // ===== オープニング設定 =====
+  var ONCE_PER_SESSION = true;  // false にすると毎回再生される
+  var root = document.getElementById('yu-opening');
+  if (!root) return;
+
+  // モーション軽減設定の人・同セッション2回目以降はスキップ
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches ||
+      (ONCE_PER_SESSION && sessionStorage.getItem('yuOpeningSeen'))) {
+    root.remove(); return;
+  }
+
+  var cvs  = document.getElementById('yu-canvas');
+  var ctx  = cvs.getContext('2d');
+  var logo = document.getElementById('yu-logo');
+  var tag  = document.getElementById('yu-tag');
+
+  // ===== 星（疑似乱数で毎回同じ夜空） =====
+  function rnd(s){ var v = Math.sin(s*127.1+311.7)*43758.5453; return v-Math.floor(v); }
+  var STARS = [];
+  for (var i=0;i<90;i++){
+    STARS.push({
+      x:3+rnd(i+1)*94, y:3+rnd(i+101)*94,
+      r:.7+rnd(i+201)*1.6, order:rnd(i+301),
+      tw:1.6+rnd(i+401)*2.6, ph:rnd(i+501)*6.283,
+      gold:rnd(i+601)<.16
+    });
+  }
+  var KIN='#c9a24b', GOFUN='#f2ede1';
+  function cl(v){ return Math.max(0,Math.min(1,v)); }
+  function frac(x){ return x-Math.floor(x); }
+
+  var W,H,M,dpr;
+  function resize(){
+    dpr = Math.min(window.devicePixelRatio||1,2);
+    W = root.clientWidth; H = root.clientHeight; M = Math.min(W,H);
+    cvs.width = W*dpr; cvs.height = H*dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    root.style.setProperty('--yu-m', M+'px');
+  }
+  resize(); addEventListener('resize', resize);
+
+  // ===== タイムライン =====
+  // 0-3秒 星が順に灯る / 3秒- 波紋 / 6秒 タイトル / 8秒 タグライン / 12秒 フェードアウト
+  var t0 = performance.now()/1000, finished=false, skipped=false;
+
+  function finish(){
+    if (finished) return;
+    finished = true;
+    root.classList.add('done');
+    if (ONCE_PER_SESSION) sessionStorage.setItem('yuOpeningSeen','1');
+    setTimeout(function(){ root.remove(); }, 1400);
+  }
+
+  function draw(){
+    if (finished) return;
+    var t = performance.now()/1000 - t0;
+    if (skipped) t = Math.max(t, 20);
+    ctx.clearRect(0,0,W,H);
+
+    // 星
+    var litP = cl(t/3);
+    for (var i=0;i<STARS.length;i++){
+      var s=STARS[i];
+      var a = cl((litP*1.2 - s.order*1.05)/.15);
+      if (a<=.001) continue;
+      var twk = .5+.5*Math.sin(t*s.tw+s.ph);
+      var o = a*(.72+.28*twk);
+      var c = s.gold?KIN:GOFUN;
+      var x = s.x/100*W, y = s.y/100*H;
+      ctx.globalAlpha = o*.10; ctx.fillStyle=c;
+      ctx.beginPath(); ctx.arc(x,y,s.r*3.4,0,7); ctx.fill();
+      ctx.globalAlpha = o;
+      ctx.beginPath(); ctx.arc(x,y,s.r,0,7); ctx.fill();
+    }
+
+    // 波紋（3秒以降・8秒周期）
+    var rip = cl((t-3)/1.2);
+    if (rip>.001){
+      var phase = frac((t-3)/8);
+      var maxR = M*.55, cx=W/2, cy=H/2;
+      var glowA = (.20+.08*Math.sin(6.283*phase))*rip;
+      var g = ctx.createRadialGradient(cx,cy,0,cx,cy,maxR*.30);
+      g.addColorStop(0,'rgba(201,162,75,.55)');
+      g.addColorStop(1,'rgba(201,162,75,0)');
+      ctx.globalAlpha=glowA; ctx.fillStyle=g;
+      ctx.beginPath(); ctx.arc(cx,cy,maxR*.30,0,7); ctx.fill();
+      for (var k=0;k<3;k++){
+        var p = frac(phase - k/3);
+        var op = Math.pow(Math.sin(Math.PI*p),1.4)*.38*rip;
+        ctx.globalAlpha=op; ctx.strokeStyle=KIN;
+        ctx.lineWidth = 2.4*(1-p)+.6;
+        ctx.beginPath(); ctx.arc(cx,cy,26+p*maxR,0,7); ctx.stroke();
+      }
+    }
+    ctx.globalAlpha=1;
+
+    // テキスト
+    if (t>=6 && !logo.classList.contains('yu-show')) logo.classList.add('yu-show');
+    if (t>=8 && !tag.classList.contains('yu-show'))  tag.classList.add('yu-show');
+
+    // 終了
+    if (t>=12){ finish(); return; }
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+
+  // 1回目のタップ：完成形へジャンプ / 2回目：閉じる
+  root.addEventListener('click', function(){
+    if (!skipped){
+      skipped = true;
+      logo.classList.add('yu-show'); tag.classList.add('yu-show');
+      t0 = performance.now()/1000 - 10.5; // 残り1.5秒で余韻→フェード
+    } else {
+      finish();
+    }
+  });
+})();
+</script>
 </body>
 </html>
