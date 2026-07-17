@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>生命の木ナビ｜結ゆう</title>
+<style>
+  :root{
+    --indigo-deep:#0a0e2a;
+    --indigo-mid:#141b4d;
+    --violet-night:#1a1145;
+    --gold:#e8c97a;
+    --gold-soft:#d4af6a;
+    --text-main:#f0edf7;
+    --text-dim:#a9a3c4;
+    --card-bg:rgba(20,27,77,.55);
+    --card-line:rgba(232,201,122,.25);
+    --mercy:#7fd8c9;
+    --severity:#e08585;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    min-height:100vh;
+    background:linear-gradient(180deg,var(--indigo-deep) 0%,var(--indigo-mid) 55%,var(--violet-night) 100%);
+    color:var(--text-main);
+    font-family:"Hiragino Kaku Gothic ProN","Yu Gothic","Meiryo",sans-serif;
+    line-height:1.75;
+    overflow-x:hidden;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:
+      radial-gradient(1px 1px at 20px 30px,#fff,transparent),
+      radial-gradient(1px 1px at 90px 120px,rgba(255,255,255,.8),transparent),
+      radial-gradient(1.5px 1.5px at 160px 60px,rgba(232,201,122,.9),transparent),
+      radial-gradient(1px 1px at 220px 160px,rgba(255,255,255,.6),transparent),
+      radial-gradient(1px 1px at 300px 90px,rgba(255,255,255,.7),transparent);
+    background-size:340px 200px;background-repeat:repeat;opacity:.8;
+  }
+  .wrap{position:relative;z-index:1;max-width:560px;margin:0 auto;padding:32px 16px 60px;}
+  header{text-align:center;margin-bottom:24px;}
+  .brand{font-family:"Hiragino Mincho ProN","Yu Mincho",serif;font-size:13px;letter-spacing:.35em;color:var(--gold-soft);margin-bottom:10px;}
+  h1{font-family:"Hiragino Mincho ProN","Yu Mincho",serif;font-size:26px;font-weight:500;letter-spacing:.12em;}
+  h1 small{display:block;font-size:12px;color:var(--text-dim);letter-spacing:.25em;margin-top:6px;}
+  .lead{font-size:13px;color:var(--text-dim);text-align:center;margin-bottom:20px;}
+
+  .panel{
+    background:var(--card-bg);border:1px solid var(--card-line);
+    border-radius:18px;padding:22px 18px;backdrop-filter:blur(4px);margin-bottom:22px;
+  }
+  .panel h2{
+    font-family:"Hiragino Mincho ProN","Yu Mincho",serif;
+    font-size:16px;font-weight:500;letter-spacing:.18em;color:var(--gold);
+    text-align:center;margin-bottom:14px;
+  }
+  .panel h3{
+    font-size:14px;color:var(--gold-soft);letter-spacing:.1em;margin:18px 0 6px;font-weight:600;
+  }
+  .panel p{font-size:14px;margin-bottom:10px;}
+  .dim{color:var(--text-dim);font-size:13px;}
+
+  /* 木のSVG */
+  svg{display:block;width:100%;height:auto;}
+  .seph{cursor:pointer;}
+  .seph circle{transition:filter .15s ease;}
+  .seph:hover circle,.seph:focus circle{filter:brightness(1.35);}
+  .seph.active circle{stroke-width:3;}
+  .sname{font-size:13px;fill:var(--text-main);font-weight:600;}
+  .sgloss{font-size:10px;fill:var(--text-dim);}
+  .snum{font-size:9px;fill:var(--gold-soft);}
+  .pillar-label{font-size:11px;fill:var(--text-dim);letter-spacing:.15em;}
+  .path-line{stroke:rgba(169,163,196,.45);stroke-width:1;}
+
+  /* 詳細パネル */
+  #detail{display:none;}
+  .d-head{text-align:center;margin-bottom:12px;}
+  .d-num{font-size:11px;color:var(--gold-soft);letter-spacing:.3em;}
+  .d-name{font-family:"Hiragino Mincho ProN","Yu Mincho",serif;font-size:26px;letter-spacing:.15em;margin:2px 0;}
+  .d-gloss{font-size:13px;color:var(--text-dim);}
+  .attr{display:grid;grid-template-columns:88px 1fr;gap:6px 12px;margin:14px 0;font-size:13px;}
+  .attr dt{color:var(--text-dim);}
+  .attr dd{color:var(--text-main);}
+  .d-desc{font-size:14px;border-top:1px solid rgba(169,163,196,.2);padding-top:12px;}
+  .d-paths{font-size:12px;color:var(--text-dim);margin-top:10px;}
+  .d-paths b{color:var(--gold-soft);font-weight:600;}
+  .seat-box{
+    margin-top:14px;border:1px dashed var(--card-line);border-radius:12px;padding:12px;
+  }
+  .seat-box .seat-title{font-size:12px;color:var(--gold);letter-spacing:.1em;margin-bottom:4px;}
+  .seat-box .seat-hint{font-size:12px;color:var(--text-dim);margin-bottom:8px;}
+  .seat-box input{
+    width:100%;background:rgba(10,14,42,.8);color:var(--text-main);
+    border:1px solid var(--card-line);border-radius:8px;padding:10px;font-size:15px;
+  }
+  .seat-box input:focus{outline:2px solid var(--gold-soft);}
+
+  /* 相関図まとめ */
+  .map-list{font-size:13px;}
+  .map-list div{display:flex;gap:10px;border-top:1px solid rgba(169,163,196,.15);padding:7px 0;}
+  .map-list div:first-child{border-top:none;}
+  .map-list .m-seph{flex:0 0 110px;color:var(--gold-soft);}
+  .map-list .m-name{flex:1;}
+  .map-list .m-name.empty{color:var(--text-dim);}
+
+  .copy-btn{
+    display:block;width:100%;margin-top:16px;
+    background:transparent;color:var(--gold);
+    border:1px solid var(--gold-soft);border-radius:12px;
+    padding:13px;font-size:14px;letter-spacing:.1em;cursor:pointer;
+  }
+  .copy-btn:hover{background:rgba(232,201,122,.1);}
+  .copied{color:#1a1433;background:var(--gold)!important;font-weight:700;}
+
+  /* タロット対応表 */
+  table{width:100%;border-collapse:collapse;font-size:12px;}
+  th,td{padding:7px 6px;text-align:left;border-bottom:1px solid rgba(169,163,196,.15);}
+  th{color:var(--gold-soft);font-weight:600;letter-spacing:.05em;}
+  td:first-child{color:var(--text-dim);white-space:nowrap;}
+
+  .note{font-size:11px;color:var(--text-dim);margin-top:10px;text-align:center;}
+  footer{text-align:center;font-size:11px;color:var(--text-dim);letter-spacing:.15em;margin-top:30px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">結 ゆ う</div>
+    <h1>生命の木ナビ<small>ETZ HAIM / TREE OF LIFE</small></h1>
+  </header>
+  <p class="lead">セフィラをタップすると解説がひらきます</p>
+
+  <section class="panel">
+    <svg viewBox="0 0 380 720" role="img" aria-label="生命の木の図" id="tree">
+      <text class="pillar-label" x="90" y="28" text-anchor="middle">峻厳の柱</text>
+      <text class="pillar-label" x="190" y="28" text-anchor="middle">均衡の柱</text>
+      <text class="pillar-label" x="290" y="28" text-anchor="middle">慈悲の柱</text>
+      <g id="paths"></g>
+      <g id="sephs"></g>
+    </svg>
+  </section>
+
+  <section class="panel" id="detail">
+    <div class="d-head">
+      <div class="d-num" id="dNum"></div>
+      <div class="d-name" id="dName"></div>
+      <div class="d-gloss" id="dGloss"></div>
+    </div>
+    <dl class="attr">
+      <dt>柱</dt><dd id="dPillar"></dd>
+      <dt>神名</dt><dd id="dGod"></dd>
+      <dt>大天使</dt><dd id="dAngel"></dd>
+      <dt>天体対応</dt><dd id="dPlanet"></dd>
+      <dt>色</dt><dd id="dColor"></dd>
+      <dt>象徴</dt><dd id="dSymbol"></dd>
+    </dl>
+    <p class="d-desc" id="dDesc"></p>
+    <p class="d-paths" id="dPaths"></p>
+    <div class="seat-box">
+      <div class="seat-title">相関図ワーク｜この座に置く人</div>
+      <div class="seat-hint" id="dSeat"></div>
+      <input type="text" id="seatInput" placeholder="名前やイニシャルを入れる（任意）">
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>生命の木とは</h2>
+    <p>カバラにおける宇宙の設計図。無限の源から発した光が、10の器（セフィラ）を稲妻型に流れ降りて、物質世界マルクトに着地する。この降下が「創造の稲妻」、逆に下から上へ辿るのが魂の帰り道とされる。</p>
+    <h3>三本の柱</h3>
+    <p>右の慈悲の柱（コクマー・ケセド・ネツァク）は拡張し与える力。左の峻厳の柱（ビナー・ゲブラー・ホド）は制限し形にする力。中央の均衡の柱がその調停役で、意識の背骨にあたる。アクセルとブレーキであり、どちらが善でも悪でもない。</p>
+    <h3>三つの三角形と四つの階層</h3>
+    <p>上の三角（ケテル・コクマー・ビナー）は神的世界。中の三角（ケセド・ゲブラー・ティファレト）は倫理と心の世界。下の三角（ネツァク・ホド・イェソド）は感情・思考・無意識の領域。単独のマルクトが肉体と物質。霊→心→魂→体の階層がひとつの木に収まっている。</p>
+    <h3>深淵とダアト</h3>
+    <p>上の三角とそれ以下の間には「深淵（アビス）」という断絶がある。点線のダアト（知識）は、その深淵に架かる見えない橋。数えられない11番目のセフィラであり、頭で得た知識が本当の叡智へ変わる場所と読まれる。</p>
+    <h3>四つの世界</h3>
+    <p>生命の木は一本ではなく、アツィルト（流出界）・ブリアー（創造界）・イェツィラー（形成界）・アッシャー（活動界）の四層で重なるという見方がある。タロットの小アルカナ四スート（ワンド・カップ・ソード・ペンタクル）はこの四世界に対応する。</p>
+  </section>
+
+  <section class="panel">
+    <h2>相関図ワーク</h2>
+    <p class="dim">自分をマルクトに置き、まわりの人を各セフィラの座に配置してみるワーク。自分という現実が、どんな力の合流点としてできているかを一枚で見る。各セフィラの解説にある入力欄に名前を入れると、ここにまとまります。</p>
+    <div class="map-list" id="mapList"></div>
+    <button class="copy-btn" id="mapCopyBtn">AIへの発注文をコピーする（相関図の読み解き）</button>
+    <p class="note">コピーした文をAIに貼ると、この相関図の読み解きをお願いできます</p>
+  </section>
+
+  <section class="panel">
+    <h2>22の小径とタロット</h2>
+    <p class="dim">セフィラを結ぶ22本の小径は、ヘブライ文字22字とタロット大アルカナ22枚に対応する（黄金の夜明け団系）。</p>
+    <table>
+      <thead><tr><th>小径</th><th>大アルカナ</th><th>結ぶセフィラ</th></tr></thead>
+      <tbody id="pathTable"></tbody>
+    </table>
+  </section>
+
+  <footer>you-no-oto ｜ 結ゆう</footer>
+</div>
+
+<script>
+(function(){
+  var SEPHS=[
+    {id:"keter",num:1,name:"ケテル",gloss:"王冠",x:190,y:100,pil:"mid",pillar:"均衡の柱（頂点）",god:"エヘイエー（我は在りて在る者）",angel:"メタトロン",planet:"原動天（プリムム・モビレ）",color:"純白の輝き",symbol:"点・王冠・老王の横顔",
+     desc:"存在のいちばん最初の一点。無限（アイン・ソフ）がはじめて凝縮した場所であり、「有る」がまだ「何か」に分かれる前の純粋存在。王冠が頭の上に載るように、思考のさらに上にあって直接はつかめない。「ケテルはマルクトの中にあり、マルクトはケテルの中にある」の格言のとおり、最上の神性は日常のいちばん泥臭いところに隠れている。",
+     seat:"源・ルーツ。人生の指針をくれる存在（師・信仰・ご先祖など）",
+     paths:"愚者（→コクマー）／魔術師（→ビナー）／女教皇（→ティファレト・深淵を渡る）"},
+    {id:"chokmah",num:2,name:"コクマー",gloss:"知恵",x:290,y:180,pil:"mercy",pillar:"慈悲の柱（頂点）",god:"ヤー",angel:"ラツィエル",planet:"黄道帯（恒星天）",color:"灰色",symbol:"直線・そびえる塔",
+     desc:"ケテルの静止した一点が、はじめて動き出した力。方向を持たない純粋な勢い・衝動であり、「父」の原理。まだ形はなく、ただほとばしるエネルギー。ひらめきが言葉になる前の瞬間はここにある。",
+     seat:"勢いとひらめきをくれる人（父性的な存在）",
+     paths:"愚者（ケテル）／女帝（ビナー）／皇帝（ティファレト）／教皇（ケセド）"},
+    {id:"binah",num:3,name:"ビナー",gloss:"理解",x:90,y:180,pil:"sev",pillar:"峻厳の柱（頂点）",god:"YHVHエロヒム",angel:"ツァフキエル",planet:"土星",color:"黒",symbol:"杯・海",
+     desc:"コクマーの奔流を受け止めて、はじめて「形」を与える器。「母」の原理。制限すること・輪郭を与えることは、峻厳であると同時に、生み出すために不可欠な優しさでもある。悲しみの母とも呼ばれ、形あるものの宿命（限りあること）を引き受ける。",
+     seat:"受け止めて形にしてくれる人（母性的な存在）",
+     paths:"魔術師（ケテル）／女帝（コクマー）／恋人（ティファレト）／戦車（ゲブラー）"},
+    {id:"daat",num:0,name:"ダアト",gloss:"知識",x:190,y:245,pil:"hidden",pillar:"均衡の柱（深淵の中）",god:"—",angel:"—",planet:"—",color:"—",symbol:"見えない橋",
+     desc:"数えられない11番目のセフィラ。上の三角（神的世界）とそれ以下の間に横たわる断絶「深淵（アビス）」に架かる見えない橋。頭で得た知識が、体験を通して本当の叡智に変わる場所と読まれる。図には点線で描かれる。",
+     seat:"見えない絆（故人・遠く離れた大切な人など）",
+     paths:"小径は割り当てられていない（深淵そのものに架かる橋）"},
+    {id:"chesed",num:4,name:"ケセド",gloss:"慈悲",x:290,y:320,pil:"mercy",pillar:"慈悲の柱",god:"エル",angel:"ツァドキエル",planet:"木星",color:"青",symbol:"王笏・玉座",
+     desc:"惜しみなく与え、広げ、祝福する力。慈愛の王。ただし与えるだけでは秩序が崩れるため、対になるゲブラーの制限を必要とする。豊かさ・寛容・保護の座。",
+     seat:"無条件に与えてくれる人・応援してくれる人",
+     paths:"教皇（コクマー）／力（ゲブラー）／隠者（ティファレト）／運命の輪（ネツァク）"},
+    {id:"gevurah",num:5,name:"ゲブラー",gloss:"峻厳",x:90,y:320,pil:"sev",pillar:"峻厳の柱",god:"エロヒム・ギボール",angel:"カマエル",planet:"火星",color:"緋色",symbol:"剣・鎖",
+     desc:"切り落とし、鍛え、正す力。恐れられがちだが、ケセドの与える力が濁らないよう剪定する庭師でもある。厳しさは愛の一形態。不要なものを手放す決断はこの座の働き。",
+     seat:"鍛えてくれる人・厳しい指摘をくれる人",
+     paths:"戦車（ビナー）／力（ケセド）／正義（ティファレト）／吊るされた男（ホド）"},
+    {id:"tiferet",num:6,name:"ティファレト",gloss:"美",x:190,y:400,pil:"mid",pillar:"均衡の柱（中心）",god:"YHVHエロアハ・ヴェダアト",angel:"ラファエル",planet:"太陽",color:"黄金",symbol:"立方体・心臓",
+     desc:"生命の木のちょうど中心。上の神性と下の物質、右の慈悲と左の峻厳、すべてがここで調和して「美」になる。太陽が対応し、人間で言えば心臓＝真我の座。ほとんどのセフィラと小径で直接つながる、木の調律点。",
+     seat:"心の中心にいる人・いるだけで調和をもたらす人",
+     paths:"女教皇（ケテル）／皇帝（コクマー）／恋人（ビナー）／隠者（ケセド）／正義（ゲブラー）／死神（ネツァク）／悪魔（ホド）／節制（イェソド）"},
+    {id:"netzach",num:7,name:"ネツァク",gloss:"勝利",x:290,y:480,pil:"mercy",pillar:"慈悲の柱",god:"YHVHツァバオト",angel:"ハニエル",planet:"金星",color:"エメラルド",symbol:"薔薇・灯火",
+     desc:"感情・情熱・芸術・本能的な愛の座。金星が対応する。「勝利」とは持久する力のこと。感情のエネルギーは対のホド（知性）と釣り合ってはじめて健やかに流れる。",
+     seat:"感情や情熱を分かち合う人・ときめきをくれる人",
+     paths:"運命の輪（ケセド）／死神（ティファレト）／塔（ホド）／星（イェソド）／月（マルクト）"},
+    {id:"hod",num:8,name:"ホド",gloss:"栄光",x:90,y:480,pil:"sev",pillar:"峻厳の柱",god:"エロヒム・ツァバオト",angel:"ミカエル",planet:"水星",color:"橙",symbol:"名前・言葉",
+     desc:"知性・言葉・分析・伝達の座。水星が対応する。感情（ネツァク）を言語化して伝える働き。言霊の座と読んでもいい。理屈が感情を切り離しすぎるとき、塔の小径（ネツァク⇔ホド）に緊張が走る。",
+     seat:"知性や言葉でつながる人・話が通じる人",
+     paths:"吊るされた男（ゲブラー）／悪魔（ティファレト）／塔（ネツァク）／太陽（イェソド）／審判（マルクト）"},
+    {id:"yesod",num:9,name:"イェソド",gloss:"基礎",x:190,y:560,pil:"mid",pillar:"均衡の柱",god:"シャダイ・エル・ハイ",angel:"ガブリエル",planet:"月",color:"菫色",symbol:"香・鏡",
+     desc:"無意識・夢・イメージ・習慣の座。月が対応する。上のすべての力はいったんここで「イメージの型」に編まれてから、マルクトの現実に映し出される。現実を変えたいとき、実際に書き換わるのはこの層。",
+     seat:"日常や無意識を共有する人（同居する家族など）",
+     paths:"節制（ティファレト）／星（ネツァク）／太陽（ホド）／世界（マルクト）"},
+    {id:"malkuth",num:10,name:"マルクト",gloss:"王国",x:190,y:650,pil:"mid",pillar:"均衡の柱（大地）",god:"アドナイ・ハアレツ",angel:"サンダルフォン",planet:"地球（四大元素）",color:"シトリン・オリーブ・赤褐・黒",symbol:"扉・祭壇",
+     desc:"物質世界・肉体・いま生きているこの現実。すべての光が最後に着地する器であり、同時に帰り道の出発点。「花嫁」とも呼ばれる。マルクトなくして木は完成しない——日常こそが神殿の床。",
+     seat:"自分自身（いまここに生きる、体を持ったわたし）",
+     paths:"月（ネツァク）／審判（ホド）／世界（イェソド）"}
+  ];
+
+  var EDGES=[
+    ["keter","chokmah"],["keter","binah"],["keter","tiferet"],
+    ["chokmah","binah"],["chokmah","tiferet"],["chokmah","chesed"],
+    ["binah","tiferet"],["binah","gevurah"],
+    ["chesed","gevurah"],["chesed","tiferet"],["chesed","netzach"],
+    ["gevurah","tiferet"],["gevurah","hod"],
+    ["tiferet","netzach"],["tiferet","hod"],["tiferet","yesod"],
+    ["netzach","hod"],["netzach","yesod"],["netzach","malkuth"],
+    ["hod","yesod"],["hod","malkuth"],
+    ["yesod","malkuth"]
+  ];
+
+  var TAROT=[
+    ["第11小径","0 愚者","ケテル — コクマー"],
+    ["第12小径","I 魔術師","ケテル — ビナー"],
+    ["第13小径","II 女教皇","ケテル — ティファレト"],
+    ["第14小径","III 女帝","コクマー — ビナー"],
+    ["第15小径","IV 皇帝","コクマー — ティファレト"],
+    ["第16小径","V 教皇","コクマー — ケセド"],
+    ["第17小径","VI 恋人","ビナー — ティファレト"],
+    ["第18小径","VII 戦車","ビナー — ゲブラー"],
+    ["第19小径","VIII 力","ケセド — ゲブラー"],
+    ["第20小径","IX 隠者","ケセド — ティファレト"],
+    ["第21小径","X 運命の輪","ケセド — ネツァク"],
+    ["第22小径","XI 正義","ゲブラー — ティファレト"],
+    ["第23小径","XII 吊るされた男","ゲブラー — ホド"],
+    ["第24小径","XIII 死神","ティファレト — ネツァク"],
+    ["第25小径","XIV 節制","ティファレト — イェソド"],
+    ["第26小径","XV 悪魔","ティファレト — ホド"],
+    ["第27小径","XVI 塔","ネツァク — ホド"],
+    ["第28小径","XVII 星","ネツァク — イェソド"],
+    ["第29小径","XVIII 月","ネツァク — マルクト"],
+    ["第30小径","XIX 太陽","ホド — イェソド"],
+    ["第31小径","XX 審判","ホド — マルクト"],
+    ["第32小径","XXI 世界","イェソド — マルクト"]
+  ];
+
+  var PIL_COLOR={mercy:"var(--mercy)",sev:"var(--severity)",mid:"var(--gold)",hidden:"var(--text-dim)"};
+  var byId={};
+  SEPHS.forEach(function(s){byId[s.id]=s;});
+  var seats={};
+
+  // 小径を描く
+  var pathsG=document.getElementById("paths");
+  EDGES.forEach(function(e){
+    var a=byId[e[0]],b=byId[e[1]];
+    var l=document.createElementNS("http://www.w3.org/2000/svg","line");
+    l.setAttribute("x1",a.x);l.setAttribute("y1",a.y);
+    l.setAttribute("x2",b.x);l.setAttribute("y2",b.y);
+    l.setAttribute("class","path-line");
+    pathsG.appendChild(l);
+  });
+
+  // セフィラを描く
+  var sephsG=document.getElementById("sephs");
+  SEPHS.forEach(function(s){
+    var g=document.createElementNS("http://www.w3.org/2000/svg","g");
+    g.setAttribute("class","seph");g.setAttribute("tabindex","0");
+    g.setAttribute("role","button");g.setAttribute("aria-label",s.name);
+    var r=(s.id==="daat")?26:38;
+    var c=document.createElementNS("http://www.w3.org/2000/svg","circle");
+    c.setAttribute("cx",s.x);c.setAttribute("cy",s.y);c.setAttribute("r",r);
+    c.setAttribute("fill","rgba(10,14,42,.85)");
+    c.setAttribute("stroke",PIL_COLOR[s.pil]);
+    c.setAttribute("stroke-width","1.5");
+    if(s.id==="daat")c.setAttribute("stroke-dasharray","4 3");
+    g.appendChild(c);
+    if(s.num>0){
+      var tn=document.createElementNS("http://www.w3.org/2000/svg","text");
+      tn.setAttribute("x",s.x);tn.setAttribute("y",s.y-16);
+      tn.setAttribute("text-anchor","middle");tn.setAttribute("class","snum");
+      tn.textContent=s.num;g.appendChild(tn);
+    }
+    var t1=document.createElementNS("http://www.w3.org/2000/svg","text");
+    t1.setAttribute("x",s.x);t1.setAttribute("y",s.y+((s.id==="daat")?-2:0));
+    t1.setAttribute("text-anchor","middle");t1.setAttribute("dominant-baseline","central");
+    t1.setAttribute("class","sname");
+    if(s.name.length>=5)t1.setAttribute("font-size","11");
+    t1.textContent=s.name;g.appendChild(t1);
+    var t2=document.createElementNS("http://www.w3.org/2000/svg","text");
+    t2.setAttribute("x",s.x);t2.setAttribute("y",s.y+((s.id==="daat")?12:16));
+    t2.setAttribute("text-anchor","middle");t2.setAttribute("dominant-baseline","central");
+    t2.setAttribute("class","sgloss");
+    t2.textContent=s.gloss;g.appendChild(t2);
+    function open(){showDetail(s.id);}
+    g.addEventListener("click",open);
+    g.addEventListener("keydown",function(ev){if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();open();}});
+    sephsG.appendChild(g);
+    s._g=g;
+  });
+
+  var current=null;
+  var seatInput=document.getElementById("seatInput");
+  function showDetail(id){
+    var s=byId[id];
+    current=id;
+    SEPHS.forEach(function(x){x._g.classList.toggle("active",x.id===id);});
+    document.getElementById("dNum").textContent=(s.num>0)?("SEPHIRA "+s.num):"HIDDEN SEPHIRA";
+    document.getElementById("dName").textContent=s.name;
+    document.getElementById("dGloss").textContent=s.gloss;
+    document.getElementById("dPillar").textContent=s.pillar;
+    document.getElementById("dGod").textContent=s.god;
+    document.getElementById("dAngel").textContent=s.angel;
+    document.getElementById("dPlanet").textContent=s.planet;
+    document.getElementById("dColor").textContent=s.color;
+    document.getElementById("dSymbol").textContent=s.symbol;
+    document.getElementById("dDesc").textContent=s.desc;
+    document.getElementById("dPaths").innerHTML="<b>小径とタロット：</b>"+s.paths;
+    document.getElementById("dSeat").textContent=s.seat;
+    seatInput.value=seats[id]||"";
+    var d=document.getElementById("detail");
+    d.style.display="block";
+    d.scrollIntoView({behavior:"smooth",block:"start"});
+  }
+  seatInput.addEventListener("input",function(){
+    if(!current)return;
+    seats[current]=this.value.trim();
+    renderMap();
+  });
+
+  // 相関図まとめ
+  function renderMap(){
+    var html="";
+    SEPHS.forEach(function(s){
+      var v=seats[s.id]||"";
+      html+='<div><span class="m-seph">'+s.name+'（'+s.gloss+'）</span>'+
+            '<span class="m-name'+(v?'':' empty')+'">'+(v?esc(v):"— 未配置 —")+'</span></div>';
+    });
+    document.getElementById("mapList").innerHTML=html;
+  }
+  function esc(t){return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+  renderMap();
+
+  // タロット対応表
+  var tb=document.getElementById("pathTable"),rows="";
+  TAROT.forEach(function(r){
+    rows+="<tr><td>"+r[0]+"</td><td>"+r[1]+"</td><td>"+r[2]+"</td></tr>";
+  });
+  tb.innerHTML=rows;
+
+  // AIへの発注文コピー
+  document.getElementById("mapCopyBtn").addEventListener("click",function(){
+    var lines=[];
+    SEPHS.forEach(function(s){
+      var v=seats[s.id];
+      if(v)lines.push("■"+s.name+"（"+s.gloss+"／"+s.seat+"）："+v);
+    });
+    var text=
+"以下はカバラの生命の木を使った人間関係の相関図ワークの結果です。\n"+
+"自分をマルクト（王国）に置き、まわりの人を各セフィラの座に配置しました。\n"+
+"この配置から読み取れる、わたしという現実に流れ込んでいる力のバランスや、\n"+
+"関係性の偏り・空いている座の意味を、やさしく読み解いてください。\n\n"+
+(lines.length?lines.join("\n"):"（まだ配置がありません）")+"\n\n"+
+"【読み解きの観点】\n"+
+"・慈悲の柱（与える力）と峻厳の柱（鍛える力）のバランス\n"+
+"・空席になっている座は「これから迎え入れる余白」として前向きに\n"+
+"・断定しすぎず、本人が自分に還るキッカケになる言葉で";
+    var btn=this;
+    function done(){
+      btn.textContent="コピーしました ✓";btn.classList.add("copied");
+      setTimeout(function(){btn.textContent="AIへの発注文をコピーする（相関図の読み解き）";btn.classList.remove("copied");},2000);
+    }
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done).catch(fallback);
+    }else{fallback();}
+    function fallback(){
+      var ta=document.createElement("textarea");
+      ta.value=text;document.body.appendChild(ta);ta.select();
+      try{document.execCommand("copy");done();}catch(e){}
+      document.body.removeChild(ta);
+    }
+  });
+})();
+</script>
+</body>
+</html>
