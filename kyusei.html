@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星のめぐり — 九星気学・方位総合ツール | 結ゆう</title>
+<style>
+  :root{
+    --night-deep:#0b1026;
+    --night-mid:#141b3d;
+    --night-soft:#1d2750;
+    --star-gold:#e8c97a;
+    --star-white:#f5f2e8;
+    --moon-blue:#8fa8d8;
+    --kichi:#7ed6a5;
+    --kyo:#e08a8a;
+    --card:#161e42cc;
+    --line:#2e3a6e;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{
+    font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;
+    background:linear-gradient(175deg,var(--night-deep) 0%,var(--night-mid) 55%,var(--night-soft) 100%);
+    min-height:100vh;color:var(--star-white);line-height:1.8;
+    padding-bottom:80px;overflow-x:hidden;
+  }
+  #starfield{position:fixed;inset:0;pointer-events:none;z-index:0;}
+  .star{position:absolute;background:#fff;border-radius:50%;animation:twinkle 4s infinite ease-in-out;}
+  @keyframes twinkle{0%,100%{opacity:.2}50%{opacity:.9}}
+  @media (prefers-reduced-motion: reduce){.star{animation:none;opacity:.5}}
+  .wrap{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:24px 16px;}
+  header{text-align:center;padding:34px 0 10px;}
+  header h1{font-size:1.7rem;letter-spacing:.35em;font-weight:600;color:var(--star-gold);}
+  header p.sub{color:var(--moon-blue);font-size:.85rem;letter-spacing:.2em;margin-top:8px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 20px;margin:18px 0;backdrop-filter:blur(3px);}
+  .card h2{font-size:1.05rem;color:var(--star-gold);letter-spacing:.18em;border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:14px;}
+  label{display:block;font-size:.85rem;color:var(--moon-blue);margin:10px 0 4px;letter-spacing:.1em;}
+  input[type=date],select{
+    width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--line);
+    background:#0e1430;color:var(--star-white);font-size:1rem;font-family:inherit;
+  }
+  .radio-row{display:flex;gap:18px;margin-top:4px;}
+  .radio-row label{display:flex;align-items:center;gap:6px;margin:0;color:var(--star-white);font-size:.95rem;cursor:pointer;}
+  button.main{
+    width:100%;margin-top:18px;padding:14px;border:none;border-radius:10px;cursor:pointer;
+    background:linear-gradient(135deg,#c9a75a,#e8c97a);color:#1a1a2e;font-size:1.05rem;
+    font-family:inherit;letter-spacing:.25em;font-weight:700;
+  }
+  button.main:hover{filter:brightness(1.08);}
+  button.copy{
+    padding:10px 16px;border:1px solid var(--star-gold);border-radius:8px;cursor:pointer;
+    background:transparent;color:var(--star-gold);font-family:inherit;font-size:.9rem;letter-spacing:.15em;margin-top:10px;
+  }
+  .result-line{display:flex;justify-content:space-between;align-items:baseline;padding:9px 2px;border-bottom:1px dashed #2a355f;flex-wrap:wrap;gap:4px;}
+  .result-line .k{color:var(--moon-blue);font-size:.85rem;letter-spacing:.1em;}
+  .result-line .v{font-size:1.06rem;letter-spacing:.06em;}
+  .desc{font-size:.88rem;color:#cfd6ef;margin-top:6px;padding:10px 12px;background:#10173399;border-radius:8px;}
+  .grid9{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:10px;}
+  .cell{background:#0e1533;border:1px solid var(--line);border-radius:8px;padding:8px 4px;text-align:center;min-height:74px;}
+  .cell .dir{font-size:.68rem;color:var(--moon-blue);letter-spacing:.15em;}
+  .cell .st{font-size:1rem;margin-top:2px;letter-spacing:.05em;}
+  .cell .flags{font-size:.62rem;margin-top:3px;line-height:1.5;}
+  .cell.center{background:#1b2450;border-color:var(--star-gold);}
+  .f-kyo{color:var(--kyo);}
+  .f-kichi{color:var(--kichi);}
+  .f-daikichi{color:var(--star-gold);font-weight:700;}
+  table.hachitaku{width:100%;border-collapse:collapse;margin-top:8px;font-size:.9rem;}
+  table.hachitaku th,table.hachitaku td{border:1px solid var(--line);padding:7px 6px;text-align:center;}
+  table.hachitaku th{background:#101736;color:var(--moon-blue);font-weight:500;font-size:.8rem;letter-spacing:.1em;}
+  textarea#prompt{
+    width:100%;height:230px;background:#0e1430;color:#dfe4f5;border:1px solid var(--line);
+    border-radius:8px;padding:12px;font-size:.8rem;font-family:monospace;line-height:1.6;margin-top:8px;
+  }
+  .note{font-size:.75rem;color:#8b95bd;margin-top:10px;line-height:1.7;}
+  #gate{
+    position:fixed;inset:0;z-index:50;background:linear-gradient(175deg,#0b1026,#141b3d);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;
+  }
+  #gate h2{color:var(--star-gold);letter-spacing:.3em;font-size:1.2rem;margin-bottom:6px;}
+  #gate p{color:var(--moon-blue);font-size:.85rem;margin-bottom:18px;letter-spacing:.1em;}
+  #gate input{max-width:280px;text-align:center;}
+  #gate button{margin-top:14px;max-width:280px;}
+  #gateErr{color:var(--kyo);font-size:.8rem;margin-top:10px;min-height:1.2em;}
+  #results{display:none;}
+  .badge{display:inline-block;font-size:.7rem;border:1px solid var(--line);border-radius:99px;padding:1px 10px;color:var(--moon-blue);margin-left:8px;vertical-align:middle;}
+  h3.mini{font-size:.9rem;color:var(--star-gold);margin:16px 0 4px;letter-spacing:.12em;}
+</style>
+</head>
+<body>
+<div id="starfield"></div>
+
+<div id="gate">
+  <h2>星のめぐり</h2>
+  <p>合言葉を入れてください</p>
+  <input type="text" id="gateInput" placeholder="ひらがなで">
+  <button class="main" onclick="checkGate()">ひらく</button>
+  <div id="gateErr"></div>
+</div>
+
+<div class="wrap">
+  <a href="uranai.html" style="display:inline-block;color:#8fa8d8;font-size:.8rem;letter-spacing:.15em;text-decoration:none;padding:4px 2px;">← 占いの部屋へもどる</a>
+  <header>
+    <h1>星のめぐり</h1>
+    <p class="sub">九星気学・傾斜・八宅 ─ 方位総合ツール</p>
+  </header>
+
+  <div class="card">
+    <h2>生まれと日付</h2>
+    <label>生年月日</label>
+    <input type="date" id="birth" min="1901-01-01" max="2035-12-31">
+    <label>性別（八宅の本命卦に使います）</label>
+    <div class="radio-row">
+      <label><input type="radio" name="sex" value="f" checked>女性</label>
+      <label><input type="radio" name="sex" value="m">男性</label>
+    </div>
+    <label>方位を見たい日（年盤・月盤・日盤の基準日）</label>
+    <input type="date" id="target">
+    <button class="main" onclick="calcAll()">星を読む</button>
+    <div class="note">※九星の年は立春、月は各節入りで切り替わります。節入り日の前後（2/3〜2/5生まれ等）は流派・年により±1日の誤差があり得るため、境目の生まれは念のため確認してください。</div>
+  </div>
+
+  <div id="results">
+
+    <div class="card">
+      <h2>あなたの星</h2>
+      <div class="result-line"><span class="k">本命星</span><span class="v" id="honmei"></span></div>
+      <div class="desc" id="honmeiDesc"></div>
+      <div class="result-line"><span class="k">月命星</span><span class="v" id="getsumei"></span></div>
+      <div class="desc" id="getsumeiDesc"></div>
+      <div class="result-line"><span class="k">傾斜宮（内面・裏の顔）</span><span class="v" id="keisha"></span></div>
+      <div class="desc" id="keishaDesc"></div>
+    </div>
+
+    <div class="card">
+      <h2>八宅風水 ─ 本命卦と住まいの方位</h2>
+      <div class="result-line"><span class="k">本命卦</span><span class="v" id="gua"></span></div>
+      <table class="hachitaku">
+        <thead><tr><th>方位</th><th>遊星</th><th>意味</th></tr></thead>
+        <tbody id="hachitakuBody"></tbody>
+      </table>
+      <div class="desc" id="bedAdvice"></div>
+      <div class="note">※本命卦は一生変わらない、その人固有の方位相性です。寝る向きは「頭を向ける方位」で見ます。</div>
+    </div>
+
+    <div class="card">
+      <h2>盤のめぐり<span class="badge" id="targetLabel"></span></h2>
+      <h3 class="mini" id="yearTitle"></h3>
+      <div class="grid9" id="yearGrid"></div>
+      <h3 class="mini" id="monthTitle"></h3>
+      <div class="grid9" id="monthGrid"></div>
+      <h3 class="mini" id="dayTitle"></h3>
+      <div class="grid9" id="dayGrid"></div>
+      <div class="note">南が上の伝統配置です。日盤は冬至・夏至に最も近い甲子日で陽遁・陰遁が切り替わる方式で計算しています（切替日前後は流派により異なる場合があります）。</div>
+    </div>
+
+    <div class="card">
+      <h2>吉方位・凶方位の判定</h2>
+      <div class="desc" id="kichiSummary"></div>
+      <table class="hachitaku">
+        <thead><tr><th>方位</th><th>年盤</th><th>月盤</th><th>判定</th></tr></thead>
+        <tbody id="houiBody"></tbody>
+      </table>
+      <div class="note">凶：五黄殺・暗剣殺・歳破・月破・本命殺・本命的殺・月命殺・月命的殺。吉：凶が無く、めぐる星があなたの本命星と相生・比和の方位。年盤と月盤の両方で吉なら◎大吉（お水取り・祐気取り向き）。</div>
+    </div>
+
+    <div class="card">
+      <h2>AIへの発注文</h2>
+      <p style="font-size:.85rem;color:var(--moon-blue);">計算結果をまとめた鑑定依頼文です。コピーしてAIに渡してください。</p>
+      <textarea id="prompt" readonly></textarea>
+      <button class="copy" onclick="copyPrompt()">発注文をコピー</button>
+      <span id="copied" style="font-size:.8rem;color:var(--kichi);margin-left:10px;"></span>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ========== 星空 ========== */
+(function(){
+  const f=document.getElementById('starfield');
+  for(let i=0;i<130;i++){
+    const s=document.createElement('div');s.className='star';
+    const size=Math.random()*2+0.5;
+    s.style.width=size+'px';s.style.height=size+'px';
+    s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';
+    s.style.animationDelay=(Math.random()*4)+'s';
+    f.appendChild(s);
+  }
+})();
+
+/* ========== 合言葉ゲート（この1行を変えれば合言葉が変わります） ========== */
+const PASS='ほしをむすぶ';
+function checkGate(){
+  const v=document.getElementById('gateInput').value.trim();
+  if(v===PASS){document.getElementById('gate').style.display='none';}
+  else{document.getElementById('gateErr').textContent='合言葉が違うようです';}
+}
+document.getElementById('gateInput').addEventListener('keydown',e=>{if(e.key==='Enter')checkGate();});
+
+/* ========== 定数 ========== */
+const STAR_NAME={1:'一白水星',2:'二黒土星',3:'三碧木星',4:'四緑木星',5:'五黄土星',6:'六白金星',7:'七赤金星',8:'八白土星',9:'九紫火星'};
+const STAR_ELEM={1:'水',2:'土',3:'木',4:'木',5:'土',6:'金',7:'金',8:'土',9:'火'};
+const STAR_DESC={
+1:'柔軟で聞き上手。水のように形を変えて人に寄り添い、苦労を深みに変えていく星。',
+2:'育てる大地。堅実で世話好き、縁の下の力持ち。コツコツの積み重ねが最強の武器。',
+3:'雷のスピードと発信力。思い立ったら即行動。若々しさと新しいもの好きが持ち味。',
+4:'風のように縁を運ぶ星。調整力・信用・コミュニケーションで道がひらける。',
+5:'帝王の星。破壊と再生、中心に立つ強さ。良くも悪くもスケールが大きい。',
+6:'天の星。責任感・完璧主義・行動力。動けば動くほど運が回りだす。',
+7:'実りと弁舌の星。楽しませ上手で社交と金運に恵まれる。愛嬌が最大の武器。',
+8:'山の星。継承と切り替えの役目を持つ。粘り強く、人生の節目で大きく動く。',
+9:'火と光の星。直感・美意識・華やかさ。隠れたものを照らし出す、真実の星。'};
+const KEISHA_DESC={
+1:'坎宮傾斜：表向きより思慮深く、秘めた情の深さを持つ。ひとり静かに潜って考える裏の顔。',
+2:'坤宮傾斜：内側は献身と忍耐の人。人を育て、支えることに深い喜びを見出す。',
+3:'震宮傾斜：内側は情熱と衝動のエンジン。じっとしていると鈍る、動いてこそ輝く質。',
+4:'巽宮傾斜：裏の顔は世話焼きの調整役。柔らかな人当たりで信用を積んでいく。',
+5:'中宮傾斜：本命星と月命星が同じ特別な生まれ。表と裏が一致し、我が道を行く強さがある。',
+6:'乾宮傾斜：内なるリーダー気質。負けず嫌いで、最終的には上に立つ器を持つ。',
+7:'兌宮傾斜：裏は楽しみ好きの社交家。話術と愛嬌で場を回す才能が隠れている。',
+8:'艮宮傾斜：芯が頑固で、蓄えてから変わるタイプ。家やルーツ・継承への思いが強い。',
+9:'離宮傾斜：内に高いプライドと美意識。物事を見抜く目が鋭い、直感の人。'};
+/* 後天定位: 南上レイアウト順（palace番号） */
+const LAYOUT=[4,9,2,3,5,7,8,1,6];
+const DIR_OF_PALACE={1:'北',2:'南西',3:'東',4:'南東',6:'北西',7:'西',8:'北東',9:'南'};
+const OPP={1:9,9:1,2:8,8:2,3:7,7:3,4:6,6:4};
+const BRANCH=['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const BRANCH_PALACE={0:1,1:8,2:8,3:3,4:4,5:4,6:9,7:2,8:2,9:7,10:6,11:6};
+/* 八卦 */
+const GUA_NAME={1:'坎',2:'坤',3:'震',4:'巽',6:'乾',7:'兌',8:'艮',9:'離'};
+const GUA_DIR={'坎':'北','坤':'南西','震':'東','巽':'南東','乾':'北西','兌':'西','艮':'北東','離':'南'};
+/* 大遊年歌に基づく遊星表 gua→{相手卦:遊星} */
+const YUSEI={
+'乾':{'兌':'生氣','坤':'延年','艮':'天醫','乾':'伏位','巽':'禍害','坎':'六煞','震':'五鬼','離':'絕命'},
+'坎':{'巽':'生氣','離':'延年','震':'天醫','坎':'伏位','兌':'禍害','乾':'六煞','艮':'五鬼','坤':'絕命'},
+'艮':{'坤':'生氣','兌':'延年','乾':'天醫','艮':'伏位','離':'禍害','震':'六煞','坎':'五鬼','巽':'絕命'},
+'震':{'離':'生氣','巽':'延年','坎':'天醫','震':'伏位','坤':'禍害','艮':'六煞','乾':'五鬼','兌':'絕命'},
+'巽':{'坎':'生氣','震':'延年','離':'天醫','巽':'伏位','乾':'禍害','兌':'六煞','坤':'五鬼','艮':'絕命'},
+'離':{'震':'生氣','坎':'延年','巽':'天醫','離':'伏位','艮':'禍害','坤':'六煞','兌':'五鬼','乾':'絕命'},
+'坤':{'艮':'生氣','乾':'延年','兌':'天醫','坤':'伏位','震':'禍害','離':'六煞','巽':'五鬼','坎':'絕命'},
+'兌':{'乾':'生氣','艮':'延年','坤':'天醫','兌':'伏位','坎':'禍害','巽':'六煞','離':'五鬼','震':'絕命'}};
+const YUSEI_MEAN={'生氣':'活力・発展・チャンス（大吉）','天醫':'健康・回復・安眠（大吉）','延年':'人間関係・縁・安定（中吉）','伏位':'平穏・現状維持（小吉）','禍害':'小さな消耗・口論（小凶）','六煞':'乱れ・散財・不眠（中凶）','五鬼':'トラブル・裏切り（大凶）','絕命':'最も消耗する方位（大凶）'};
+const YUSEI_ORDER=['生氣','天醫','延年','伏位','禍害','六煞','五鬼','絕命'];
+
+/* ========== 節気（近似式 1901-2100） ========== */
+const TERMS=[
+ {n:'小寒',m:1,c20:6.11,c21:5.4055},{n:'立春',m:2,c20:4.6295,c21:3.87},
+ {n:'啓蟄',m:3,c20:6.3826,c21:5.63},{n:'清明',m:4,c20:5.59,c21:4.81},
+ {n:'立夏',m:5,c20:6.318,c21:5.52},{n:'芒種',m:6,c20:6.5,c21:5.678},
+ {n:'小暑',m:7,c20:7.928,c21:7.108},{n:'立秋',m:8,c20:8.35,c21:7.5},
+ {n:'白露',m:9,c20:8.44,c21:7.646},{n:'寒露',m:10,c20:9.098,c21:8.318},
+ {n:'立冬',m:11,c20:8.218,c21:7.438},{n:'大雪',m:12,c20:7.9,c21:7.18}];
+function termDay(y,idx){
+  const t=TERMS[idx];const y2=y%100;
+  let d;
+  if(y>=2001){d=Math.floor(y2*0.2422+t.c21)-Math.floor(y2/4);}
+  else{d=Math.floor(y2*0.2422+t.c20)-Math.floor((y2-1)/4);}
+  return new Date(Date.UTC(y,t.m-1,d));
+}
+function solstice(y,summer){
+  const y2=y%100;const c=(y>=2001)?(summer?21.37:21.94):(summer?22.20:22.60);
+  let d;
+  if(y>=2001){d=Math.floor(y2*0.2422+c)-Math.floor(y2/4);}
+  else{d=Math.floor(y2*0.2422+c)-Math.floor((y2-1)/4);}
+  return new Date(Date.UTC(y,summer?5:11,d));
+}
+
+/* ========== 基本計算 ========== */
+function toUTC(d){return new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()));}
+function parseDate(v){const p=v.split('-');return new Date(Date.UTC(+p[0],+p[1]-1,+p[2]));}
+function effYear(d){const y=d.getUTCFullYear();return d<termDay(y,1)?y-1:y;}
+function yearStar(d){const y=effYear(d);let n=11-(y%9);while(n>9)n-=9;if(n<1)n+=9;return n;}
+function monthBranch(d){
+  const y=d.getUTCFullYear();
+  let last=null;
+  for(let yy=y-1;yy<=y;yy++){
+    for(let i=0;i<12;i++){
+      const td=termDay(yy,i);
+      if(td<=d)last={term:i};
+    }
+  }
+  /* 節indexから支へ: 小寒0→丑1, 立春1→寅2, ... 大雪11→子0 */
+  const map=[1,2,3,4,5,6,7,8,9,10,11,0];
+  return map[last.term];
+}
+function monthStar(d,yStar){
+  const b=monthBranch(d);
+  const g=yStar%3; /* 1,4,7→1  2,5,8→2  3,6,9→0 */
+  const start=(g===1)?8:(g===2)?2:5;
+  const since=(b-2+12)%12;
+  let s=start-since;while(s<1)s+=9;while(s>9)s-=9;return s;
+}
+function starInPalace(c,p){return ((c-1+p-5)%9+9)%9+1;}
+function palaceOfStar(c,s){return ((s-c+5-1)%9+9)%9+1;}
+
+/* ========== 日盤 ========== */
+function dayIndex(d){ /* 甲子=0, 基準: 2026-07-19=甲午(30) */
+  const diff=Math.round((d.getTime()-Date.UTC(2026,6,19))/86400000);
+  return ((30+diff)%60+60)%60;
+}
+function nearestKoshi(s){
+  const idx=dayIndex(s);
+  const before=new Date(s.getTime()-idx*86400000);
+  const after=new Date(before.getTime()+60*86400000);
+  const db=(s-before)/86400000, da=(after-s)/86400000;
+  return db<=da?before:after;
+}
+function dayStar(d){
+  const y=d.getUTCFullYear();
+  const cands=[
+    {t:'陰',a:nearestKoshi(solstice(y-1,true))},
+    {t:'陽',a:nearestKoshi(solstice(y-1,false))},
+    {t:'陰',a:nearestKoshi(solstice(y,true))},
+    {t:'陽',a:nearestKoshi(solstice(y,false))}
+  ].filter(c=>c.a<=d).sort((a,b)=>a.a-b.a);
+  const cur=cands[cands.length-1];
+  const off=Math.round((d-cur.a)/86400000);
+  let s;
+  if(cur.t==='陽'){s=(off%9)+1;}
+  else{s=((8-off)%9+9)%9+1;}
+  return {star:s,mode:cur.t==='陽'?'陽遁':'陰遁'};
+}
+
+/* ========== 傾斜 ========== */
+function keisha(hon,getsu){
+  if(hon===getsu)return 5;
+  return palaceOfStar(getsu,hon);
+}
+
+/* ========== 八宅 ========== */
+function guaNum(birthEffYear,sex){
+  let s=birthEffYear;while(s>9){s=String(s).split('').reduce((a,b)=>a+ +b,0);}
+  let g;
+  if(sex==='m'){g=11-s;while(g>9)g-=9;if(g<1)g+=9;if(g===5)g=2;}
+  else{g=s+4;while(g>9)g-=9;if(g===5)g=8;}
+  return g;
+}
+
+/* ========== 吉方位判定 ========== */
+function gen(a,b){ /* aがbを生む */
+  return (a==='木'&&b==='火')||(a==='火'&&b==='土')||(a==='土'&&b==='金')||(a==='金'&&b==='水')||(a==='水'&&b==='木');
+}
+function isGoodStar(q,p){
+  if(q===5)return false;
+  const eq=STAR_ELEM[q],ep=STAR_ELEM[p];
+  return gen(eq,ep)||gen(ep,eq)||eq===ep;
+}
+function chartFlags(center,hon,getsu,breakBranch){
+  const flags={};for(const p of [1,2,3,4,6,7,8,9])flags[p]=[];
+  const p5=palaceOfStar(center,5);
+  if(p5!==5){flags[p5].push('五黄殺');flags[OPP[p5]].push('暗剣殺');}
+  const ph=palaceOfStar(center,hon);
+  if(ph!==5){flags[ph].push('本命殺');flags[OPP[ph]].push('本命的殺');}
+  const pg=palaceOfStar(center,getsu);
+  if(pg!==5){if(!flags[pg].includes('本命殺'))flags[pg].push('月命殺');if(!flags[OPP[pg]].includes('本命的殺'))flags[OPP[pg]].push('月命的殺');}
+  if(breakBranch!=null){
+    const bb=(breakBranch+6)%12;const bp=BRANCH_PALACE[bb];
+    flags[bp].push(breakBranch===undefined?'破':'破');
+  }
+  return flags;
+}
+
+/* ========== 描画 ========== */
+function renderGrid(el,center,flags,goodMap){
+  el.innerHTML='';
+  for(const p of LAYOUT){
+    const c=document.createElement('div');
+    if(p===5){c.className='cell center';c.innerHTML='<div class="dir">中宮</div><div class="st">'+STAR_NAME[center]+'</div>';}
+    else{
+      const s=starInPalace(center,p);
+      let fl=flags?flags[p]:[];
+      let html='<div class="dir">'+DIR_OF_PALACE[p]+'</div><div class="st">'+STAR_NAME[s]+'</div>';
+      let ftxt='';
+      if(fl.length)ftxt='<span class="f-kyo">'+fl.join('・')+'</span>';
+      else if(goodMap&&goodMap[p])ftxt='<span class="f-kichi">'+goodMap[p]+'</span>';
+      html+='<div class="flags">'+ftxt+'</div>';
+      c.className='cell';c.innerHTML=html;
+    }
+    el.appendChild(c);
+  }
+}
+
+let LAST=null;
+function calcAll(){
+  const bv=document.getElementById('birth').value;
+  const tv=document.getElementById('target').value;
+  if(!bv){alert('生年月日を入れてください');return;}
+  const birth=parseDate(bv);
+  const target=tv?parseDate(tv):toUTC(new Date());
+  const sex=document.querySelector('input[name=sex]:checked').value;
+
+  /* 本人の星 */
+  const hon=yearStar(birth);
+  const getsu=monthStar(birth,hon);
+  const kp=keisha(hon,getsu);
+  const gnum=guaNum(effYear(birth),sex);
+  const gname=GUA_NAME[gnum];
+
+  document.getElementById('honmei').textContent=STAR_NAME[hon];
+  document.getElementById('honmeiDesc').textContent=STAR_DESC[hon];
+  document.getElementById('getsumei').textContent=STAR_NAME[getsu];
+  document.getElementById('getsumeiDesc').textContent='月命星は幼少期の性質と、心の土台。'+STAR_DESC[getsu];
+  const kpName=(kp===5)?'中宮傾斜':({1:'坎宮',2:'坤宮',3:'震宮',4:'巽宮',6:'乾宮',7:'兌宮',8:'艮宮',9:'離宮'}[kp]+'傾斜');
+  document.getElementById('keisha').textContent=kpName;
+  document.getElementById('keishaDesc').textContent=KEISHA_DESC[kp];
+
+  /* 八宅 */
+  document.getElementById('gua').textContent=gname+'命（'+((gnum===1||gnum===3||gnum===4||gnum===9)?'東四命':'西四命')+'）';
+  const tb=document.getElementById('hachitakuBody');tb.innerHTML='';
+  const rows=[];
+  for(const other in YUSEI[gname]){
+    rows.push({dir:GUA_DIR[other],y:YUSEI[gname][other]});
+  }
+  rows.sort((a,b)=>YUSEI_ORDER.indexOf(a.y)-YUSEI_ORDER.indexOf(b.y));
+  let tenni='',seiki='',zetsu=[],goki='';
+  for(const r of rows){
+    const isK=YUSEI_ORDER.indexOf(r.y)<4;
+    tb.innerHTML+='<tr><td>'+r.dir+'</td><td class="'+(isK?'f-kichi':'f-kyo')+'">'+r.y+'</td><td style="font-size:.8rem">'+YUSEI_MEAN[r.y]+'</td></tr>';
+    if(r.y==='天醫')tenni=r.dir;if(r.y==='生氣')seiki=r.dir;
+    if(r.y==='絕命'||r.y==='五鬼')zetsu.push(r.dir);
+  }
+  document.getElementById('bedAdvice').textContent='おすすめの枕の向き：健康・安眠なら頭を'+tenni+'（天醫）へ、活力チャージなら'+seiki+'（生氣）へ。'+zetsu.join('・')+'枕は避けるのが無難です。';
+
+  /* 盤 */
+  const yS=yearStar(target);
+  const mS=monthStar(target,yS);
+  const dRes=dayStar(target);
+  const tey=effYear(target);
+  const yBranch=((tey-4)%12+12)%12;
+  const mBranch=monthBranch(target);
+  const dBranch=dayIndex(target)%12;
+
+  document.getElementById('targetLabel').textContent=target.getUTCFullYear()+'/'+(target.getUTCMonth()+1)+'/'+target.getUTCDate();
+  document.getElementById('yearTitle').textContent='年盤 '+tey+'年（'+BRANCH[yBranch]+'年）── '+STAR_NAME[yS]+' 中宮';
+  document.getElementById('monthTitle').textContent='月盤（'+BRANCH[mBranch]+'月）── '+STAR_NAME[mS]+' 中宮';
+  document.getElementById('dayTitle').textContent='日盤（'+BRANCH[dBranch]+'日・'+dRes.mode+'）── '+STAR_NAME[dRes.star]+' 中宮';
+
+  const yFlags=chartFlags(yS,hon,getsu,null);
+  const ybp=BRANCH_PALACE[(yBranch+6)%12];yFlags[ybp].push('歳破');
+  const mFlags=chartFlags(mS,hon,getsu,null);
+  const mbp=BRANCH_PALACE[(mBranch+6)%12];mFlags[mbp].push('月破');
+  const dFlags=chartFlags(dRes.star,hon,getsu,null);
+  const dbp=BRANCH_PALACE[(dBranch+6)%12];dFlags[dbp].push('日破');
+
+  /* 吉判定 */
+  const yGood={},mGood={};
+  for(const p of [1,2,3,4,6,7,8,9]){
+    const s=starInPalace(yS,p);
+    if(yFlags[p].length===0&&isGoodStar(s,hon))yGood[p]=isGoodStar(s,getsu)?'吉◎':'吉';
+    const s2=starInPalace(mS,p);
+    if(mFlags[p].length===0&&isGoodStar(s2,hon))mGood[p]=isGoodStar(s2,getsu)?'吉◎':'吉';
+  }
+  renderGrid(document.getElementById('yearGrid'),yS,yFlags,yGood);
+  renderGrid(document.getElementById('monthGrid'),mS,mFlags,mGood);
+  renderGrid(document.getElementById('dayGrid'),dRes.star,dFlags,null);
+
+  /* 方位判定表 */
+  const hb=document.getElementById('houiBody');hb.innerHTML='';
+  const daikichi=[];const kichi=[];
+  for(const p of [1,2,3,4,6,7,8,9]){
+    const yTxt=yFlags[p].length?('<span class="f-kyo">'+yFlags[p].join('・')+'</span>'):(yGood[p]?'<span class="f-kichi">'+yGood[p]+'</span>':'─');
+    const mTxt=mFlags[p].length?('<span class="f-kyo">'+mFlags[p].join('・')+'</span>'):(mGood[p]?'<span class="f-kichi">'+mGood[p]+'</span>':'─');
+    let judge='─';
+    if(yGood[p]&&mGood[p]){judge='<span class="f-daikichi">◎大吉</span>';daikichi.push(DIR_OF_PALACE[p]);}
+    else if(mGood[p]&&!yFlags[p].length){judge='<span class="f-kichi">○月吉</span>';kichi.push(DIR_OF_PALACE[p]);}
+    else if(yFlags[p].length||mFlags[p].length){judge='<span class="f-kyo">凶あり</span>';}
+    hb.innerHTML+='<tr><td>'+DIR_OF_PALACE[p]+'</td><td>'+yTxt+'</td><td>'+mTxt+'</td><td>'+judge+'</td></tr>';
+  }
+  let summary='';
+  if(daikichi.length)summary='今月の大吉方位：'+daikichi.join('・')+'。年盤・月盤の両方で吉が重なる、お出かけ・祐気取りに最適の方位です。';
+  else if(kichi.length)summary='今月は年月そろっての大吉はありませんが、月盤の吉方位：'+kichi.join('・')+'は日帰りのお出かけに使えます。';
+  else summary='今月は吉方位が立ちにくい配置です。無理に方位を取らず、住まいを整えるのに向く時期と読めます。';
+  document.getElementById('kichiSummary').textContent=summary;
+
+  /* 発注文 */
+  const bd=birth.getUTCFullYear()+'年'+(birth.getUTCMonth()+1)+'月'+birth.getUTCDate()+'日';
+  const td2=target.getUTCFullYear()+'年'+(target.getUTCMonth()+1)+'月'+target.getUTCDate()+'日';
+  let ptxt='あなたは九星気学と八宅風水にくわしい、誠実な解説者です。\n以下は専用ツールで正確に計算した方位データです。このデータだけを根拠に読み解いてください。\n\n【守ってほしいルール】\n・書かれていない星・方位・殺を創作しない\n・吉凶は断定や脅しにせず「傾向」として、活かし方とセットで伝える\n・まず最初に「何について知りたいか（問い）」を私にひとつ確認してから読み始める\n・専門用語には短い説明を添える\n\n【本人データ】\n生年月日：'+bd+'（'+(sex==='f'?'女性':'男性')+'）\n本命星：'+STAR_NAME[hon]+'\n月命星：'+STAR_NAME[getsu]+'\n傾斜：'+kpName+'\n本命卦（八宅）：'+gname+'命\n八宅の吉方位：';
+  const yj=[];for(const r of rows){if(YUSEI_ORDER.indexOf(r.y)<4)yj.push(r.y+'='+r.dir);}
+  ptxt+=yj.join('、')+'\n八宅の凶方位：';
+  const yk=[];for(const r of rows){if(YUSEI_ORDER.indexOf(r.y)>=4)yk.push(r.y+'='+r.dir);}
+  ptxt+=yk.join('、')+'\n\n【対象日：'+td2+'】\n年盤：'+STAR_NAME[yS]+'中宮（'+BRANCH[yBranch]+'年・歳破='+DIR_OF_PALACE[BRANCH_PALACE[(yBranch+6)%12]]+'）\n月盤：'+STAR_NAME[mS]+'中宮（'+BRANCH[mBranch]+'月・月破='+DIR_OF_PALACE[BRANCH_PALACE[(mBranch+6)%12]]+'）\n日盤：'+STAR_NAME[dRes.star]+'中宮（'+dRes.mode+'）\n\n【方位判定（年盤×月盤）】\n';
+  for(const p of [1,2,3,4,6,7,8,9]){
+    ptxt+=DIR_OF_PALACE[p]+'：年盤'+STAR_NAME[starInPalace(yS,p)]+(yFlags[p].length?'['+yFlags[p].join('・')+']':(yGood[p]?'[吉]':''))+'／月盤'+STAR_NAME[starInPalace(mS,p)]+(mFlags[p].length?'['+mFlags[p].join('・')+']':(mGood[p]?'[吉]':''))+'\n';
+  }
+  ptxt+=(daikichi.length?'\n大吉方位（年月重ね）：'+daikichi.join('・')+'\n':'\n年月そろっての大吉方位：なし\n');
+  ptxt+='\n準備ができたら、まず私に「何について知りたいですか？」と聞いてください。';
+  document.getElementById('prompt').value=ptxt;
+
+  document.getElementById('results').style.display='block';
+  LAST=true;
+}
+function copyPrompt(){
+  const t=document.getElementById('prompt');
+  t.select();document.execCommand('copy');
+  document.getElementById('copied').textContent='コピーしました';
+  setTimeout(()=>{document.getElementById('copied').textContent='';},2000);
+}
+/* 初期値: 今日 */
+(function(){
+  const n=new Date();
+  const s=n.getFullYear()+'-'+String(n.getMonth()+1).padStart(2,'0')+'-'+String(n.getDate()).padStart(2,'0');
+  document.getElementById('target').value=s;
+})();
+</script>
+</body>
+</html>
