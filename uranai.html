@@ -12,44 +12,59 @@
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --ai:#1b3a5b; --ai-fuka:#12293f; --kin:#b8860b;
-  --usu:#f4f1ea; --sumi:#2a2a2a; --haku:#fbfaf7; --sen:#d8d2c4;
+  --yozora-ue:#0b1626; --yozora-naka:#152944; --yozora-shita:#1b3a5b;
+  --kin:#c9a24b; --hoshi:#f2ede1;
+  --moji:#e9e5d9; --usumoji:#b9b4a6; --sen:rgba(242,237,225,.18);
+  --kaado:rgba(242,237,225,.05);
   --line:#06C755;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{
   font-family:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
-  background:var(--usu); color:var(--sumi); line-height:1.9;
+  background:linear-gradient(180deg,var(--yozora-ue) 0%,var(--yozora-naka) 45%,var(--yozora-shita) 100%);
+  background-attachment:fixed;
+  color:var(--moji); line-height:1.9;
+  min-height:100vh;
+  position:relative;
 }
+/* 星空 */
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background-image:
+    radial-gradient(1px 1px at 15% 12%, rgba(242,237,225,.8) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 80% 8%, rgba(201,162,75,.7) 50%, transparent 51%),
+    radial-gradient(1px 1px at 60% 22%, rgba(242,237,225,.5) 50%, transparent 51%),
+    radial-gradient(1px 1px at 30% 35%, rgba(242,237,225,.4) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 90% 30%, rgba(242,237,225,.45) 50%, transparent 51%),
+    radial-gradient(1px 1px at 10% 55%, rgba(242,237,225,.5) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 45% 62%, rgba(201,162,75,.5) 50%, transparent 51%),
+    radial-gradient(1px 1px at 75% 58%, rgba(242,237,225,.4) 50%, transparent 51%),
+    radial-gradient(1px 1px at 25% 78%, rgba(242,237,225,.45) 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 65% 85%, rgba(242,237,225,.4) 50%, transparent 51%),
+    radial-gradient(1px 1px at 88% 92%, rgba(201,162,75,.45) 50%, transparent 51%);
+}
+main,header,footer,.modori{position:relative; z-index:1}
 .modori{
-  display:inline-block; font-size:12px; color:#999; text-decoration:none;
+  display:inline-block; font-size:12px; color:var(--usumoji); text-decoration:none;
   letter-spacing:.15em; padding:16px 20px;
 }
-.modori:hover{color:var(--ai)}
+.modori:hover{color:var(--kin)}
 header{
-  background:linear-gradient(180deg,#0b1626 0%,#152944 60%,#1b3a5b 100%);
-  color:#f2ede1; text-align:center;
+  color:var(--hoshi); text-align:center;
   padding:42px 20px 36px;
-  background-image:
-    radial-gradient(1px 1px at 15% 25%, rgba(242,237,225,.8) 50%, transparent 51%),
-    radial-gradient(1.5px 1.5px at 80% 20%, rgba(201,162,75,.7) 50%, transparent 51%),
-    radial-gradient(1px 1px at 60% 55%, rgba(242,237,225,.5) 50%, transparent 51%),
-    radial-gradient(1px 1px at 30% 75%, rgba(242,237,225,.4) 50%, transparent 51%),
-    radial-gradient(1.5px 1.5px at 90% 70%, rgba(242,237,225,.45) 50%, transparent 51%),
-    linear-gradient(180deg,#0b1626 0%,#152944 60%,#1b3a5b 100%);
 }
 header h1{font-size:22px; font-weight:600; letter-spacing:.25em}
 header p{font-size:12px; opacity:.72; margin-top:12px; letter-spacing:.12em; line-height:1.8}
 main{max-width:560px; margin:0 auto; padding:10px 20px 60px}
 section{
-  background:var(--haku); border:1px solid var(--sen); border-radius:2px;
+  background:var(--kaado); border:1px solid var(--sen); border-radius:2px;
   padding:26px 24px; margin:20px 0;
 }
 section h2{
-  font-size:15px; color:var(--ai); letter-spacing:.2em; font-weight:600;
+  font-size:15px; color:var(--kin); letter-spacing:.2em; font-weight:600;
   border-bottom:1px solid var(--sen); padding-bottom:10px; margin-bottom:16px;
 }
-section p{font-size:13px; color:#555; letter-spacing:.04em}
+section p{font-size:13px; color:var(--usumoji); letter-spacing:.04em}
 .btn{
   display:block; text-align:center; text-decoration:none;
   padding:14px; margin-top:18px; font-size:15px; letter-spacing:.2em;
@@ -57,7 +72,7 @@ section p{font-size:13px; color:#555; letter-spacing:.04em}
 }
 .btn:hover{opacity:.85}
 .btn.line{background:var(--line); color:#fff}
-.btn.shiro{background:var(--haku); color:var(--ai); border:1px solid var(--ai)}
+.btn.shiro{background:transparent; color:var(--hoshi); border:1px solid var(--hoshi)}
 .dogu{
   display:block; text-decoration:none; color:inherit;
   border:1px solid var(--sen); border-radius:2px;
@@ -65,20 +80,54 @@ section p{font-size:13px; color:#555; letter-spacing:.04em}
   transition:border-color .2s;
 }
 .dogu:hover{border-color:var(--kin)}
-.dogu h3{font-size:15px; color:var(--ai); font-weight:600; letter-spacing:.1em}
-.dogu p{font-size:12px; color:#777; margin-top:6px}
+.dogu h3{font-size:15px; color:var(--hoshi); font-weight:600; letter-spacing:.1em}
+.dogu p{font-size:12px; color:var(--usumoji); margin-top:6px}
 .dogu .kagi{
   display:inline-block; font-size:11px; color:var(--kin);
   border:1px solid var(--kin); border-radius:2px;
   padding:1px 8px; margin-left:8px; letter-spacing:.1em;
 }
 .dogu .atarasii{
-  display:inline-block; font-size:11px; color:#fff; background:var(--kin);
+  display:inline-block; font-size:11px; color:#0b1626; background:var(--kin);
   border-radius:2px; padding:1px 8px; margin-left:8px; letter-spacing:.1em;
 }
-.soeb{font-size:11px; color:#999; margin-top:14px; line-height:1.8; letter-spacing:.03em}
+.soeb{font-size:11px; color:var(--usumoji); opacity:.8; margin-top:14px; line-height:1.8; letter-spacing:.03em}
+/* ===== 結ゆうの本棚 ===== */
+.hondana-pr{
+  font-size:11px; color:var(--usumoji); letter-spacing:.08em;
+  margin:-6px 0 16px;
+}
+.hon{
+  display:flex; gap:16px; align-items:flex-start;
+  border-top:1px solid var(--sen);
+  padding:18px 2px;
+}
+.hon:first-of-type{border-top:none; padding-top:6px}
+.hon-hyoshi{flex:0 0 80px}
+.hon-hyoshi img{
+  display:block; width:80px; height:auto;
+  background:#fff; border-radius:2px;
+  box-shadow:0 4px 14px rgba(0,0,0,.5);
+}
+.hon-naka{flex:1; min-width:0}
+.hon-dai{font-size:14px; line-height:1.6; margin-bottom:6px}
+.hon-dai a{
+  color:var(--hoshi); text-decoration:none;
+  border-bottom:1px solid rgba(201,162,75,.5);
+}
+.hon-dai a:hover{color:var(--kin)}
+.hon-koto{font-size:12px; color:var(--usumoji); line-height:1.8; margin-bottom:10px}
+.hon-btn{
+  display:inline-block; font-size:12px; letter-spacing:.15em;
+  color:var(--kin); border:1px solid var(--kin); border-radius:2px;
+  padding:6px 16px; text-decoration:none; transition:opacity .2s;
+}
+.hon-btn:hover{opacity:.8}
+@media (max-width:400px){
+  .hon{gap:12px}
+}
 footer{
-  text-align:center; font-size:11px; color:#aaa;
+  text-align:center; font-size:11px; color:var(--usumoji); opacity:.7;
   padding:26px 20px; letter-spacing:.2em; border-top:1px solid var(--sen);
 }
 </style>
@@ -146,6 +195,45 @@ footer{
     <a class="btn line" href="https://lin.ee/sV1Dkxl">公式LINEに登録して合言葉を受けとる</a>
 
     <p class="soeb">どの道具も、入力した情報はどこにも送信されません。すべてお使いの端末の中だけで動きます。</p>
+  </section>
+
+  <section>
+    <h2>結ゆうの本棚</h2>
+    <p class="hondana-pr">［PR］紹介リンクには楽天アフィリエイトを利用しています。</p>
+    <p style="margin-bottom:18px">道具で写しとった結果を、自分の手で読み解きたくなったら。結ゆうが実際に開いている本を置いています。</p>
+
+    <div class="hon">
+      <div class="hon-hyoshi">
+        <a href="https://hb.afl.rakuten.co.jp/ichiba/0ee36173.3a647d04.0ee36174.96165ffb/?pc=https%3A%2F%2Fproduct.rakuten.co.jp%2Fproduct%2F-%2F309c0f54b5d9b4d98501eaf036bf0a48%2F&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiI4MHg4MCIsIm5hbSI6MSwibmFtcCI6InJpZ2h0IiwiY29tIjoxLCJjb21wIjoiZG93biIsInByaWNlIjoxLCJib3IiOjEsImNvbCI6MSwiYmJ0biI6MSwicHJvZCI6MSwiYW1wIjpmYWxzZX0%3D" target="_blank" rel="nofollow sponsored noopener"><img src="https://hbb.afl.rakuten.co.jp/hgb/55e76616.97d67b84.55e76617.1e93f959/?me_id=1213310&item_id=21357241&pc=https%3A%2F%2Fthumbnail.image.rakuten.co.jp%2F%400_mall%2Fbook%2Fcabinet%2F1576%2F9784046071576_1_5.jpg%3F_ex%3D80x80&s=80x80&t=picttext" border="0" alt="新装改訂版 古代マヤ暦「13の音」書影"></a>
+      </div>
+      <div class="hon-naka">
+        <p class="hon-dai"><a href="https://hb.afl.rakuten.co.jp/ichiba/0ee36173.3a647d04.0ee36174.96165ffb/?pc=https%3A%2F%2Fproduct.rakuten.co.jp%2Fproduct%2F-%2F309c0f54b5d9b4d98501eaf036bf0a48%2F&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiI4MHg4MCIsIm5hbSI6MSwibmFtcCI6InJpZ2h0IiwiY29tIjoxLCJjb21wIjoiZG93biIsInByaWNlIjoxLCJib3IiOjEsImNvbCI6MSwiYmJ0biI6MSwicHJvZCI6MSwiYW1wIjpmYWxzZX0%3D" target="_blank" rel="nofollow sponsored noopener">新装改訂版　古代マヤ暦「13の音」 ［越川宗亮］</a></p>
+        <p class="hon-koto">KINを構成するもうひとつの柱「銀河の音」を、一音ずつ丁寧に。自分の音の意味を知ると、リズムの取り方が変わります。</p>
+        <a class="hon-btn" href="https://hb.afl.rakuten.co.jp/ichiba/0ee36173.3a647d04.0ee36174.96165ffb/?pc=https%3A%2F%2Fproduct.rakuten.co.jp%2Fproduct%2F-%2F309c0f54b5d9b4d98501eaf036bf0a48%2F&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiI4MHg4MCIsIm5hbSI6MSwibmFtcCI6InJpZ2h0IiwiY29tIjoxLCJjb21wIjoiZG93biIsInByaWNlIjoxLCJib3IiOjEsImNvbCI6MSwiYmJ0biI6MSwicHJvZCI6MSwiYW1wIjpmYWxzZX0%3D" target="_blank" rel="nofollow sponsored noopener">楽天で見る</a>
+      </div>
+    </div>
+
+    <div class="hon">
+      <div class="hon-hyoshi">
+        <a href="https://hb.afl.rakuten.co.jp/ichiba/0ee36173.3a647d04.0ee36174.96165ffb/?pc=https%3A%2F%2Fproduct.rakuten.co.jp%2Fproduct%2F-%2Fae1e831ea8c4a36483aee91d50b394bd%2F&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiI4MHg4MCIsIm5hbSI6MSwibmFtcCI6InJpZ2h0IiwiY29tIjoxLCJjb21wIjoiZG93biIsInByaWNlIjowLCJib3IiOjEsImNvbCI6MSwiYmJ0biI6MSwicHJvZCI6MSwiYW1wIjpmYWxzZX0%3D" target="_blank" rel="nofollow sponsored noopener"><img src="https://hbb.afl.rakuten.co.jp/hgb/55e76616.97d67b84.55e76617.1e93f959/?me_id=1213310&item_id=20632164&pc=https%3A%2F%2Fthumbnail.image.rakuten.co.jp%2F%400_mall%2Fbook%2Fcabinet%2F7082%2F9784046057082_1_7.jpg%3F_ex%3D80x80&s=80x80&t=picttext" border="0" alt="新装改訂版 古代マヤ暦「20の刻印」書影"></a>
+      </div>
+      <div class="hon-naka">
+        <p class="hon-dai"><a href="https://hb.afl.rakuten.co.jp/ichiba/0ee36173.3a647d04.0ee36174.96165ffb/?pc=https%3A%2F%2Fproduct.rakuten.co.jp%2Fproduct%2F-%2Fae1e831ea8c4a36483aee91d50b394bd%2F&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiI4MHg4MCIsIm5hbSI6MSwibmFtcCI6InJpZ2h0IiwiY29tIjoxLCJjb21wIjoiZG93biIsInByaWNlIjowLCJib3IiOjEsImNvbCI6MSwiYmJ0biI6MSwicHJvZCI6MSwiYW1wIjpmYWxzZX0%3D" target="_blank" rel="nofollow sponsored noopener">新装改訂版　古代マヤ暦「20の刻印」 ［越川宗亮］</a></p>
+        <p class="hon-koto">太陽の紋章20を一つずつ深掘りする一冊。まずは自分の紋章のページから。「13の音」と対で揃えると、読み解きが立体になります。</p>
+        <a class="hon-btn" href="https://hb.afl.rakuten.co.jp/ichiba/0ee36173.3a647d04.0ee36174.96165ffb/?pc=https%3A%2F%2Fproduct.rakuten.co.jp%2Fproduct%2F-%2Fae1e831ea8c4a36483aee91d50b394bd%2F&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiI4MHg4MCIsIm5hbSI6MSwibmFtcCI6InJpZ2h0IiwiY29tIjoxLCJjb21wIjoiZG93biIsInByaWNlIjowLCJib3IiOjEsImNvbCI6MSwiYmJ0biI6MSwicHJvZCI6MSwiYW1wIjpmYWxzZX0%3D" target="_blank" rel="nofollow sponsored noopener">楽天で見る</a>
+      </div>
+    </div>
+
+    <div class="hon">
+      <div class="hon-hyoshi">
+        <a href="https://hb.afl.rakuten.co.jp/ichiba/0ee36173.3a647d04.0ee36174.96165ffb/?pc=https%3A%2F%2Fproduct.rakuten.co.jp%2Fproduct%2F-%2F1a717bdd2db0b68d232e4aa320037ffb%2F&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiI4MHg4MCIsIm5hbSI6MSwibmFtcCI6InJpZ2h0IiwiY29tIjoxLCJjb21wIjoiZG93biIsInByaWNlIjowLCJib3IiOjEsImNvbCI6MSwiYmJ0biI6MSwicHJvZCI6MSwiYW1wIjpmYWxzZX0%3D" target="_blank" rel="nofollow sponsored noopener"><img src="https://hbb.afl.rakuten.co.jp/hgb/55e76616.97d67b84.55e76617.1e93f959/?me_id=1213310&item_id=21200366&pc=https%3A%2F%2Fthumbnail.image.rakuten.co.jp%2F%400_mall%2Fbook%2Fcabinet%2F2111%2F9784537222111_1_6.jpg%3F_ex%3D80x80&s=80x80&t=picttext" border="0" alt="一番わかりやすい はじめての四柱推命 書影"></a>
+      </div>
+      <div class="hon-naka">
+        <p class="hon-dai"><a href="https://hb.afl.rakuten.co.jp/ichiba/0ee36173.3a647d04.0ee36174.96165ffb/?pc=https%3A%2F%2Fproduct.rakuten.co.jp%2Fproduct%2F-%2F1a717bdd2db0b68d232e4aa320037ffb%2F&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiI4MHg4MCIsIm5hbSI6MSwibmFtcCI6InJpZ2h0IiwiY29tIjoxLCJjb21wIjoiZG93biIsInByaWNlIjowLCJib3IiOjEsImNvbCI6MSwiYmJ0biI6MSwicHJvZCI6MSwiYW1wIjpmYWxzZX0%3D" target="_blank" rel="nofollow sponsored noopener">一番わかりやすい はじめての四柱推命 ［愛新覚羅ゆうはん］</a></p>
+        <p class="hon-koto">書き込み式ワークつきで、自分の命式を手を動かしながら読めるようになる入門書。最初の一冊に迷ったらこれ。</p>
+        <a class="hon-btn" href="https://hb.afl.rakuten.co.jp/ichiba/0ee36173.3a647d04.0ee36174.96165ffb/?pc=https%3A%2F%2Fproduct.rakuten.co.jp%2Fproduct%2F-%2F1a717bdd2db0b68d232e4aa320037ffb%2F&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiI4MHg4MCIsIm5hbSI6MSwibmFtcCI6InJpZ2h0IiwiY29tIjoxLCJjb21wIjoiZG93biIsInByaWNlIjowLCJib3IiOjEsImNvbCI6MSwiYmJ0biI6MSwicHJvZCI6MSwiYW1wIjpmYWxzZX0%3D" target="_blank" rel="nofollow sponsored noopener">楽天で見る</a>
+      </div>
+    </div>
   </section>
 </main>
 
