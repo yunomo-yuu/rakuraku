@@ -92,7 +92,7 @@
 <div id="gate">
   <h2>星のめぐり</h2>
   <p>合言葉を入れてください</p>
-  <input type="text" id="gateInput" placeholder="ひらがなで">
+  <input type="password" id="gateInput" placeholder="合言葉" autocomplete="off">
   <button class="main" onclick="checkGate()">ひらく</button>
   <div id="gateErr"></div>
 </div>
@@ -188,12 +188,20 @@
   }
 })();
 
-/* ========== 合言葉ゲート（この1行を変えれば合言葉が変わります） ========== */
-const PASS='ほしをむすぶ';
-function checkGate(){
+/* ========== 合言葉ゲート（ハッシュ照合方式・合言葉はファイルに書かれていません） ========== */
+const PASS_HASH='427750830cf9e470753845aa86529eb6f72a0b79e5e780e904215b56ce061fb6';
+async function sha256hex(str){
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function checkGate(){
   const v=document.getElementById('gateInput').value.trim();
-  if(v===PASS){document.getElementById('gate').style.display='none';}
-  else{document.getElementById('gateErr').textContent='合言葉が違うようです';}
+  if(!v){document.getElementById('gateErr').textContent='合言葉を入れてください';return;}
+  try{
+    const h=await sha256hex(v);
+    if(h===PASS_HASH){document.getElementById('gate').style.display='none';}
+    else{document.getElementById('gateErr').textContent='合言葉が違うようです';}
+  }catch(e){document.getElementById('gateErr').textContent='確認できませんでした（https経由で開いてください）';}
 }
 document.getElementById('gateInput').addEventListener('keydown',e=>{if(e.key==='Enter')checkGate();});
 
