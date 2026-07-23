@@ -130,6 +130,11 @@
     margin-top:8px;
   }
   .notice.show{display:block;}
+  .undo-link{
+    background:none;border:none;padding:0;margin-left:8px;
+    color:var(--indigo-deep);font:inherit;font-weight:700;
+    text-decoration:underline;cursor:pointer;
+  }
 
   .tail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
   @media(max-width:560px){.tail-grid{grid-template-columns:1fr;}}
@@ -154,6 +159,11 @@
     border-radius:8px;padding:8px 22px;font:inherit;font-weight:700;cursor:pointer;
   }
   .copy-btn.copied{border-color:var(--ok);color:var(--ok);}
+  .next-btn{
+    background:#fff;border:2px solid var(--muted);color:var(--muted);
+    border-radius:8px;padding:8px 22px;font:inherit;font-weight:700;cursor:pointer;
+  }
+  .next-btn:hover{border-color:var(--indigo-deep);color:var(--indigo-deep);}
   #output{
     width:100%;min-height:300px;
     font-family:inherit;font-size:.92rem;line-height:1.8;
@@ -197,10 +207,20 @@
         </select>
       </div>
     </div>
+    <div class="row" style="margin-top:10px;">
+      <div>
+        <label for="time-start">開始時刻 <span class="opt">任意</span></label>
+        <input type="time" id="time-start">
+      </div>
+      <div>
+        <label for="time-end">終了時刻 <span class="opt">任意</span></label>
+        <input type="time" id="time-end">
+      </div>
+    </div>
     <div style="margin-top:10px;">
       <label>面接相手（本人チェック または 家族欄の入力が必須）</label>
       <div class="check-inline">
-        <label><input type="checkbox" id="honnin" checked>本人</label>
+        <label><input type="checkbox" id="honnin">本人</label>
         <div style="flex:1;min-width:180px;">
           <input type="text" id="family" placeholder="家族（例：長女、夫）※同席なしなら空欄">
         </div>
@@ -230,6 +250,7 @@
     <legend>サービスの実施状況 <span class="req">必須</span></legend>
     <div id="services"></div>
     <button type="button" class="add-btn" onclick="addService()">＋ サービスを追加</button>
+    <div class="notice" id="svc-undo-notice">サービス行を削除しました。<button type="button" class="undo-link" onclick="undoRemoveService()">元に戻す</button></div>
   </fieldset>
 
   <fieldset>
@@ -303,7 +324,10 @@
   <div class="output-sec" id="output-sec">
     <div class="output-head">
       <h2>生成結果（そのままコピペできます）</h2>
-      <button type="button" class="copy-btn" id="copy-btn" onclick="copyOutput()">コピー</button>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button type="button" class="copy-btn" id="copy-btn" onclick="copyOutput()">コピー</button>
+        <button type="button" class="next-btn" id="next-btn" onclick="nextClient()">次の利用者へ（入力をクリア）</button>
+      </div>
     </div>
     <textarea id="output" readonly></textarea>
   </div>
@@ -319,6 +343,10 @@
 
 <script>
 let mode = 'kaigo';
+let dirty = false;
+let firstInvalidEl = null;
+let removedService = null;
+let svcUndoTimer = null;
 
 const LABELS = {
   kaigo: {
@@ -368,26 +396,67 @@ function toggleTail4Text(){
   document.getElementById('tail4-text').style.display = isAri ? 'block' : 'none';
 }
 
-function addService(name, status){
-  const wrap = document.getElementById('services');
+function createServiceRow(name, status){
   const row = document.createElement('div');
   row.className = 'svc-row';
   row.innerHTML =
     '<input type="text" class="svc-name" placeholder="サービス種別（例：訪問介護）">' +
     '<input type="text" class="svc-status" value="計画通り実施されている。">' +
-    '<button type="button" class="svc-del" title="この行を削除" onclick="this.parentNode.remove()">×</button>';
+    '<button type="button" class="svc-del" title="この行を削除" onclick="removeService(this)">×</button>';
   if(typeof name === 'string') row.querySelector('.svc-name').value = name;
   if(typeof status === 'string') row.querySelector('.svc-status').value = status;
-  wrap.appendChild(row);
+  return row;
+}
+
+function addService(name, status){
+  document.getElementById('services').appendChild(createServiceRow(name, status));
+}
+
+function removeService(btn){
+  const row = btn.parentNode;
+  const wrap = document.getElementById('services');
+  const index = Array.from(wrap.children).indexOf(row);
+  removedService = {
+    index,
+    name: row.querySelector('.svc-name').value,
+    status: row.querySelector('.svc-status').value
+  };
+  row.remove();
+  markDirty();
+
+  const notice = document.getElementById('svc-undo-notice');
+  notice.classList.add('show');
+  clearTimeout(svcUndoTimer);
+  svcUndoTimer = setTimeout(() => {
+    notice.classList.remove('show');
+    removedService = null;
+  }, 8000);
+}
+
+function undoRemoveService(){
+  if(!removedService) return;
+  const wrap = document.getElementById('services');
+  const row = createServiceRow(removedService.name, removedService.status);
+  const ref = wrap.children[removedService.index] || null;
+  wrap.insertBefore(row, ref);
+  removedService = null;
+  clearTimeout(svcUndoTimer);
+  document.getElementById('svc-undo-notice').classList.remove('show');
 }
 
 function clearInvalid(){
   document.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
   document.getElementById('error-msg').classList.remove('show');
+  firstInvalidEl = null;
 }
 
 function markInvalid(el){
   el.classList.add('invalid');
+  if(!firstInvalidEl) firstInvalidEl = el;
+}
+
+function markDirty(){
+  dirty = true;
 }
 
 function formatDate(v){
@@ -438,6 +507,10 @@ function generate(){
   if(!ok){
     document.getElementById('error-msg').classList.add('show');
     document.getElementById('output-sec').classList.remove('show');
+    if(firstInvalidEl){
+      firstInvalidEl.scrollIntoView({behavior:'smooth', block:'center'});
+      firstInvalidEl.focus();
+    }
     return;
   }
 
@@ -470,10 +543,21 @@ function generate(){
     '利用者満足度：' + document.getElementById('tail3').value + '\n' +
     L.tail4 + '：' + tail4Value;
 
+  // 実施時間
+  const timeStart = document.getElementById('time-start').value;
+  const timeEnd = document.getElementById('time-end').value;
+  let timeLine = '';
+  if(timeStart && timeEnd) timeLine = timeStart + '〜' + timeEnd;
+  else if(timeStart) timeLine = timeStart + '〜';
+  else if(timeEnd) timeLine = '〜' + timeEnd;
+
   let text = '';
   text += '＜' + L.docTitle + '＞\n';
   text += '実施日：' + formatDate(dateEl.value) + '\n';
   text += '実施方法：' + document.getElementById('method').value + '\n';
+  if(timeLine){
+    text += '実施時間：' + timeLine + '\n';
+  }
   text += '面接相手：' + people.join('、') + '\n';
   text += '\n【心身の状況・生活状況】\n' + shinshinText + '\n';
   text += '\n【サービスの実施状況】\n' + svcText + '\n';
@@ -543,6 +627,56 @@ function fallbackCopy(out, done){
   done();
 }
 
+function nextClient(){
+  if(!confirm('入力内容をクリアして、次の利用者の入力を始めますか？\n（この操作は元に戻せません）')){
+    return;
+  }
+
+  clearInvalid();
+
+  const today = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  document.getElementById('date').value =
+    today.getFullYear() + '-' + pad(today.getMonth()+1) + '-' + pad(today.getDate());
+  document.getElementById('method').selectedIndex = 0;
+  document.getElementById('time-start').value = '';
+  document.getElementById('time-end').value = '';
+  document.getElementById('honnin').checked = false;
+  document.getElementById('family').value = '';
+
+  document.getElementById('henka').value = 'none';
+  document.getElementById('shinshin').value = '';
+  toggleHenkaNote();
+
+  document.getElementById('services').innerHTML = '';
+  addService();
+  addService();
+  removedService = null;
+  clearTimeout(svcUndoTimer);
+  document.getElementById('svc-undo-notice').classList.remove('show');
+
+  document.getElementById('tanki').value = '';
+  document.getElementById('ikou').value = '';
+  document.getElementById('tokki').value = '';
+
+  document.getElementById('tw-riyohyo').checked = false;
+  document.getElementById('tw-assess').checked = false;
+  document.getElementById('tw-hyoka').checked = false;
+
+  document.getElementById('tail1').selectedIndex = 0;
+  document.getElementById('tail2').selectedIndex = 0;
+  document.getElementById('tail3').selectedIndex = 0;
+  document.getElementById('tail4').value = 'なし';
+  document.getElementById('tail4-text').value = '';
+  toggleTail4Text();
+
+  document.getElementById('output').value = '';
+  document.getElementById('output-sec').classList.remove('show');
+
+  dirty = false;
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
 // 初期化
 (function init(){
   const today = new Date();
@@ -551,6 +685,15 @@ function fallbackCopy(out, done){
     today.getFullYear() + '-' + pad(today.getMonth()+1) + '-' + pad(today.getDate());
   addService();
   addService();
+
+  document.querySelector('.card').addEventListener('input', markDirty);
+  document.querySelector('.card').addEventListener('change', markDirty);
+
+  window.addEventListener('beforeunload', function(e){
+    if(!dirty) return;
+    e.preventDefault();
+    e.returnValue = '';
+  });
 })();
 </script>
 </body>

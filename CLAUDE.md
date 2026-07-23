@@ -39,3 +39,4 @@ The site is organized as two sibling sections reachable from the entry pages `in
 - らくらくの部屋の3ツール（monitoring.html / houkokusho.html / keika.html）は、入力データを端末内で完結させる設計。外部にデータを送信するコードは絶対に追加しない。
 - ケアマネ書類の文面に「安心・安全」という表現を使わない。
 - 鍵付きページのパスフレーズ判定ロジックは、明示的に指示されたときだけ触る。
+- らくらくのツールでサービス名を入力する欄は、事業所の正式名称を書くための欄。サービス種別の候補表示（datalist等）は提案しない。
