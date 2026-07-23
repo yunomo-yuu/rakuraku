@@ -29,3 +29,13 @@ The site is organized as two sibling sections reachable from the entry pages `in
 - **The らくらく tools share one interaction pattern** (see `monitoring.html`, `houkokusho.html`, `keika.html`): a form with required/optional field badges → client-side validation that toggles an `.invalid` class and an `.error-msg` element → a `generate()` function that assembles a plain-text (or printable HTML) document from form state → output shown in a readonly `<textarea>` with a copy-to-clipboard button (`navigator.clipboard`, falling back to `document.execCommand('copy')`). When adding a new tool or field to one of these, follow this same generate/validate/copy structure rather than inventing a new pattern.
 - **Privacy is a stated product property**: every らくらく tool explicitly tells the user that input is processed entirely client-side and never transmitted anywhere, and that closing/reloading the page clears it. Do not add any network calls (fetch, analytics beacons, form submissions, external APIs) to these tool pages — that would contradict what the page tells the user. Google Fonts `<link>` tags (already present) are the one existing exception to "no external requests."
 - **Navigation**: sub-pages link back to their section index via a small `← 玄関へもどる` / similar anchor near the top of `<body>`, not a shared nav component (there is no shared header/footer include mechanism — every page is fully self-contained, so shared text like the footer credit line is duplicated per file and must be edited in each file individually if changed).
+
+## Working rules for Claude Code
+
+- 回答は日本語。結論を先に、理由は後。
+- サイト全体の夜空テーマ（濃紺×星空×金茶、Shippori Mincho）は指示がない限り変更しない。
+- 指示されていないファイルは触らない。
+- 変更したら、変更ファイルと変更箇所を最後に一覧で報告する。
+- らくらくの部屋の3ツール（monitoring.html / houkokusho.html / keika.html）は、入力データを端末内で完結させる設計。外部にデータを送信するコードは絶対に追加しない。
+- ケアマネ書類の文面に「安心・安全」という表現を使わない。
+- 鍵付きページのパスフレーズ判定ロジックは、明示的に指示されたときだけ触る。
