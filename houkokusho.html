@@ -12,6 +12,10 @@
     --paper:#f6f7f9;
     --line:#c9d2e0;
     --muted:#6b7891;
+    --danger:#c0392b;
+    --danger-bg:#fdf0ee;
+    --warn-bg:#fff8e6;
+    --warn-line:#e0c060;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   body{
@@ -37,6 +41,24 @@
   .btn-next{background:#fff;color:var(--indigo-deep);border:2px solid var(--indigo);}
   .btn-next:hover{background:#eef2fa;}
   .toolbar .hint{font-size:11px;color:var(--muted);}
+  .error-msg{color:var(--danger);font-size:11px;font-weight:700;display:none;}
+  .error-msg.show{display:block;}
+  .notice{
+    display:none;
+    background:var(--warn-bg);
+    border:1px solid var(--warn-line);
+    border-radius:6px;
+    padding:6px 12px;
+    font-size:11px;
+    margin-top:1.5mm;
+  }
+  .notice.show{display:block;}
+  .toolbar + .notice{max-width:210mm;margin:0 auto 14px;}
+  .undo-link{
+    background:none;border:none;padding:0;margin-left:8px;
+    color:var(--indigo-deep);font:inherit;font-weight:700;
+    text-decoration:underline;cursor:pointer;
+  }
 
   /* 帳票本体 */
   .sheet{
@@ -123,6 +145,7 @@
     width:100%;
   }
   input:focus,textarea:focus{outline:1.5px solid var(--indigo);}
+  .invalid{outline:1.5px solid var(--danger)!important;background:var(--danger-bg)!important;}
   input.short{width:22mm;}
   input.mid{width:40mm;}
   textarea{
@@ -172,6 +195,7 @@
       padding:2mm 4mm;
     }
     input,textarea{border-bottom-color:#bbb;}
+    .invalid{outline:none!important;background:transparent!important;}
     .sec,.sec-day,.sec-visit,.sec-fac,.sec-ext{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
     th{background:#f0f0f0 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   }
@@ -180,10 +204,12 @@
 <body>
 
 <div class="toolbar">
-  <button type="button" class="btn-print" onclick="window.print()">印刷 / PDF保存</button>
+  <button type="button" class="btn-print" onclick="handlePrint()">印刷 / PDF保存</button>
   <button type="button" class="btn-next" onclick="nextPerson()">次の利用者へ（利用者情報をクリア）</button>
   <span class="hint">「事業種別」にチェックを入れると、その種別の項目が表示されます。対象月・事業所・種別は「次の利用者へ」でも残ります。</span>
+  <span class="error-msg" id="req-error">利用者名・事業所名・対象月が未入力です。赤い欄を確認してください。</span>
 </div>
+<div class="notice no-print" id="clear-undo-notice">利用者情報をクリアしました。<button type="button" class="undo-link" onclick="undoClear()">元に戻す</button></div>
 
 <div class="sheet">
   <h1>利用状況月次報告書</h1>
@@ -207,10 +233,10 @@
       <th>事業種別</th>
       <td>
         <div class="biz-opts">
-          <label><input type="checkbox" class="biz" value="通所" data-grp="tsusho" checked onchange="toggleSections()">通所</label>
+          <label><input type="checkbox" class="biz" value="通所" data-grp="tsusho" onchange="toggleSections()">通所</label>
           <label><input type="checkbox" class="biz" value="訪問" data-grp="homon" onchange="toggleSections()">訪問</label>
-          <label><input type="checkbox" class="biz" value="施設" data-grp="shisetsu" checked onchange="toggleSections()">施設</label>
-          <label><input type="checkbox" class="biz" value="外部" data-grp="ext" checked onchange="toggleSections()">外部</label>
+          <label><input type="checkbox" class="biz" value="施設" data-grp="shisetsu" onchange="toggleSections()">施設</label>
+          <label><input type="checkbox" class="biz" value="外部" data-grp="ext" onchange="toggleSections()">外部</label>
         </div>
       </td>
     </tr>
@@ -264,6 +290,7 @@
           <label><input type="checkbox" id="ka-kunren" checked onchange="toggleKasanRows()">個別機能訓練加算</label>
           <button type="button" class="btn-add no-print" onclick="addKasan()">＋ その他の加算を追加</button>
         </div>
+        <div class="notice no-print" id="kasan-undo-notice">加算行を削除しました。<button type="button" class="undo-link" onclick="undoDelKasan()">元に戻す</button></div>
       </td>
     </tr>
     <tr class="grp-tsusho" id="row-bath">
@@ -474,6 +501,128 @@
 </div>
 
 <script>
+let dirty = false;
+let lastSnapshot = null;
+let clearUndoTimer = null;
+let removedKasanRow = null;
+let removedKasanIndex = null;
+let kasanUndoTimer = null;
+
+const PERSON_FIELD_IDS = ['user-name','plan-note','event-note','night-note','rhythm-note',
+   'w-now','w-prev','ouushin-note','med-note','change-note','tokki','cm-name','cm-office',
+   'bath-note','kunren-note','comm-note','rec-note',
+   'seikatsu-note','shintai-note','atoshintai-note','jikan-note','homon-jiyuu'];
+
+const PERSON_RADIO_NAMES = ['plan','event','night','rhythm','ouushin','med','change','ext2',
+   'bath','bathlv','kunren','comm','rec','seikatsu','shintai','atoshintai','jikan'];
+
+function markDirty(){
+  dirty = true;
+}
+
+function capturePersonSnapshot(){
+  const values = {};
+  PERSON_FIELD_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if(el) values[id] = el.value;
+  });
+
+  const dayChecked = Array.from(document.querySelectorAll('.day')).map(cb => cb.checked);
+  const hmChecked = Array.from(document.querySelectorAll('.hm')).map(cb => cb.checked);
+  const extNotes = Array.from(document.querySelectorAll('.ext-note')).map(el => el.value);
+
+  const radios = {};
+  PERSON_RADIO_NAMES.forEach(name => {
+    const checked = document.querySelector(`input[name="${name}"]:checked`);
+    radios[name] = checked ? checked.value : null;
+  });
+
+  const kasanRows = Array.from(document.querySelectorAll('.kasan-row')).map(row => {
+    const noteEl = row.querySelector('.kasan-note');
+    const checkedRadio = row.querySelector('input[type="radio"]:checked');
+    return { note: noteEl ? noteEl.value : '', status: checkedRadio ? checkedRadio.value : '実施' };
+  });
+
+  return { values, dayChecked, hmChecked, extNotes, radios, kasanRows };
+}
+
+function restorePersonSnapshot(snap){
+  Object.entries(snap.values).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if(el){ el.value = val; if(el.classList.contains('name-area')) autoGrow(el); }
+  });
+
+  document.querySelectorAll('.day').forEach((cb, i) => { cb.checked = !!snap.dayChecked[i]; });
+  document.querySelectorAll('.hm').forEach((cb, i) => { cb.checked = !!snap.hmChecked[i]; });
+  document.querySelectorAll('.ext-note').forEach((el, i) => {
+    el.value = snap.extNotes[i] || '';
+    autoGrow(el);
+  });
+
+  Object.entries(snap.radios).forEach(([name, val]) => {
+    if(val === null) return;
+    const r = document.querySelector(`input[name="${name}"][value="${val}"]`);
+    if(r) r.checked = true;
+  });
+
+  document.querySelectorAll('.kasan-row').forEach((row, i) => {
+    const s = snap.kasanRows[i];
+    if(!s) return;
+    const noteEl = row.querySelector('.kasan-note');
+    if(noteEl){ noteEl.value = s.note; autoGrow(noteEl); }
+    const radio = row.querySelector(`input[type="radio"][value="${s.status}"]`);
+    if(radio) radio.checked = true;
+  });
+
+  calcDiff();
+}
+
+function showClearUndo(){
+  const notice = document.getElementById('clear-undo-notice');
+  notice.classList.add('show');
+  clearTimeout(clearUndoTimer);
+  clearUndoTimer = setTimeout(() => {
+    notice.classList.remove('show');
+    lastSnapshot = null;
+  }, 10000);
+}
+
+function undoClear(){
+  if(!lastSnapshot) return;
+  restorePersonSnapshot(lastSnapshot);
+  lastSnapshot = null;
+  clearTimeout(clearUndoTimer);
+  document.getElementById('clear-undo-notice').classList.remove('show');
+  markDirty();
+}
+
+function validateRequired(){
+  document.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid'));
+  const requiredIds = ['office', 'user-name', 'month'];
+  let firstInvalid = null;
+  requiredIds.forEach(id => {
+    const el = document.getElementById(id);
+    if(!el.value.trim()){
+      el.classList.add('invalid');
+      if(!firstInvalid) firstInvalid = el;
+    }
+  });
+  return firstInvalid;
+}
+
+function handlePrint(){
+  const firstInvalid = validateRequired();
+  const errorEl = document.getElementById('req-error');
+  if(firstInvalid){
+    errorEl.classList.add('show');
+    firstInvalid.scrollIntoView({behavior:'smooth', block:'center'});
+    firstInvalid.focus();
+    return;
+  }
+  errorEl.classList.remove('show');
+  window.print();
+}
+
 function toggleSections(){
   document.querySelectorAll('.biz').forEach(cb => {
     const grp = cb.dataset.grp;
@@ -523,8 +672,32 @@ function addKasan(name){
 }
 
 function delKasan(btn){
-  if(!confirm('この加算行を削除しますか？')) return;
-  btn.closest('tr').remove();
+  const tr = btn.closest('tr');
+  const rows = Array.from(document.querySelectorAll('.kasan-row'));
+  removedKasanIndex = rows.indexOf(tr);
+  removedKasanRow = tr;
+  tr.remove();
+  markDirty();
+
+  const notice = document.getElementById('kasan-undo-notice');
+  notice.classList.add('show');
+  clearTimeout(kasanUndoTimer);
+  kasanUndoTimer = setTimeout(() => {
+    notice.classList.remove('show');
+    removedKasanRow = null;
+  }, 8000);
+}
+
+function undoDelKasan(){
+  if(!removedKasanRow) return;
+  const rows = document.querySelectorAll('.kasan-row');
+  let anchor = document.getElementById('row-kunren');
+  if(removedKasanIndex > 0 && rows[removedKasanIndex - 1]) anchor = rows[removedKasanIndex - 1];
+  anchor.insertAdjacentElement('afterend', removedKasanRow);
+  removedKasanRow = null;
+  clearTimeout(kasanUndoTimer);
+  document.getElementById('kasan-undo-notice').classList.remove('show');
+  markDirty();
 }
 
 function calcDiff(){
@@ -539,12 +712,10 @@ function calcDiff(){
 function nextPerson(){
   if(!confirm('この利用者の入力内容をクリアして、次の利用者に進みますか？\n（印刷がまだの場合は先に印刷してください）')) return;
 
+  lastSnapshot = capturePersonSnapshot();
+
   // 利用者ごとの項目だけクリア（事業所名・事業種別・対象月は残す）
-  ['user-name','plan-note','event-note','night-note','rhythm-note',
-   'w-now','w-prev','ouushin-note','med-note','change-note','tokki','cm-name','cm-office',
-   'bath-note','kunren-note','comm-note','rec-note',
-   'seikatsu-note','shintai-note','atoshintai-note','jikan-note','homon-jiyuu']
-    .forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+  PERSON_FIELD_IDS.forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
 
   document.querySelectorAll('.day').forEach(cb => cb.checked = false);
   document.querySelectorAll('.hm').forEach(cb => cb.checked = false);
@@ -571,6 +742,9 @@ function nextPerson(){
   document.getElementById('w-diff').textContent = '−';
   document.querySelectorAll('.name-area').forEach(autoGrow);
   document.getElementById('user-name').focus();
+
+  dirty = false;
+  showClearUndo();
 }
 
 (function init(){
@@ -580,6 +754,15 @@ function nextPerson(){
   document.getElementById('made-date').value = t.getFullYear() + '/' + (t.getMonth()+1) + '/' + t.getDate();
   toggleSections();
   toggleKasanRows();
+
+  document.querySelector('.sheet').addEventListener('input', markDirty);
+  document.querySelector('.sheet').addEventListener('change', markDirty);
+
+  window.addEventListener('beforeunload', function(e){
+    if(!dirty) return;
+    e.preventDefault();
+    e.returnValue = '';
+  });
 })();
 </script>
 <div style="text-align:center;padding:18px 0 26px;font-family:serif;font-size:13px" class="no-print"><a href="rakuraku.html" style="color:#9c7209;text-decoration:none;letter-spacing:.15em">← らくらくの部屋へもどる</a></div></body>
