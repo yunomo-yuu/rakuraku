@@ -63,6 +63,9 @@ input,select{
   background:rgba(10,14,42,.6);color:var(--ink);font-size:1rem;margin-bottom:14px;
 }
 input:focus,select:focus{outline:2px solid var(--gold-soft);border-color:transparent;}
+input.invalid{border-color:var(--accent-red)!important;background:rgba(240,141,141,.1)!important;}
+.error-msg{color:var(--accent-red);font-size:.82rem;margin:-6px 0 14px;display:none;line-height:1.6;}
+.error-msg.show{display:block;}
 .row{display:flex;gap:12px;flex-wrap:wrap;}
 .row>div{flex:1;min-width:130px;}
 .chk{display:flex;align-items:center;gap:8px;margin-bottom:14px;font-size:.88rem;color:var(--ink);}
@@ -164,23 +167,26 @@ button.copy:active{background:rgba(232,197,106,.15);}
     <div class="row">
       <div>
         <label for="bdate">生年月日</label>
-        <input type="date" id="bdate" value="1978-11-12" min="1900-01-01" max="2099-12-31">
+        <input type="date" id="bdate" min="1900-01-01" max="2099-12-31" oninput="this.classList.remove('invalid')">
       </div>
       <div>
         <label for="btime">出生時刻</label>
-        <input type="time" id="btime" value="23:11">
+        <input type="time" id="btime" oninput="this.classList.remove('invalid');updateYoziVisibility()">
       </div>
     </div>
-    <div class="chk"><input type="checkbox" id="timeUnknown"><label for="timeUnknown" style="margin:0;color:var(--ink);">出生時刻がわからない（三柱で鑑定）</label></div>
+    <div class="error-msg" id="birthError"></div>
+    <div class="chk"><input type="checkbox" id="timeUnknown" onchange="updateBirthTimeUI()"><label for="timeUnknown" style="margin:0;color:var(--ink);">出生時刻がわからない（三柱で鑑定）</label></div>
     <label>性別（大運の順逆に使用）</label>
     <div class="radio-g">
       <label><input type="radio" name="sex" value="f" checked>女性</label>
       <label><input type="radio" name="sex" value="m">男性</label>
     </div>
-    <label>23時台の生まれの扱い（夜子時）</label>
-    <div class="radio-g">
-      <label><input type="radio" name="yozi" value="stay" checked>当日の日柱（マニアック式）</label>
-      <label><input type="radio" name="yozi" value="next">翌日の日柱</label>
+    <div id="yoziGroup" style="display:none;">
+      <label>23時台の生まれの扱い（夜子時）</label>
+      <div class="radio-g">
+        <label><input type="radio" name="yozi" value="stay" checked>当日の日柱（マニアック式）</label>
+        <label><input type="radio" name="yozi" value="next">翌日の日柱</label>
+      </div>
     </div>
     <button class="main" onclick="run()">命式を立てる</button>
     <div class="note">※日本標準時（JST）で計算します。立春前の生まれは前年の干支、節入り時刻は分単位で自動判定。</div>
@@ -192,6 +198,7 @@ button.copy:active{background:rgba(232,197,106,.15);}
     <div class="card">
       <h2>命式表</h2>
       <div class="tbl-scroll"><table id="meishiki"></table></div>
+      <div class="note">※表は横にスクロールできます。</div>
       <div class="note" id="relNote"></div>
     </div>
 
@@ -227,13 +234,13 @@ button.copy:active{background:rgba(232,197,106,.15);}
       <h2>大運（10年ごとの運勢）</h2>
       <div class="kv"><span class="k">起運</span><span id="kiun"></span></div>
       <div class="tbl-scroll"><table id="taiun"></table></div>
-      <div class="note"><span class="mark-ku">赤</span>＝空亡　<span class="mark-go">青</span>＝日柱との干合・支合・三合　冲・害は文字で表示</div>
+      <div class="note">※表は横にスクロールできます。<span class="mark-ku">赤</span>＝空亡　<span class="mark-go">青</span>＝日柱との干合・支合・三合　冲・害は文字で表示</div>
     </div>
 
     <div class="card">
       <h2>歳運（1年ごとの運勢）</h2>
-      <div class="tbl-scroll"><table id="saiun"></table></div>
-      <div class="note">枠色つき＝今年。<span class="mark-ku">空亡</span>・冲・<span class="mark-go">支合／干合</span>・<span class="mark-sa">三合</span>は命式（主に日柱）との関係。</div>
+      <div class="tbl-scroll" id="saiunScroll"><table id="saiun"></table></div>
+      <div class="note">※生成すると自動で「今年」の列を表示します。横にもスクロールできます。<br>枠色つき＝今年。<span class="mark-ku">空亡</span>・冲・<span class="mark-go">支合／干合</span>・<span class="mark-sa">三合</span>は命式（主に日柱）との関係。</div>
     </div>
 
     <div class="card">
@@ -246,6 +253,10 @@ button.copy:active{background:rgba(232,197,106,.15);}
       <h2>AIに鑑定を依頼する</h2>
       <p style="font-size:.86rem;color:var(--ink-dim);margin-bottom:12px;">下のボタンで命式データと鑑定の観点をまとめてコピーし、AIに貼り付けてください。</p>
       <button class="copy" id="copyBtn" onclick="copyOrder()">AIへの発注文をコピー</button>
+      <details id="orderPreview" style="margin-top:12px;" ontoggle="if(this.open)refreshOrderPreview()">
+        <summary style="cursor:pointer;color:var(--gold-soft);font-size:.85rem;letter-spacing:.05em;">発注文の内容をプレビュー</summary>
+        <pre id="orderPreviewText" style="white-space:pre-wrap;word-break:break-word;font-size:.78rem;color:var(--ink-dim);background:rgba(10,14,42,.4);border:1px solid var(--card-line);border-radius:8px;padding:12px;margin-top:8px;max-height:300px;overflow-y:auto;"></pre>
+      </details>
     </div>
 
     <div class="foot">結ゆう ｜ 人と本音を、結ぶ。<br>このツールは端末内のみで計算し、入力データを送信しません。</div>
@@ -272,7 +283,24 @@ async function checkGate(){
 document.addEventListener("DOMContentLoaded",()=>{
   const gi=document.getElementById("gateInput");
   if(gi)gi.addEventListener("keydown",e=>{if(e.key==="Enter")checkGate();});
+  updateBirthTimeUI();
 });
+
+/* ============ 入力UIの表示切替（計算には無関係） ============ */
+function updateBirthTimeUI(){
+  const noTime=document.getElementById("timeUnknown").checked;
+  const timeEl=document.getElementById("btime");
+  timeEl.disabled=noTime;
+  timeEl.style.opacity=noTime?.45:1;
+  if(noTime)timeEl.classList.remove("invalid");
+  updateYoziVisibility();
+}
+function updateYoziVisibility(){
+  const noTime=document.getElementById("timeUnknown").checked;
+  const tv=document.getElementById("btime").value;
+  const isLateNight=!noTime&&tv&&Number(tv.split(":")[0])===23;
+  document.getElementById("yoziGroup").style.display=isLateNight?"":"none";
+}
 
 /* ============ 基本テーブル ============ */
 const STEMS=["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
@@ -463,16 +491,31 @@ function calc(y,m,d,h,mi,sex,yoziMode,noTime){
 let CUR=null;
 function esc(s){return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 function run(){
-  const dv=document.getElementById("bdate").value;
-  if(!dv){alert("生年月日を入れてください");return;}
-  const [y,m,d]=dv.split("-").map(Number);
+  const dateEl=document.getElementById("bdate");
+  const timeEl=document.getElementById("btime");
+  const errEl=document.getElementById("birthError");
+  dateEl.classList.remove("invalid");
+  timeEl.classList.remove("invalid");
+  errEl.classList.remove("show");
+  errEl.textContent="";
+
+  const dv=dateEl.value;
   const noTime=document.getElementById("timeUnknown").checked;
   let h=12,mi=0;
+  const missing=[];
+  if(!dv){dateEl.classList.add("invalid");missing.push("生年月日");}
   if(!noTime){
-    const tv=document.getElementById("btime").value;
-    if(!tv){alert("出生時刻を入れてください（不明の場合はチェックを）");return;}
-    [h,mi]=tv.split(":").map(Number);
+    const tv=timeEl.value;
+    if(!tv){timeEl.classList.add("invalid");missing.push("出生時刻");}
+    else [h,mi]=tv.split(":").map(Number);
   }
+  if(missing.length){
+    errEl.textContent=missing.join("・")+"が未入力です。出生時刻が不明な場合は「出生時刻がわからない」にチェックを入れてください。";
+    errEl.classList.add("show");
+    (!dv?dateEl:timeEl).focus();
+    return;
+  }
+  const [y,m,d]=dv.split("-").map(Number);
   const sex=document.querySelector('input[name="sex"]:checked').value;
   const yozi=document.querySelector('input[name="yozi"]:checked').value;
   const C=calc(y,m,d,h,mi,sex,yozi,noTime);
@@ -559,6 +602,9 @@ function render(C){
   renderTaiun(C);
   renderSaiun(C);
   renderGenzai(C);
+
+  const preview=document.getElementById("orderPreview");
+  if(preview&&preview.open)refreshOrderPreview();
 }
 
 function renderGenzai(C){
@@ -828,7 +874,7 @@ function renderSaiun(C){
     if(GAI[BRANCHES[P.day.b]]===br)marks.push("六害");
     for(const tri of SANGO){if(tri.includes(br)){const others=tri.filter(x=>x!==br);if(others.filter(o=>brs.includes(o)).length>=2){marks.push('<span class="mark-sa">三合</span>');break;}}}
     const st=cur?' style="border:2px solid var(--gold);"':"";
-    head+=`<th${cur?' style="color:#fff;background:rgba(232,197,106,.35);"':""}>${yy}</th>`;
+    head+=`<th${cur?' id="saiun-cur" style="color:#fff;background:rgba(232,197,106,.35);"':""}>${yy}</th>`;
     ra+=`<td${st}>${a}歳</td>`;
     r1+=`<td class="big" style="font-size:1rem;${cur?"border:2px solid var(--gold);":""}">${STEMS[s]}${br}</td>`;
     r2+=`<td${st}>${tsuhen(ds,s)}</td>`;
@@ -836,11 +882,16 @@ function renderSaiun(C){
     r4+=`<td style="font-size:.72rem;">${marks.join("<br>")}</td>`;
   }
   document.getElementById("saiun").innerHTML=head+"</tr>"+ra+"</tr>"+r1+"</tr>"+r2+"</tr>"+r3+"</tr>"+r4+"</tr>";
+  const curTh=document.getElementById("saiun-cur");
+  const scroller=document.getElementById("saiunScroll");
+  if(curTh&&scroller){
+    scroller.scrollLeft=Math.max(0,curTh.offsetLeft-scroller.clientWidth/2+curTh.clientWidth/2);
+  }
 }
 
 /* ============ AI発注文 ============ */
-function copyOrder(){
-  if(!CUR)return;
+function buildOrderText(){
+  if(!CUR)return "";
   const C=CUR,P=C.pillars,ds=P.day.s;
   const pd=pillarData(C);
   const {rel}=relations(C);
@@ -882,7 +933,12 @@ function copyOrder(){
   lines.push("・通変星のバランスから、才能の出方と対人関係の傾向を読んでください");
   lines.push("・大運の流れ（特に空亡の期間）は、吉凶ではなく「エネルギーの質の変化」として解説してください");
   lines.push("・特殊星は補助的に。断定しすぎず、本人が自分に還るキッカケになる言葉でお願いします");
-  const text=lines.join("\n");
+  return lines.join("\n");
+}
+
+function copyOrder(){
+  const text=buildOrderText();
+  if(!text)return;
   navigator.clipboard.writeText(text).then(()=>{
     const b=document.getElementById("copyBtn");
     b.textContent="コピーしました ✓";b.classList.add("copied");
@@ -890,6 +946,10 @@ function copyOrder(){
   }).catch(()=>{
     prompt("以下を手動でコピーしてください",text);
   });
+}
+
+function refreshOrderPreview(){
+  document.getElementById("orderPreviewText").textContent=buildOrderText();
 }
 </script>
 </body>
