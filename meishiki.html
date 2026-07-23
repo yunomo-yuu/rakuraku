@@ -253,11 +253,16 @@ button.copy:active{background:rgba(232,197,106,.15);}
 </div>
 
 <script>
-/* ============ 合言葉ゲート ============ */
-const AIKOTOBA="ほしをむすぶ"; // ←ここを書き換えると合言葉が変わります
-function checkGate(){
+/* ============ 合言葉ゲート（ハッシュ照合方式・合言葉はファイルに書かれていません） ============ */
+const AIKOTOBA_HASH="845342e6e007a13dc3a576315238caf3238bcfa135f030d0606bb4906803068c";
+async function sha256hex(str){
+  const buf=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+async function checkGate(){
   const v=document.getElementById("gateInput").value.trim();
-  if(v===AIKOTOBA){
+  const h=await sha256hex(v);
+  if(h===AIKOTOBA_HASH){
     document.getElementById("gateCard").style.display="none";
     document.getElementById("inputCard").style.display="block";
   }else{
