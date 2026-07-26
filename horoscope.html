@@ -225,6 +225,21 @@ function calc(){
     horoscope.CelestialBodies.all.forEach(b=>{if(NAME_MAP[b.key])planets[NAME_MAP[b.key]]=[b.ChartPosition.Ecliptic.DecimalDegrees];});
     const cusps=horoscope.Houses.map(hh=>hh.ChartPosition.StartPosition.Ecliptic.DecimalDegrees);
 
+    // Placidusハウス計算はある種の日時条件で境界の丸め誤差により
+    // 天体がどのハウスにも属さなくなることがある（緯度経度は無関係、東京・長野等でも起こりうる）。
+    // その場合は直前のハウス境界に基づいて補完し、b.House.id参照でのクラッシュを防ぐ。
+    horoscope.CelestialBodies.all.forEach(b=>{
+      if(!b.House){
+        const lon=b.ChartPosition.Ecliptic.DecimalDegrees;
+        let best=1,bestGap=360;
+        for(let i=0;i<12;i++){
+          const gap=((lon-cusps[i])%360+360)%360;
+          if(gap<bestGap){bestGap=gap;best=i+1;}
+        }
+        b.House={id:best};
+      }
+    });
+
     document.getElementById('chart').innerHTML='';
     const size=Math.min(window.innerWidth-60,460);
     const chart=new astrochart.Chart('chart',size,size);
