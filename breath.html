@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>本気の呼吸 ｜ 結ゆう・整う部屋</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  html,body{margin:0;padding:0;background:#070a16}
+  #root{min-height:100vh}
+  #backlink{position:fixed;top:14px;left:16px;z-index:9999;
+    font-family:'Shippori Mincho',serif;font-size:11px;letter-spacing:.18em;
+    color:rgba(232,200,119,.7);text-decoration:none;
+    border:1px solid rgba(232,200,119,.22);border-radius:999px;
+    padding:6px 14px;background:rgba(7,10,22,.55);backdrop-filter:blur(4px);}
+  #backlink:hover{color:#FFD580;border-color:rgba(232,200,119,.5)}
+</style>
+</head>
+<body>
+<a id="backlink" href="totonou.html">← 整う部屋</a>
+<div id="root"></div>
+<script type="text/babel" data-presets="react">
+const { useState, useEffect, useRef, useCallback } = React;
+
+
+const TOTAL = 36;
+
+const PHRASES_INHALE = [
+  "今この瞬間に、全力で吸って",
+  "余力ゼロまで、吸い込んで",
+  "潜在意識に届けるように",
+  "本気で、吸って",
+  "限界まで、吸い込んで",
+  "宇宙から、受け取って",
+  "全細胞に届けるように",
+  "今ここに、全部集めて",
+];
+
+const PHRASES_EXHALE = [
+  "余力ゼロまで、全部出して",
+  "本当の本気で、吐き切って",
+  "癖を書き換えるように",
+  "限界の、そのさらに先まで",
+  "全部、手放して",
+  "出し切って、出し切って",
+  "潜在意識に刻むように",
+  "今この瞬間に、全力で",
+];
+
+const ENCOURAGEMENTS = [
+  "そう、その調子",
+  "完璧だよ",
+  "本気、出てるよ",
+  "書き換わってる",
+  "刷り込まれてる",
+  "その感覚、大事に",
+];
+
+function bpmToDuration(bpm) {
+  // BPM = 1分間のサイクル数（吸う+吐く）
+  // 1サイクル = 60 / BPM 秒
+  // 吸う = 吐く = 半分
+  return Math.round((60 / bpm / 2) * 1000);
+}
+
+function BreathingApp() {
+  const [bpm, setBpm] = useState(36);
+  const [phase, setPhase] = useState("ready");
+  const [count, setCount] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const [phrase, setPhrase] = useState("準備はいい？");
+  const [encouragement, setEncouragement] = useState("");
+  const [showEnc, setShowEnc] = useState(false);
+
+  const rafRef = useRef(null);
+  const startTimeRef = useRef(null);
+  const phaseRef = useRef("ready");
+  const bpmRef = useRef(bpm);
+
+  useEffect(() => { bpmRef.current = bpm; }, [bpm]);
+
+  function speak(text) {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = "ja-JP";
+    u.rate = 1.1;
+    window.speechSynthesis.speak(u);
+  }
+
+  function getRandomPhrase(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function startPhase(nextPhase, currentCount) {
+    phaseRef.current = nextPhase;
+    setPhase(nextPhase);
+    startTimeRef.current = performance.now();
+    setProgress(0);
+
+    const duration = bpmToDuration(bpmRef.current);
+
+    if (nextPhase === "inhale") {
+      const p = getRandomPhrase(PHRASES_INHALE);
+      setPhrase(p);
+      speak(p);
+    } else {
+      const p = getRandomPhrase(PHRASES_EXHALE);
+      setPhrase(p);
+      speak(p);
+    }
+
+    function animate(now) {
+      const elapsed = now - startTimeRef.current;
+      const prog = Math.min(elapsed / duration, 1);
+      setProgress(prog);
+
+      if (prog < 1) {
+        rafRef.current = requestAnimationFrame(animate);
+      } else {
+        if (phaseRef.current === "inhale") {
+          startPhase("exhale", currentCount);
+        } else {
+          const next = currentCount + 1;
+          setCount(next);
+
+          if (next % 6 === 0 && next < TOTAL) {
+            const enc = ENCOURAGEMENTS[Math.floor(next / 6) - 1] || getRandomPhrase(ENCOURAGEMENTS);
+            setEncouragement(enc);
+            setShowEnc(true);
+            speak(enc);
+            setTimeout(() => setShowEnc(false), 1800);
+          }
+
+          if (next >= TOTAL) {
+            phaseRef.current = "done";
+            setPhase("done");
+            setPhrase("潜在意識に刻まれた");
+            speak("潜在意識に刻まれた");
+          } else {
+            startPhase("inhale", next);
+          }
+        }
+      }
+    }
+
+    rafRef.current = requestAnimationFrame(animate);
+  }
+
+  function handleStart() {
+    setCount(0);
+    startPhase("inhale", 0);
+  }
+
+  function handleReset() {
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    window.speechSynthesis?.cancel();
+    phaseRef.current = "ready";
+    setPhase("ready");
+    setCount(0);
+    setProgress(0);
+    setPhrase("準備はいい？");
+    setShowEnc(false);
+  }
+
+  useEffect(() => {
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      window.speechSynthesis?.cancel();
+    };
+  }, []);
+
+  const isInhale = phase === "inhale";
+  const isExhale = phase === "exhale";
+  const minR = 80;
+  const maxR = 148;
+  let circleR = minR;
+  if (isInhale) circleR = minR + (maxR - minR) * progress;
+  if (isExhale) circleR = maxR - (maxR - minR) * progress;
+  if (phase === "done") circleR = (minR + maxR) / 2;
+
+  const phaseColor = isInhale
+    ? "rgba(120,200,255,0.18)"
+    : isExhale
+    ? "rgba(180,140,255,0.18)"
+    : "rgba(200,200,200,0.10)";
+
+  const ringColor = isInhale ? "#7AC8FF" : isExhale ? "#B48CFF" : phase === "done" ? "#FFD580" : "#555";
+  const progressPct = count / TOTAL;
+
+  // 1サイクルの秒数（表示用）
+  const secPerHalf = (bpmToDuration(bpm) / 1000).toFixed(2);
+
+  return (
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "radial-gradient(ellipse at 60% 30%, #0a0a1a 60%, #10082a 100%)",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        fontFamily: "'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif",
+        padding: "24px 16px",
+        userSelect: "none",
+      }}
+    >
+      <p style={{ color: "#888", fontSize: 11, letterSpacing: "0.25em", marginBottom: 8 }}>
+        彩花メソッド
+      </p>
+      <h1 style={{ color: "#fff", fontSize: 22, fontWeight: 300, letterSpacing: "0.15em", marginBottom: 24, textAlign: "center" }}>
+        本気の呼吸
+      </h1>
+
+      {/* BPM設定（待機中のみ） */}
+      {phase === "ready" && (
+        <div
+          style={{
+            background: "rgba(255,255,255,0.04)",
+            border: "1px solid rgba(255,255,255,0.1)",
+            borderRadius: 16,
+            padding: "16px 24px",
+            marginBottom: 24,
+            width: "100%",
+            maxWidth: 280,
+            textAlign: "center",
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+            <span style={{ color: "#888", fontSize: 11, letterSpacing: "0.15em" }}>BPM</span>
+            <span style={{ color: "#fff", fontSize: 24, fontWeight: 300 }}>{bpm}</span>
+            <span style={{ color: "#888", fontSize: 11, letterSpacing: "0.1em" }}>
+              {secPerHalf}秒×2
+            </span>
+          </div>
+          <input
+            type="range"
+            min={20}
+            max={120}
+            step={1}
+            value={bpm}
+            onChange={(e) => setBpm(Number(e.target.value))}
+            style={{ width: "100%", accentColor: "#7AC8FF", cursor: "pointer" }}
+          />
+          <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
+            <span style={{ color: "#555", fontSize: 10 }}>20 ゆっくり</span>
+            <span style={{ color: "#555", fontSize: 10 }}>速い 120</span>
+          </div>
+          {/* プリセット */}
+          <div style={{ display: "flex", gap: 8, marginTop: 12, justifyContent: "center" }}>
+            {[
+              { label: "ゆっくり", val: 20 },
+              { label: "彩花先生", val: 36 },
+              { label: "速い", val: 60 },
+              { label: "最速", val: 120 },
+            ].map(({ label, val }) => (
+              <button
+                key={val}
+                onClick={() => setBpm(val)}
+                style={{
+                  background: bpm === val ? "rgba(122,200,255,0.2)" : "rgba(255,255,255,0.05)",
+                  border: `1px solid ${bpm === val ? "#7AC8FF" : "rgba(255,255,255,0.1)"}`,
+                  color: bpm === val ? "#7AC8FF" : "#888",
+                  fontSize: 10,
+                  padding: "4px 8px",
+                  borderRadius: 20,
+                  cursor: "pointer",
+                  letterSpacing: "0.05em",
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* BPM表示（実行中） */}
+      {(isInhale || isExhale) && (
+        <p style={{ color: "rgba(255,255,255,0.2)", fontSize: 11, marginBottom: 16, letterSpacing: "0.1em" }}>
+          {bpm} BPM
+        </p>
+      )}
+
+      {/* メインサークル */}
+      <div
+        style={{
+          position: "relative",
+          width: 300,
+          height: 300,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          marginBottom: 24,
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            width: circleR * 2 + 40,
+            height: circleR * 2 + 40,
+            borderRadius: "50%",
+            background: phaseColor,
+            filter: "blur(24px)",
+            transition: "background 0.3s",
+          }}
+        />
+        <svg width={300} height={300} style={{ position: "absolute" }}>
+          <circle cx={150} cy={150} r={148} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth={2} />
+          <circle
+            cx={150} cy={150} r={148}
+            fill="none" stroke={ringColor} strokeWidth={2} strokeOpacity={0.4}
+            strokeDasharray={`${2 * Math.PI * 148 * progressPct} ${2 * Math.PI * 148}`}
+            strokeLinecap="round"
+            transform="rotate(-90 150 150)"
+            style={{ transition: "stroke 0.3s" }}
+          />
+          <circle
+            cx={150} cy={150} r={circleR}
+            fill={phaseColor} stroke={ringColor} strokeWidth={1.5}
+            style={{ transition: "stroke 0.3s" }}
+          />
+        </svg>
+
+        <div style={{ position: "relative", zIndex: 10, textAlign: "center" }}>
+          {phase === "ready" && (
+            <div>
+              <p style={{ color: "#ccc", fontSize: 14, letterSpacing: "0.1em" }}>
+                {secPerHalf}秒 / {secPerHalf}秒
+              </p>
+              <p style={{ color: "#777", fontSize: 11, marginTop: 4 }}>36回 1セット</p>
+            </div>
+          )}
+          {(isInhale || isExhale) && (
+            <div>
+              <p style={{ color: ringColor, fontSize: 16, fontWeight: 700, letterSpacing: "0.2em", transition: "color 0.3s" }}>
+                {isInhale ? "吸う" : "吐く"}
+              </p>
+              <p style={{ color: "#fff", fontSize: 36, fontWeight: 200, marginTop: 4 }}>
+                {count + 1}
+              </p>
+              <p style={{ color: "#666", fontSize: 11 }}>/ {TOTAL}</p>
+            </div>
+          )}
+          {phase === "done" && (
+            <div>
+              <p style={{ color: "#FFD580", fontSize: 20 }}>✦</p>
+              <p style={{ color: "#FFD580", fontSize: 14, letterSpacing: "0.08em", marginTop: 4 }}>
+                潜在意識に<br />刻まれた
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* フレーズ */}
+      <div style={{ height: 40, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
+        {showEnc ? (
+          <p style={{ color: "#FFD580", fontSize: 16, fontWeight: 500, letterSpacing: "0.12em", textAlign: "center" }}>
+            {encouragement}
+          </p>
+        ) : (
+          <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 13, letterSpacing: "0.08em", textAlign: "center", lineHeight: 1.6 }}>
+            {phrase}
+          </p>
+        )}
+      </div>
+
+      {/* ボタン */}
+      <div style={{ marginTop: 8 }}>
+        {phase === "ready" && (
+          <button
+            onClick={handleStart}
+            style={{
+              background: "none",
+              border: "1px solid rgba(255,255,255,0.3)",
+              color: "#fff",
+              fontSize: 14,
+              letterSpacing: "0.2em",
+              padding: "12px 40px",
+              borderRadius: 40,
+              cursor: "pointer",
+            }}
+          >
+            はじめる
+          </button>
+        )}
+        {(isInhale || isExhale) && (
+          <button
+            onClick={handleReset}
+            style={{
+              background: "none",
+              border: "none",
+              color: "rgba(255,255,255,0.3)",
+              fontSize: 12,
+              letterSpacing: "0.15em",
+              cursor: "pointer",
+              padding: "8px 20px",
+            }}
+          >
+            やめる
+          </button>
+        )}
+        {phase === "done" && (
+          <button
+            onClick={handleReset}
+            style={{
+              background: "none",
+              border: "1px solid rgba(255,215,128,0.4)",
+              color: "#FFD580",
+              fontSize: 13,
+              letterSpacing: "0.2em",
+              padding: "12px 36px",
+              borderRadius: 40,
+              cursor: "pointer",
+            }}
+          >
+            もう一度
+          </button>
+        )}
+      </div>
+
+      <p style={{ marginTop: 32, fontSize: 10, color: "rgba(255,255,255,0.2)", letterSpacing: "0.1em", textAlign: "center" }}>
+        本気で、やりきって
+      </p>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<BreathingApp />);
+</script>
+</body>
+</html>
