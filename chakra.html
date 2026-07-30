@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>七つの音 ｜ 結ゆう・整う部屋</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#070a16;
+    --bg2:#0e1430;
+    --ink:#ece7d8;
+    --muted:#9aa0bd;
+    --gold:#e8c877;
+    --gold-bright:#FFD580;
+    --line:rgba(232,200,119,.22);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:'Shippori Mincho',serif;
+    background:
+      radial-gradient(1200px 700px at 50% -10%, #131a3e 0%, transparent 60%),
+      linear-gradient(180deg,#070a16 0%,#05060e 100%);
+    color:var(--ink);
+    min-height:100vh;
+    overflow-x:hidden;
+    position:relative;
+    padding:0 20px 64px;
+  }
+  #stars{position:fixed;inset:0;pointer-events:none;z-index:0}
+  .star{position:absolute;border-radius:50%;background:#fff;opacity:.5;animation:tw 4s ease-in-out infinite}
+  @keyframes tw{0%,100%{opacity:.15}50%{opacity:.7}}
+  .wrap{position:relative;z-index:1;max-width:520px;margin:0 auto}
+
+  header{text-align:center;padding:52px 0 8px}
+  .eyebrow{font-size:11px;letter-spacing:.42em;color:var(--gold);opacity:.85;margin-bottom:18px}
+  h1{font-weight:600;font-size:30px;letter-spacing:.24em;color:#fff;text-indent:.24em}
+  .sub{margin-top:14px;font-size:13px;color:var(--muted);letter-spacing:.06em;line-height:1.9}
+
+  .phones{
+    margin:26px auto 8px;max-width:420px;
+    border:1px solid var(--line);border-radius:14px;
+    padding:13px 16px;font-size:12.5px;letter-spacing:.04em;
+    color:var(--gold-bright);text-align:center;line-height:1.7;
+    background:rgba(232,200,119,.05);
+  }
+  .phones b{font-weight:600}
+
+  /* spine */
+  .spine{position:relative;margin:40px auto 8px;padding:6px 0}
+  .spine::before{
+    content:"";position:absolute;left:32px;top:24px;bottom:24px;width:1px;
+    background:linear-gradient(180deg,transparent,var(--line) 12%,var(--line) 88%,transparent);
+  }
+  .node{
+    position:relative;display:flex;align-items:center;gap:20px;
+    padding:11px 8px;cursor:pointer;border-radius:14px;
+    -webkit-tap-highlight-color:transparent;transition:background .25s;
+  }
+  .node:hover{background:rgba(255,255,255,.03)}
+  .orb{
+    position:relative;flex:0 0 auto;width:34px;height:34px;border-radius:50%;
+    margin-left:15px;
+    background:var(--c);
+    box-shadow:0 0 0 1px rgba(255,255,255,.12), 0 0 14px -2px var(--c);
+    transition:transform .3s, box-shadow .3s;
+  }
+  .node.on .orb{
+    animation:pulse var(--beat,1s) ease-in-out infinite;
+    box-shadow:0 0 0 1px rgba(255,255,255,.4), 0 0 34px 2px var(--c);
+  }
+  @keyframes pulse{0%,100%{transform:scale(1);filter:brightness(1)}50%{transform:scale(1.32);filter:brightness(1.5)}}
+  .meta{flex:1;min-width:0}
+  .name{font-size:16px;font-weight:500;letter-spacing:.08em;color:#fff}
+  .name .num{color:var(--c);font-weight:600;margin-right:.5em}
+  .name .sa{font-size:11.5px;color:var(--muted);margin-left:.5em;letter-spacing:.04em}
+  .role{font-size:11.5px;color:var(--muted);margin-top:3px;letter-spacing:.1em}
+  .freq{flex:0 0 auto;text-align:right;font-size:11px;color:var(--gold);letter-spacing:.05em;line-height:1.6;opacity:.9}
+  .freq b{color:var(--gold-bright);font-weight:600}
+  .node.on .freq{opacity:1}
+
+  /* controls */
+  .panel{
+    max-width:420px;margin:30px auto 0;border-top:1px solid var(--line);padding-top:24px;
+  }
+  .nowplaying{text-align:center;font-size:13px;color:var(--muted);letter-spacing:.08em;min-height:22px;margin-bottom:18px;transition:color .3s}
+  .nowplaying b{color:var(--gold-bright);font-weight:500}
+  .vol{display:flex;align-items:center;gap:14px;font-size:11px;color:var(--muted);letter-spacing:.1em}
+  input[type=range]{-webkit-appearance:none;appearance:none;flex:1;height:2px;background:var(--line);border-radius:2px;outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--gold-bright);cursor:pointer;box-shadow:0 0 8px -1px var(--gold)}
+  input[type=range]::-moz-range-thumb{width:16px;height:16px;border:none;border-radius:50%;background:var(--gold-bright);cursor:pointer}
+  .stopbtn{
+    display:block;margin:22px auto 0;background:none;border:1px solid var(--line);
+    color:var(--gold);font-family:inherit;font-size:12.5px;letter-spacing:.2em;
+    padding:11px 30px;border-radius:999px;cursor:pointer;transition:.25s;opacity:.5;pointer-events:none;
+  }
+  .stopbtn.live{opacity:1;pointer-events:auto}
+  .stopbtn.live:hover{background:rgba(232,200,119,.08);color:var(--gold-bright)}
+
+  .note{max-width:420px;margin:38px auto 0;font-size:11px;color:#6f7492;line-height:1.95;letter-spacing:.03em;text-align:center}
+
+  @media (prefers-reduced-motion:reduce){
+    .star{animation:none;opacity:.4}
+    .node.on .orb{animation:none;transform:scale(1.2)}
+  }
+  @media (max-width:420px){
+    .freq{font-size:10px}
+    .orb{margin-left:8px}
+    .spine::before{left:25px}
+    .node{gap:14px}
+  }
+</style>
+</head>
+<body>
+<div id="stars"></div>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">整う 部屋</div>
+    <h1>七つの音</h1>
+    <p class="sub">ソルフェジオ周波数のバイノーラルビート。<br>ひとつ選んで、目を閉じて。</p>
+  </header>
+
+  <div class="phones"><b>イヤホン・ヘッドホンで</b>聴いてね。<br>左右の耳で少しずつ違う音が鳴り、その差を脳が“うなり”として感じる仕組み。スピーカーだと成立しないの。</div>
+
+  <div class="spine" id="spine"></div>
+
+  <div class="panel">
+    <div class="nowplaying" id="now">音は止まっています</div>
+    <div class="vol">
+      <span>音量</span>
+      <input type="range" id="vol" min="0" max="0.5" step="0.01" value="0.22">
+    </div>
+    <button class="stopbtn" id="stop">と め る</button>
+  </div>
+
+  <p class="note">これは特定の脳波状態に寄せることを狙った周波数設計です。心地よさは人それぞれ。医療的な効果を約束するものではないので、自分の身体の声を最優先に、無理のない範囲で。</p>
+</div>
+
+<script>
+// ── チャクラ定義（下＝ルート / 上＝クラウン。表示は上から順にクラウン→ルート）
+const CH = [
+  {n:7, ja:'サハスラーラ', sa:'Crown',       role:'ひらく・つながる', carrier:963, beat:10, c:'#A66BD4'},
+  {n:6, ja:'アジナ',       sa:'Third Eye',   role:'観る・見通す',     carrier:852, beat:9,  c:'#4A54C4'},
+  {n:5, ja:'ヴィシュッダ', sa:'Throat',      role:'伝える・表す',     carrier:741, beat:8,  c:'#2E8FD6'},
+  {n:4, ja:'アナハタ',     sa:'Heart',       role:'愛す・ゆるす',     carrier:639, beat:7,  c:'#35B36B'},
+  {n:3, ja:'マニプーラ',   sa:'Solar Plexus',role:'動く・決める',     carrier:528, beat:6,  c:'#F2C744'},
+  {n:2, ja:'スワディスターナ',sa:'Sacral',   role:'感じる・味わう',   carrier:417, beat:5,  c:'#E8792B'},
+  {n:1, ja:'ムーラダーラ', sa:'Root',        role:'地に立つ',         carrier:396, beat:4,  c:'#C0392B'},
+];
+
+// ── 星
+(function(){
+  const s=document.getElementById('stars'); const f=document.createDocumentFragment();
+  for(let i=0;i<70;i++){
+    const d=document.createElement('div'); d.className='star';
+    const sz=Math.random()*1.8+.4;
+    d.style.width=d.style.height=sz+'px';
+    d.style.left=Math.random()*100+'%'; d.style.top=Math.random()*100+'%';
+    d.style.animationDelay=(Math.random()*4)+'s';
+    f.appendChild(d);
+  }
+  s.appendChild(f);
+})();
+
+// ── UI 構築
+const spine=document.getElementById('spine');
+CH.forEach(ch=>{
+  const el=document.createElement('div');
+  el.className='node'; el.dataset.n=ch.n;
+  el.style.setProperty('--c',ch.c);
+  el.style.setProperty('--beat',(1/ch.beat).toFixed(3)+'s');
+  el.innerHTML=`
+    <div class="orb"></div>
+    <div class="meta">
+      <div class="name"><span class="num">${ch.n}</span>${ch.ja}<span class="sa">${ch.sa}</span></div>
+      <div class="role">${ch.role}</div>
+    </div>
+    <div class="freq"><b>${ch.carrier}Hz</b><br>うなり ${ch.beat}Hz</div>`;
+  el.addEventListener('click',()=>toggle(ch,el));
+  spine.appendChild(el);
+});
+
+// ── Web Audio
+let ctx=null, cur=null;
+const volEl=document.getElementById('vol');
+const nowEl=document.getElementById('now');
+const stopBtn=document.getElementById('stop');
+
+function ensureCtx(){
+  if(!ctx) ctx=new (window.AudioContext||window.webkitAudioContext)();
+  if(ctx.state==='suspended') ctx.resume();
+}
+function clearActive(){document.querySelectorAll('.node.on').forEach(n=>n.classList.remove('on'));}
+
+function stop(fast){
+  if(!cur) return;
+  const {oscL,oscR,master}=cur, t=ctx.currentTime, r=fast?0.15:0.6;
+  master.gain.cancelScheduledValues(t);
+  master.gain.setValueAtTime(master.gain.value,t);
+  master.gain.linearRampToValueAtTime(0,t+r);
+  oscL.stop(t+r+0.05); oscR.stop(t+r+0.05);
+  cur=null;
+  clearActive();
+  nowEl.innerHTML='音は止まっています';
+  stopBtn.classList.remove('live');
+}
+
+function toggle(ch,el){
+  ensureCtx();
+  if(cur && cur.n===ch.n){ stop(); return; }
+  if(cur) stop(true);
+  const merger=ctx.createChannelMerger(2);
+  const oscL=ctx.createOscillator(); oscL.type='sine'; oscL.frequency.value=ch.carrier;
+  const oscR=ctx.createOscillator(); oscR.type='sine'; oscR.frequency.value=ch.carrier+ch.beat;
+  const gL=ctx.createGain(), gR=ctx.createGain();
+  oscL.connect(gL); gL.connect(merger,0,0);   // 左耳
+  oscR.connect(gR); gR.connect(merger,0,1);   // 右耳
+  const master=ctx.createGain(); master.gain.value=0;
+  merger.connect(master); master.connect(ctx.destination);
+  const t=ctx.currentTime, vol=parseFloat(volEl.value);
+  master.gain.linearRampToValueAtTime(vol, t+1.6);
+  oscL.start(); oscR.start();
+  cur={oscL,oscR,master,n:ch.n};
+  clearActive(); el.classList.add('on');
+  nowEl.innerHTML=`<b>${ch.n}・${ch.ja}</b>　${ch.carrier}Hz ／ 左右差 ${ch.beat}Hz`;
+  stopBtn.classList.add('live');
+}
+
+volEl.addEventListener('input',()=>{
+  if(cur){const t=ctx.currentTime;cur.master.gain.cancelScheduledValues(t);cur.master.gain.setValueAtTime(parseFloat(volEl.value),t);}
+});
+stopBtn.addEventListener('click',()=>stop());
+</script>
+</body>
+</html>
