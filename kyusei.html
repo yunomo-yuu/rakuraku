@@ -132,6 +132,20 @@
     </div>
 
     <div class="card">
+      <h2>運のめぐり ─ 年運・月運</h2>
+      <div class="result-line"><span class="k">今年のあなた</span><span class="v" id="nenun"></span></div>
+      <div class="desc" id="nenunDesc"></div>
+      <div class="result-line"><span class="k">今月のあなた</span><span class="v" id="getsuun"></span></div>
+      <div class="desc" id="getsuunDesc"></div>
+      <h3 class="mini">九年のめぐり</h3>
+      <table class="hachitaku">
+        <thead><tr><th>年</th><th>めぐる宮</th><th>ひとことで</th></tr></thead>
+        <tbody id="cycleBody"></tbody>
+      </table>
+      <div class="note">※九星気学の年は立春で切り替わります。本命星が中宮にめぐる年は「八方塞がり」と呼ばれ、九年の折り返しにあたります。良い悪いではなく、季節のような周期として読んでください。</div>
+    </div>
+
+    <div class="card">
       <h2>八宅風水 ─ 本命卦と住まいの方位</h2>
       <div class="result-line"><span class="k">本命卦</span><span class="v" id="gua"></span></div>
       <table class="hachitaku">
@@ -150,17 +164,46 @@
       <div class="grid9" id="monthGrid"></div>
       <h3 class="mini" id="dayTitle"></h3>
       <div class="grid9" id="dayGrid"></div>
-      <div class="note">南が上の伝統配置です。日盤は冬至・夏至に最も近い甲子日で陽遁・陰遁が切り替わる方式で計算しています（切替日前後は流派により異なる場合があります）。</div>
+      <div class="note">南が上の伝統配置です。日盤は冬至・夏至に最も近い甲子日で陽遁・陰遁が切り替わる方式で計算しています（切替日前後は流派により異なる場合があります）。<br><b>日盤だけが吉でも、その方位を取ったことにはなりません。</b>下の判定表で年盤・月盤とそろっているかを確かめてください。</div>
     </div>
 
     <div class="card">
       <h2>吉方位・凶方位の判定</h2>
       <div class="desc" id="kichiSummary"></div>
       <table class="hachitaku">
-        <thead><tr><th>方位</th><th>年盤</th><th>月盤</th><th>判定</th></tr></thead>
+        <thead><tr><th>方位</th><th>年盤</th><th>月盤</th><th>日盤</th><th>判定</th></tr></thead>
         <tbody id="houiBody"></tbody>
       </table>
-      <div class="note">凶：五黄殺・暗剣殺・歳破・月破・本命殺・本命的殺・月命殺・月命的殺。吉：凶が無く、めぐる星があなたの本命星と相生・比和の方位。年盤と月盤の両方で吉なら◎大吉（お水取り・祐気取り向き）。</div>
+      <div class="note">凶：五黄殺・暗剣殺・歳破・月破・日破・本命殺・本命的殺・月命殺・月命的殺。吉：凶が無く、めぐる星があなたの本命星と相生・比和の方位。<br>◎大吉（年月）＝年盤と月盤の両方で吉。引っ越し・長期の移動はここを基準にします。<br>◎三盤そろい＝年盤・月盤・日盤すべてで吉。<b>その日に日帰りのお水取り・祐気取りができる方位</b>です。<br>年月が大吉でも日盤が凶なら、その日は見送って別の日を探してください。基準日を変えると再計算されます。</div>
+    </div>
+
+    <div class="card">
+      <h2>方位から日を探す</h2>
+      <p style="font-size:.85rem;color:var(--moon-blue);">行きたい方位を選ぶと、その方位が取れる日を基準日から先に向かって探します。</p>
+      <label>行きたい方位</label>
+      <select id="scanDir">
+        <option>北</option><option>北東</option><option>東</option><option>南東</option>
+        <option>南</option><option>南西</option><option>西</option><option>北西</option>
+      </select>
+      <label>探す期間</label>
+      <select id="scanRange">
+        <option value="30">30日先まで</option>
+        <option value="90" selected>90日先まで</option>
+        <option value="180">180日先まで</option>
+        <option value="365">1年先まで</option>
+      </select>
+      <label>条件</label>
+      <select id="scanMode">
+        <option value="3">三盤そろい ─ 日帰りで取れる日</option>
+        <option value="2">年月が大吉で、その日の日盤に凶がない日</option>
+      </select>
+      <button class="main" onclick="scanDays()">取れる日を探す</button>
+      <div class="desc" id="scanSummary" style="display:none"></div>
+      <table class="hachitaku" id="scanTable" style="display:none">
+        <thead><tr><th>日付</th><th>曜</th><th>年盤</th><th>月盤</th><th>日盤</th></tr></thead>
+        <tbody id="scanBody"></tbody>
+      </table>
+      <div class="note">※見つからないときは期間を延ばすか、別の方位を試してください。年盤で凶になっている方位は、日を変えてもその年のあいだは取れません（年盤は立春で切り替わります）。</div>
     </div>
 
     <div class="card">
@@ -209,15 +252,15 @@ document.getElementById('gateInput').addEventListener('keydown',e=>{if(e.key==='
 const STAR_NAME={1:'一白水星',2:'二黒土星',3:'三碧木星',4:'四緑木星',5:'五黄土星',6:'六白金星',7:'七赤金星',8:'八白土星',9:'九紫火星'};
 const STAR_ELEM={1:'水',2:'土',3:'木',4:'木',5:'土',6:'金',7:'金',8:'土',9:'火'};
 const STAR_DESC={
-1:'柔軟で聞き上手。水のように形を変えて人に寄り添い、苦労を深みに変えていく星。',
-2:'育てる大地。堅実で世話好き、縁の下の力持ち。コツコツの積み重ねが最強の武器。',
-3:'雷のスピードと発信力。思い立ったら即行動。若々しさと新しいもの好きが持ち味。',
-4:'風のように縁を運ぶ星。調整力・信用・コミュニケーションで道がひらける。',
-5:'帝王の星。破壊と再生、中心に立つ強さ。良くも悪くもスケールが大きい。',
-6:'天の星。責任感・完璧主義・行動力。動けば動くほど運が回りだす。',
-7:'実りと弁舌の星。楽しませ上手で社交と金運に恵まれる。愛嬌が最大の武器。',
-8:'山の星。継承と切り替えの役目を持つ。粘り強く、人生の節目で大きく動く。',
-9:'火と光の星。直感・美意識・華やかさ。隠れたものを照らし出す、真実の星。'};
+1:'始める人。何事も口火を切る、物事のスタート役。柔らかく人の懐に入るが、根は苦労性。夜と水の星なので、秘めごとや色恋の縁も濃いめ。健康志向でサプリ好き。',
+2:'九星で一番優しい星。世話好きでよく尽くすが、素直になれずアマノジャクが出やすい。我慢を溜め込みがち。',
+3:'とにかく騒がしい、音楽は爆音。頭の回転が速く、美人が多い。勢いのあるパリピ気質。',
+4:'なんでも知りたがる情報通。でも口は堅く、腹の内は見せない。外面はいいが、実は内弁慶。',
+5:'中心の星。自己中に見えて、本当は寂しがり。胸に秘めて我慢する強さがある。きれいな人が多い。',
+6:'リーダー星。切れ味のいい刃物のイメージで、スパスパ物事を進める。実力者しか認めない気質。',
+7:'ザ・パリピ。サービス精神旺盛で気配り上手の人気者。ただし異性間のトラブルは多め。',
+8:'職人星。オタクになりやすく、こだわりが強くて意見を曲げない。白い星（一白・六白・八白）の中でも、八白はお金が貯まりやすい。',
+9:'熱しやすく冷めやすい火の星。面食いで好き嫌いがはっきり。頭の回転は速い。'};
 const KEISHA_DESC={
 1:'坎宮傾斜：表向きより思慮深く、秘めた情の深さを持つ。ひとり静かに潜って考える裏の顔。',
 2:'坤宮傾斜：内側は献身と忍耐の人。人を育て、支えることに深い喜びを見出す。',
@@ -228,6 +271,30 @@ const KEISHA_DESC={
 7:'兌宮傾斜：裏は楽しみ好きの社交家。話術と愛嬌で場を回す才能が隠れている。',
 8:'艮宮傾斜：芯が頑固で、蓄えてから変わるタイプ。家やルーツ・継承への思いが強い。',
 9:'離宮傾斜：内に高いプライドと美意識。物事を見抜く目が鋭い、直感の人。'};
+/* ========== 年運・月運の文章 ==========
+   ▼ここから下の3つ（PALACE_NAME以外）は差し替え用の下書きです。
+     CYCLE_LABEL … 一覧表の「ひとことで」
+     UNMEI_DESC  … 年運の本文
+     UNMEI_SHORT … 月運の一行
+   文章だけ書き換えれば表示が変わります。番号（1〜9）は動かさないでください。 */
+const PALACE_NAME={1:'坎宮',2:'坤宮',3:'震宮',4:'巽宮',5:'中宮',6:'乾宮',7:'兌宮',8:'艮宮',9:'離宮'};
+const CYCLE_LABEL={
+1:'充電の年',2:'下ごしらえの年',3:'動きだしの年',4:'縁がひらく年',5:'八方塞がり・転換の年',
+6:'責任と充実の年',7:'実りの年',8:'変わり目の年',9:'頂点・注目の年'};
+const UNMEI_DESC={
+1:'底で力を蓄える一年。外から見える動きは鈍くても、内側で次の九年ぶんの根が育っていく時期です。打って出るより、休む・学ぶ・整えるほうが流れに合います。',
+2:'土の中で芽が動きだす、下ごしらえの年。地味な積み重ねがそのまま来年以降の形になります。人から頼まれごとが増えやすく、それが縁の種になります。',
+3:'動きたくなる年。新しいことを始める勢いが出るぶん、急ぎすぎて足元が抜けやすくもあります。走りながら整えるつもりでいるとちょうどいい時期。',
+4:'縁と信用がまわりだす年。人の紹介や口コミで話が広がりやすくなります。見え方・伝え方を整えておくと、そのぶん返ってきます。',
+5:'九年の折り返し。動こうとすると四方から止められる感覚が出やすい一年で、新しく始めるより、整理・棚卸し・手放しに向きます。ここで置いていったものが、次の四年を軽くします。',
+6:'責任と決定権がまわってくる年。忙しさと引き換えに、実力が人の目に留まりやすくなります。引き受ける力と同じくらい、断る力も要る時期。',
+7:'実りと楽しみの年。お金も人づきあいもよく動きますが、入るのも出るのも早くなります。使いどころを先に決めておくと、手元に残ります。',
+8:'変わり目の年。住まい・仕事・関係のどこかで区切りが来やすくなります。粘るのか替えるのか、自分で選ぶ場面が用意される時期。',
+9:'九年でいちばん目立つ年。伸ばしたいことも、隠しておきたかったことも表に出やすくなります。見られる前提で整えておくと、そのまま追い風になります。'};
+const UNMEI_SHORT={
+1:'休息と充電の月。',2:'下ごしらえと世話役の月。',3:'動きだしの月。',4:'縁がつながる月。',5:'整理と足止めの月。',
+6:'責任が回る月。',7:'実りと出費の月。',8:'変わり目の月。',9:'目立つ月。'};
+
 /* 後天定位: 南上レイアウト順（palace番号） */
 const LAYOUT=[4,9,2,3,5,7,8,1,6];
 const DIR_OF_PALACE={1:'北',2:'南西',3:'東',4:'南東',6:'北西',7:'西',8:'北東',9:'南'};
@@ -389,6 +456,8 @@ function renderGrid(el,center,flags,goodMap){
 }
 
 let LAST=null;
+let ME=null;
+const PALACE_OF_DIR={'北':1,'南西':2,'東':3,'南東':4,'北西':6,'西':7,'北東':8,'南':9};
 function calcAll(){
   const bv=document.getElementById('birth').value;
   const tv=document.getElementById('target').value;
@@ -443,6 +512,21 @@ function calcAll(){
   document.getElementById('monthTitle').textContent='月盤（'+BRANCH[mBranch]+'月）── '+STAR_NAME[mS]+' 中宮';
   document.getElementById('dayTitle').textContent='日盤（'+BRANCH[dBranch]+'日・'+dRes.mode+'）── '+STAR_NAME[dRes.star]+' 中宮';
 
+  /* 年運・月運 */
+  const nenPal=palaceOfStar(yS,hon);
+  const getPal=palaceOfStar(mS,hon);
+  document.getElementById('nenun').textContent=tey+'年 ─ '+PALACE_NAME[nenPal]+'めぐり（'+CYCLE_LABEL[nenPal]+'）';
+  document.getElementById('nenunDesc').textContent=UNMEI_DESC[nenPal];
+  document.getElementById('getsuun').textContent=BRANCH[mBranch]+'月 ─ '+PALACE_NAME[getPal]+'めぐり';
+  document.getElementById('getsuunDesc').textContent=UNMEI_SHORT[getPal]+UNMEI_DESC[getPal];
+  const cb=document.getElementById('cycleBody');cb.innerHTML='';
+  for(let i=0;i<9;i++){
+    const yy=tey+i;
+    const pp=((nenPal-1+i)%9)+1;
+    const hi=(i===0);
+    cb.innerHTML+='<tr'+(hi?' style="background:#1b2450"':'')+'><td'+(hi?' class="f-daikichi"':'')+'>'+yy+'年</td><td'+(pp===5?' class="f-kyo"':'')+'>'+PALACE_NAME[pp]+'</td><td style="font-size:.82rem">'+CYCLE_LABEL[pp]+'</td></tr>';
+  }
+
   const yFlags=chartFlags(yS,hon,getsu,null);
   const ybp=BRANCH_PALACE[(yBranch+6)%12];yFlags[ybp].push('歳破');
   const mFlags=chartFlags(mS,hon,getsu,null);
@@ -451,52 +535,121 @@ function calcAll(){
   const dbp=BRANCH_PALACE[(dBranch+6)%12];dFlags[dbp].push('日破');
 
   /* 吉判定 */
-  const yGood={},mGood={};
+  const yGood={},mGood={},dGood={};
   for(const p of [1,2,3,4,6,7,8,9]){
     const s=starInPalace(yS,p);
     if(yFlags[p].length===0&&isGoodStar(s,hon))yGood[p]=isGoodStar(s,getsu)?'吉◎':'吉';
     const s2=starInPalace(mS,p);
     if(mFlags[p].length===0&&isGoodStar(s2,hon))mGood[p]=isGoodStar(s2,getsu)?'吉◎':'吉';
+    const s3=starInPalace(dRes.star,p);
+    if(dFlags[p].length===0&&isGoodStar(s3,hon))dGood[p]=isGoodStar(s3,getsu)?'吉◎':'吉';
   }
   renderGrid(document.getElementById('yearGrid'),yS,yFlags,yGood);
   renderGrid(document.getElementById('monthGrid'),mS,mFlags,mGood);
-  renderGrid(document.getElementById('dayGrid'),dRes.star,dFlags,null);
+  renderGrid(document.getElementById('dayGrid'),dRes.star,dFlags,dGood);
 
   /* 方位判定表 */
+  const td=target.getUTCFullYear()+'年'+(target.getUTCMonth()+1)+'月'+target.getUTCDate()+'日';
   const hb=document.getElementById('houiBody');hb.innerHTML='';
-  const daikichi=[];const kichi=[];
+  const daikichi=[];const kichi=[];const sanban=[];
   for(const p of [1,2,3,4,6,7,8,9]){
     const yTxt=yFlags[p].length?('<span class="f-kyo">'+yFlags[p].join('・')+'</span>'):(yGood[p]?'<span class="f-kichi">'+yGood[p]+'</span>':'─');
     const mTxt=mFlags[p].length?('<span class="f-kyo">'+mFlags[p].join('・')+'</span>'):(mGood[p]?'<span class="f-kichi">'+mGood[p]+'</span>':'─');
+    const dTxt=dFlags[p].length?('<span class="f-kyo">'+dFlags[p].join('・')+'</span>'):(dGood[p]?'<span class="f-kichi">'+dGood[p]+'</span>':'─');
     let judge='─';
-    if(yGood[p]&&mGood[p]){judge='<span class="f-daikichi">◎大吉</span>';daikichi.push(DIR_OF_PALACE[p]);}
+    if(yGood[p]&&mGood[p]&&dGood[p]){judge='<span class="f-daikichi">◎三盤そろい</span><br><span style="font-size:.72rem;color:var(--kichi)">この日に日帰り可</span>';sanban.push(DIR_OF_PALACE[p]);daikichi.push(DIR_OF_PALACE[p]);}
+    else if(yGood[p]&&mGood[p]){judge='<span class="f-daikichi">◎大吉（年月）</span>'+(dFlags[p].length?'<br><span style="font-size:.72rem;color:var(--kyo)">この日は不可</span>':'<br><span style="font-size:.72rem;color:var(--moon-blue)">別の日を選ぶ</span>');daikichi.push(DIR_OF_PALACE[p]);}
     else if(mGood[p]&&!yFlags[p].length){judge='<span class="f-kichi">○月吉</span>';kichi.push(DIR_OF_PALACE[p]);}
     else if(yFlags[p].length||mFlags[p].length){judge='<span class="f-kyo">凶あり</span>';}
-    hb.innerHTML+='<tr><td>'+DIR_OF_PALACE[p]+'</td><td>'+yTxt+'</td><td>'+mTxt+'</td><td>'+judge+'</td></tr>';
+    hb.innerHTML+='<tr><td>'+DIR_OF_PALACE[p]+'</td><td>'+yTxt+'</td><td>'+mTxt+'</td><td>'+dTxt+'</td><td>'+judge+'</td></tr>';
   }
   let summary='';
   if(daikichi.length)summary='今月の大吉方位：'+daikichi.join('・')+'。年盤・月盤の両方で吉が重なる、お出かけ・祐気取りに最適の方位です。';
   else if(kichi.length)summary='今月は年月そろっての大吉はありませんが、月盤の吉方位：'+kichi.join('・')+'は日帰りのお出かけに使えます。';
   else summary='今月は吉方位が立ちにくい配置です。無理に方位を取らず、住まいを整えるのに向く時期と読めます。';
-  document.getElementById('kichiSummary').textContent=summary;
+  if(sanban.length)summary+='<br><br><b>【'+td+'について】</b><br>'+sanban.join('・')+'が年盤・月盤・日盤すべてで吉です。日帰りのお水取り・祐気取りに使えます。';
+  else if(daikichi.length)summary+='<br><br><b>【'+td+'について】</b><br>この日は三盤そろう方位がありません。大吉方位そのものは活きているので、日付を変えて探してみてください。';
+  else summary+='<br><br><b>【'+td+'について】</b><br>この日は三盤そろう方位がありません。';
+  document.getElementById('kichiSummary').innerHTML=summary;
 
   /* 発注文 */
   const bd=birth.getUTCFullYear()+'年'+(birth.getUTCMonth()+1)+'月'+birth.getUTCDate()+'日';
   const td2=target.getUTCFullYear()+'年'+(target.getUTCMonth()+1)+'月'+target.getUTCDate()+'日';
-  let ptxt='あなたは九星気学と八宅風水にくわしい、誠実な解説者です。\n以下は専用ツールで正確に計算した方位データです。このデータだけを根拠に読み解いてください。\n\n【守ってほしいルール】\n・書かれていない星・方位・殺を創作しない\n・吉凶は断定や脅しにせず「傾向」として、活かし方とセットで伝える\n・まず最初に「何について知りたいか（問い）」を私にひとつ確認してから読み始める\n・専門用語には短い説明を添える\n\n【本人データ】\n生年月日：'+bd+'（'+(sex==='f'?'女性':'男性')+'）\n本命星：'+STAR_NAME[hon]+'\n月命星：'+STAR_NAME[getsu]+'\n傾斜：'+kpName+'\n本命卦（八宅）：'+gname+'命\n八宅の吉方位：';
+  let ptxt='あなたは九星気学と八宅風水にくわしい、誠実な解説者です。\n以下は専用ツールで正確に計算した方位データです。このデータだけを根拠に読み解いてください。\n\n【守ってほしいルール】\n・書かれていない星・方位・殺を創作しない\n・吉凶は断定や脅しにせず「傾向」として、活かし方とセットで伝える\n・まず最初に「何について知りたいか（問い）」を私にひとつ確認してから読み始める\n・専門用語には短い説明を添える\n\n【本人データ】\n生年月日：'+bd+'（'+(sex==='f'?'女性':'男性')+'）\n本命星：'+STAR_NAME[hon]+'\n月命星：'+STAR_NAME[getsu]+'\n傾斜：'+kpName+'\n本命卦（八宅）：'+gname+'命\n今年の年運：'+tey+'年・'+PALACE_NAME[nenPal]+'めぐり（'+CYCLE_LABEL[nenPal]+'）\n今月の月運：'+BRANCH[mBranch]+'月・'+PALACE_NAME[getPal]+'めぐり\n八宅の吉方位：';
   const yj=[];for(const r of rows){if(YUSEI_ORDER.indexOf(r.y)<4)yj.push(r.y+'='+r.dir);}
   ptxt+=yj.join('、')+'\n八宅の凶方位：';
   const yk=[];for(const r of rows){if(YUSEI_ORDER.indexOf(r.y)>=4)yk.push(r.y+'='+r.dir);}
-  ptxt+=yk.join('、')+'\n\n【対象日：'+td2+'】\n年盤：'+STAR_NAME[yS]+'中宮（'+BRANCH[yBranch]+'年・歳破='+DIR_OF_PALACE[BRANCH_PALACE[(yBranch+6)%12]]+'）\n月盤：'+STAR_NAME[mS]+'中宮（'+BRANCH[mBranch]+'月・月破='+DIR_OF_PALACE[BRANCH_PALACE[(mBranch+6)%12]]+'）\n日盤：'+STAR_NAME[dRes.star]+'中宮（'+dRes.mode+'）\n\n【方位判定（年盤×月盤）】\n';
+  ptxt+=yk.join('、')+'\n\n【対象日：'+td2+'】\n年盤：'+STAR_NAME[yS]+'中宮（'+BRANCH[yBranch]+'年・歳破='+DIR_OF_PALACE[BRANCH_PALACE[(yBranch+6)%12]]+'）\n月盤：'+STAR_NAME[mS]+'中宮（'+BRANCH[mBranch]+'月・月破='+DIR_OF_PALACE[BRANCH_PALACE[(mBranch+6)%12]]+'）\n日盤：'+STAR_NAME[dRes.star]+'中宮（'+dRes.mode+'）\n\n【方位判定（年盤×月盤×日盤）】\n';
   for(const p of [1,2,3,4,6,7,8,9]){
-    ptxt+=DIR_OF_PALACE[p]+'：年盤'+STAR_NAME[starInPalace(yS,p)]+(yFlags[p].length?'['+yFlags[p].join('・')+']':(yGood[p]?'[吉]':''))+'／月盤'+STAR_NAME[starInPalace(mS,p)]+(mFlags[p].length?'['+mFlags[p].join('・')+']':(mGood[p]?'[吉]':''))+'\n';
+    ptxt+=DIR_OF_PALACE[p]+'：年盤'+STAR_NAME[starInPalace(yS,p)]+(yFlags[p].length?'['+yFlags[p].join('・')+']':(yGood[p]?'[吉]':''))+'／月盤'+STAR_NAME[starInPalace(mS,p)]+(mFlags[p].length?'['+mFlags[p].join('・')+']':(mGood[p]?'[吉]':''))+'／日盤'+STAR_NAME[starInPalace(dRes.star,p)]+(dFlags[p].length?'['+dFlags[p].join('・')+']':(dGood[p]?'[吉]':''))+'\n';
   }
-  ptxt+=(daikichi.length?'\n大吉方位（年月重ね）：'+daikichi.join('・')+'\n':'\n年月そろっての大吉方位：なし\n');
-  ptxt+='\n準備ができたら、まず私に「何について知りたいですか？」と聞いてください。';
+  ptxt+=(daikichi.length?'\n大吉方位（年月重ね／引っ越し・長期移動の基準）：'+daikichi.join('・')+'\n':'\n年月そろっての大吉方位：なし\n');
+  ptxt+=(sanban.length?'三盤そろい（'+td2+'に日帰りで取れる方位）：'+sanban.join('・')+'\n':'三盤そろいの方位：この日はなし\n');
+  ptxt+='\n※日盤だけが吉の方位は、その方位を取ったことになりません。日帰りの可否は三盤そろいで判断してください。';
+  ptxt+='\n\n準備ができたら、まず私に「何について知りたいですか？」と聞いてください。';
   document.getElementById('prompt').value=ptxt;
 
+  ME={hon:hon,getsu:getsu,target:target};
+  document.getElementById('scanSummary').style.display='none';
+  document.getElementById('scanTable').style.display='none';
   document.getElementById('results').style.display='block';
   LAST=true;
+}
+/* ========== 方位から日を探す ========== */
+function boardsFor(d){
+  const yS=yearStar(d), mS=monthStar(d,yS), dR=dayStar(d);
+  const tey=effYear(d);
+  const yBranch=((tey-4)%12+12)%12;
+  const mBranch=monthBranch(d);
+  const dBranch=dayIndex(d)%12;
+  const yF=chartFlags(yS,ME.hon,ME.getsu,null); yF[BRANCH_PALACE[(yBranch+6)%12]].push('歳破');
+  const mF=chartFlags(mS,ME.hon,ME.getsu,null); mF[BRANCH_PALACE[(mBranch+6)%12]].push('月破');
+  const dF=chartFlags(dR.star,ME.hon,ME.getsu,null); dF[BRANCH_PALACE[(dBranch+6)%12]].push('日破');
+  return {yS:yS,mS:mS,dS:dR.star,yF:yF,mF:mF,dF:dF};
+}
+const WD=['日','月','火','水','木','金','土'];
+function fmtDate(d){return d.getUTCFullYear()+'年'+(d.getUTCMonth()+1)+'月'+d.getUTCDate()+'日';}
+function scanDays(){
+  if(!ME){alert('先に「星を読む」を押してください');return;}
+  const dir=document.getElementById('scanDir').value;
+  const pa=PALACE_OF_DIR[dir];
+  const range=+document.getElementById('scanRange').value;
+  const mode=document.getElementById('scanMode').value;
+  const hits=[];
+  let capped=false;
+  for(let i=0;i<=range;i++){
+    const d=new Date(ME.target.getTime()+i*86400000);
+    const b=boardsFor(d);
+    const yOK=b.yF[pa].length===0&&isGoodStar(starInPalace(b.yS,pa),ME.hon);
+    const mOK=b.mF[pa].length===0&&isGoodStar(starInPalace(b.mS,pa),ME.hon);
+    const dOK=b.dF[pa].length===0&&isGoodStar(starInPalace(b.dS,pa),ME.hon);
+    const ok=(mode==='3')?(yOK&&mOK&&dOK):(yOK&&mOK&&b.dF[pa].length===0);
+    if(ok)hits.push({d:d,b:b,dOK:dOK});
+    if(hits.length>=60){capped=true;break;}
+  }
+  const tb=document.getElementById('scanBody');tb.innerHTML='';
+  const tbl=document.getElementById('scanTable');
+  const sm=document.getElementById('scanSummary');
+  sm.style.display='block';
+  if(!hits.length){
+    tbl.style.display='none';
+    const b0=boardsFor(ME.target);
+    const yBad=b0.yF[pa].length>0||!isGoodStar(starInPalace(b0.yS,pa),ME.hon);
+    let msg=dir+'は、'+range+'日以内に条件を満たす日が見つかりませんでした。';
+    if(yBad)msg+='<br><br>この方位はいま<b>年盤の時点で吉になっていません</b>。年盤は立春（2月4日ごろ）まで動かないので、それまでは日を変えても取れません。'+(range<365?'探す期間を「1年先まで」にすると、立春をまたいだ先の日が見つかることがあります。':'別の方位を探してみてください。');
+    else msg+='<br><br>年盤は吉なので、期間を延ばすと見つかる可能性があります。';
+    sm.innerHTML=msg;
+    return;
+  }
+  for(const h of hits){
+    const dstr=fmtDate(h.d);
+    const wd=WD[h.d.getUTCDay()];
+    const wcol=(wd==='日')?'var(--kyo)':(wd==='土')?'var(--moon-blue)':'inherit';
+    tb.innerHTML+='<tr><td>'+dstr+'</td><td style="color:'+wcol+'">'+wd+'</td><td>'+STAR_NAME[starInPalace(h.b.yS,pa)]+'</td><td>'+STAR_NAME[starInPalace(h.b.mS,pa)]+'</td><td'+(h.dOK?' class="f-kichi"':'')+'>'+STAR_NAME[starInPalace(h.b.dS,pa)]+'</td></tr>';
+  }
+  tbl.style.display='';
+  const label=(mode==='3')?'三盤そろい（日帰りで取れる日）':'年月が大吉で、日盤に凶がない日';
+  sm.innerHTML='<b>'+dir+'</b>／'+label+'<br>'+range+'日以内に<b>'+hits.length+'日</b>'+(capped?'以上':'')+'見つかりました。いちばん近いのは<b>'+fmtDate(hits[0].d)+'（'+WD[hits[0].d.getUTCDay()]+'）</b>です。'+(capped?'<br>（多すぎるため60件で打ち切っています）':'');
 }
 function copyPrompt(){
   const t=document.getElementById('prompt');
