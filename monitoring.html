@@ -108,17 +108,13 @@
   .check-inline input[type="checkbox"]{width:18px;height:18px;accent-color:var(--indigo);}
 
   .svc-row{display:flex;gap:8px;margin-bottom:8px;align-items:flex-start;}
-  .svc-row input.svc-name{flex:0 0 34%;min-width:0;}
-  .svc-row input.svc-status{flex:1;min-width:0;}
+  .svc-row input.svc-name{flex:0 0 34%;}
+  .svc-row input.svc-status{flex:1;}
   .svc-del{
     flex:0 0 auto;border:1px solid var(--line);background:#fff;color:var(--muted);
     border-radius:6px;width:34px;height:38px;cursor:pointer;font-size:1rem;
   }
   .svc-del:hover{color:var(--danger);border-color:var(--danger);}
-  @media(max-width:560px){
-    .svc-row{flex-wrap:wrap;}
-    .svc-row input.svc-name{flex:1 1 100%;}
-  }
   .add-btn{
     border:1px dashed var(--indigo);background:#f2f5fb;color:var(--indigo-deep);
     border-radius:6px;padding:6px 14px;cursor:pointer;font:inherit;font-size:.85rem;
@@ -163,6 +159,21 @@
     border-radius:8px;padding:8px 22px;font:inherit;font-weight:700;cursor:pointer;
   }
   .copy-btn.copied{border-color:var(--ok);color:var(--ok);}
+  .save-btn{padding:8px 16px;border-radius:8px;border:1.5px solid var(--indigo);background:var(--indigo);color:#fff;font-weight:700;font-size:.9rem;cursor:pointer;font-family:inherit;}
+  .save-btn:hover{opacity:.88;}
+  .save-btn.saved{background:var(--ok);border-color:var(--ok);}
+  .saved-sec{margin-top:30px;display:none;}
+  .saved-sec.show{display:block;}
+  .saved-note{font-size:.8rem;color:var(--muted,#777);margin:4px 0 12px;line-height:1.7;}
+  .clear-all-btn{padding:6px 12px;border-radius:8px;border:1.5px solid #c0392b;background:#fff;color:#c0392b;font-weight:700;font-size:.8rem;cursor:pointer;font-family:inherit;}
+  .rec-card{border:1.5px solid #d5dbe8;border-radius:10px;padding:12px 14px;margin-bottom:10px;background:#fafbfe;}
+  .rec-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;}
+  .rec-title{font-weight:700;font-size:.85rem;color:var(--indigo-deep);}
+  .rec-btns{display:flex;gap:8px;}
+  .rec-copy{padding:5px 12px;border-radius:7px;border:1.5px solid var(--indigo);background:#fff;color:var(--indigo);font-weight:700;font-size:.8rem;cursor:pointer;font-family:inherit;}
+  .rec-copy.copied{border-color:var(--ok);color:var(--ok);}
+  .rec-del{padding:5px 12px;border-radius:7px;border:1.5px solid #c0392b;background:#fff;color:#c0392b;font-weight:700;font-size:.8rem;cursor:pointer;font-family:inherit;}
+  .rec-body{font-size:.8rem;color:#444;white-space:pre-wrap;max-height:80px;overflow:auto;background:#fff;border-radius:6px;padding:8px;border:1px solid #e5e9f2;}
   .next-btn{
     background:#fff;border:2px solid var(--muted);color:var(--muted);
     border-radius:8px;padding:8px 22px;font:inherit;font-weight:700;cursor:pointer;
@@ -175,25 +186,50 @@
     border:1px solid var(--line);border-radius:8px;padding:14px;
     background-image:repeating-linear-gradient(transparent,transparent 1.72em,#eef1f6 1.72em,#eef1f6 calc(1.72em + 1px));
   }
+  .howto{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:10px 14px;
+    margin:0 0 14px;
+    font-size:.85rem;
+  }
+  .howto summary{
+    cursor:pointer;
+    font-weight:700;
+    color:var(--indigo-deep);
+    letter-spacing:.06em;
+  }
+  .howto ol{margin:10px 0 4px 1.2em;}
+  .howto li{margin-bottom:4px;}
+  .howto p{margin-top:8px;color:var(--muted);}
   footer{margin-top:30px;font-size:.75rem;color:var(--muted);text-align:center;}
 </style>
 </head>
 <body>
-<noscript>
-  <div style="max-width:760px;margin:16px auto;padding:14px 16px;background:#fff8e6;border:1px solid #e0c060;border-radius:8px;font-size:.9rem;line-height:1.8;color:#6b5900;">
-    <strong>⚠ このツールが動いていません（JavaScriptがオフになっています）。</strong><br>
-    LINEなどアプリ内の「プレビュー」画面のままだと動作しません。プレビュー右上または下の共有アイコン（□に↑）をタップし、「Safariで開く」を選んでください。表示されない場合は、いったん「”ファイル”に保存」してから、ファイルアプリでこのファイルを開き、共有アイコンから「Safariで開く」を選んでください。
-  </div>
-</noscript>
 <div class="wrap">
 <header>
   <h1>らくらくモニタリング</h1>
   <p class="sub">必須欄を埋める → 生成 → コピーして経過記録へ貼り付け。入力内容はこのブラウザ内だけで処理され、どこにも送信されません。</p>
 </header>
 
+<details class="howto">
+  <summary>はじめて使う方へ（クリックで開きます）</summary>
+  <ol>
+    <li>上のタブで「要介護（居宅）」か「要支援（介護予防）」を選びます。</li>
+    <li><strong>赤い「必須」</strong>が付いた欄を埋めます。「任意」は空欄のままで構いません。</li>
+    <li>「記録文を生成」を押すと、下に文章ができます。</li>
+    <li>「コピー」を押して、いつもの記録ソフトに貼り付けてください。</li>
+    <li>続けて次の方を入力するときは「次の利用者へ（入力をクリア）」を押します。</li>
+  </ol>
+  <p>※インターネットにつながっていなくても使えます。入力した内容がこのパソコンの外に出ることはありません。<br>
+  ※ブラウザを閉じる・再読み込みすると入力内容は消えます。生成した文章は先に貼り付けてから閉じてください。<br>
+  ※出てくる文章はあくまで下書きです。必ずご自身で内容を確認し、担当の方の状況に合わせて手を入れてから記録してください。</p>
+</details>
+
 <div class="tabs" role="tablist">
-  <button class="tab active" id="tab-kaigo" role="tab" aria-selected="true">要介護（居宅）</button>
-  <button class="tab" id="tab-yoshien" role="tab" aria-selected="false">要支援（介護予防）</button>
+  <button class="tab active" id="tab-kaigo" role="tab" aria-selected="true" onclick="setMode('kaigo')">要介護（居宅）</button>
+  <button class="tab" id="tab-yoshien" role="tab" aria-selected="false" onclick="setMode('yoshien')">要支援（介護予防）</button>
 </div>
 
 <div class="card">
@@ -243,7 +279,7 @@
     <div class="row">
       <div style="flex:0 0 180px;">
         <label for="henka">前回との比較</label>
-        <select id="henka">
+        <select id="henka" onchange="toggleHenkaNote()">
           <option value="none">変化なし</option>
           <option value="change">変化あり</option>
         </select>
@@ -259,8 +295,8 @@
   <fieldset>
     <legend>サービスの実施状況 <span class="req">必須</span></legend>
     <div id="services"></div>
-    <button type="button" class="add-btn" id="add-service-btn">＋ サービスを追加</button>
-    <div class="notice" id="svc-undo-notice">サービス行を削除しました。<button type="button" class="undo-link" id="svc-undo-link">元に戻す</button></div>
+    <button type="button" class="add-btn" onclick="addService()">＋ サービスを追加</button>
+    <div class="notice" id="svc-undo-notice">サービス行を削除しました。<button type="button" class="undo-link" onclick="undoRemoveService()">元に戻す</button></div>
   </fieldset>
 
   <fieldset>
@@ -317,7 +353,7 @@
       </div>
       <div>
         <label for="tail4" id="tail4-label">プランの修正箇所</label>
-        <select id="tail4">
+        <select id="tail4" onchange="toggleTail4Text()">
           <option value="なし">なし</option>
           <option value="あり">あり</option>
         </select>
@@ -327,7 +363,7 @@
   </fieldset>
 
   <div class="actions">
-    <button type="button" class="generate" id="generate-btn">記録文を生成</button>
+    <button type="button" class="generate" onclick="generate()">記録文を生成</button>
     <span class="error-msg" id="error-msg">必須項目が空欄です。赤い欄を確認してください。</span>
   </div>
 
@@ -335,19 +371,29 @@
     <div class="output-head">
       <h2>生成結果（そのままコピペできます）</h2>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <button type="button" class="copy-btn" id="copy-btn">コピー</button>
-        <button type="button" class="next-btn" id="next-btn">次の利用者へ（入力をクリア）</button>
+        <button type="button" class="copy-btn" id="copy-btn" onclick="copyOutput()">コピー</button>
+        <button type="button" class="save-btn" id="save-btn" onclick="saveRecord()">この記録を保存</button>
+        <button type="button" class="next-btn" id="next-btn" onclick="nextClient()">次の利用者へ（入力をクリア）</button>
       </div>
     </div>
     <textarea id="output" readonly></textarea>
+  </div>
+
+  <div class="saved-sec" id="saved-sec">
+    <div class="output-head">
+      <h2>保存した記録（<span id="saved-count">0</span>件）</h2>
+      <button type="button" class="clear-all-btn" id="clear-all-btn" onclick="clearAllSaved()">すべて削除</button>
+    </div>
+    <p class="saved-note">この無料版では記録を<b>2件まで</b>保存できます。移動中に何件もまとめて保存したい方は、<b>完全オフライン・音声入力対応・保存無制限のアプリ版</b>をご利用ください。<br>データはこの端末の中だけに保存されます。事務所に戻ったら「コピー」して記録ソフトに貼り付け→「削除」。</p>
+    <div id="saved-list"></div>
   </div>
 
 </div>
 
 <footer>
   <p style="margin-bottom:6px;font-size:.85rem;color:var(--indigo-deep);font-weight:600;">らくらくモニタリング｜ケアマネによる、ケアマネのためのツールです。みんなの仕事が「らくらく」になりますように。</p>
-  <p style="margin-bottom:6px;">作成：innercore_yuu（Threads）　使い方のご質問・不具合・ご要望は、フォローのうえコメントまたはDMでどうぞ。</p>
-  <p>※本ツールは記録作成の補助を目的としたものであり、運営指導への対応を保証するものではありません。書式・運用は保険者や事業所の定めに従ってください。<br>※入力内容はどこにも送信されず、お使いのPC内で完結します。ブラウザを閉じる／再読み込みすると入力内容は消えます。</p>
+  <p style="margin-bottom:6px;">使い方のご質問・不具合・ご要望は、このファイルを渡した担当者までお知らせください。</p>
+  <p>※本ツールは記録作成の補助を目的としたものであり、運営指導への対応を保証するものではありません。書式・運用は保険者や事業所の定めに従ってください。<br>※入力内容はどこにも送信されず、お使いの端末内で完結します。作成中の入力欄はブラウザを閉じる／再読み込みすると消えますが、「保存した記録」は端末内に残ります（削除するまで保持されます）。</p>
 </footer>
 </div>
 
@@ -409,28 +455,12 @@ function toggleTail4Text(){
 function createServiceRow(name, status){
   const row = document.createElement('div');
   row.className = 'svc-row';
-
-  const nameInput = document.createElement('input');
-  nameInput.type = 'text';
-  nameInput.className = 'svc-name';
-  nameInput.placeholder = 'サービス種別（例：訪問介護）';
-  if(typeof name === 'string') nameInput.value = name;
-
-  const statusInput = document.createElement('input');
-  statusInput.type = 'text';
-  statusInput.className = 'svc-status';
-  statusInput.value = typeof status === 'string' ? status : '計画通り実施されている。';
-
-  const delBtn = document.createElement('button');
-  delBtn.type = 'button';
-  delBtn.className = 'svc-del';
-  delBtn.title = 'この行を削除';
-  delBtn.textContent = '×';
-  delBtn.addEventListener('click', function(){ removeService(delBtn); });
-
-  row.appendChild(nameInput);
-  row.appendChild(statusInput);
-  row.appendChild(delBtn);
+  row.innerHTML =
+    '<input type="text" class="svc-name" placeholder="事業所名（例：ヘルパーステーション〇〇）">' +
+    '<input type="text" class="svc-status" value="計画通り実施されている。">' +
+    '<button type="button" class="svc-del" title="この行を削除" onclick="removeService(this)">×</button>';
+  if(typeof name === 'string') row.querySelector('.svc-name').value = name;
+  if(typeof status === 'string') row.querySelector('.svc-status').value = status;
   return row;
 }
 
@@ -712,16 +742,6 @@ function nextClient(){
   addService();
   addService();
 
-  document.getElementById('tab-kaigo').addEventListener('click', function(){ setMode('kaigo'); });
-  document.getElementById('tab-yoshien').addEventListener('click', function(){ setMode('yoshien'); });
-  document.getElementById('henka').addEventListener('change', toggleHenkaNote);
-  document.getElementById('add-service-btn').addEventListener('click', function(){ addService(); });
-  document.getElementById('svc-undo-link').addEventListener('click', undoRemoveService);
-  document.getElementById('tail4').addEventListener('change', toggleTail4Text);
-  document.getElementById('generate-btn').addEventListener('click', generate);
-  document.getElementById('copy-btn').addEventListener('click', copyOutput);
-  document.getElementById('next-btn').addEventListener('click', nextClient);
-
   document.querySelector('.card').addEventListener('input', markDirty);
   document.querySelector('.card').addEventListener('change', markDirty);
 
@@ -731,6 +751,91 @@ function nextClient(){
     e.returnValue = '';
   });
 })();
+// ===== 記録の保存・管理（端末内・LocalStorage） =====
+var SAVE_KEY = 'rakuraku_moni_saved_v1';
+
+function loadSaved(){
+  try{ var s=localStorage.getItem(SAVE_KEY); return s?JSON.parse(s):[]; }
+  catch(e){ return []; }
+}
+function writeSaved(arr){
+  try{ localStorage.setItem(SAVE_KEY, JSON.stringify(arr)); }catch(e){}
+}
+function nowLabel(){
+  var d=new Date();
+  var mm=('0'+(d.getMonth()+1)).slice(-2), dd=('0'+d.getDate()).slice(-2);
+  var hh=('0'+d.getHours()).slice(-2), mi=('0'+d.getMinutes()).slice(-2);
+  return mm+'/'+dd+' '+hh+':'+mi;
+}
+var HP_LIMIT = 2; // 無料HP版：保存は2件まで
+function saveRecord(){
+  var out=document.getElementById('output');
+  if(!out || !out.value.trim()){ alert('先に「生成」して記録を作ってください。'); return; }
+  var arr=loadSaved();
+  if(arr.length >= HP_LIMIT){
+    alert('無料版で保存できるのは'+HP_LIMIT+'件までです。\n\n移動中に何件もまとめて保存したい方は、完全オフライン・音声入力対応のアプリ版（保存無制限）をご利用ください。\n（保存済みの記録は、コピーして削除すると新しく保存できます）');
+    return;
+  }
+  arr.push({ id:Date.now(), label:nowLabel(), text:out.value });
+  writeSaved(arr);
+  renderSaved();
+  var b=document.getElementById('save-btn');
+  b.classList.add('saved'); b.textContent='保存しました';
+  setTimeout(function(){ b.classList.remove('saved'); b.textContent='この記録を保存'; },1400);
+}
+function deleteSaved(id){
+  var arr=loadSaved().filter(function(r){return r.id!==id;});
+  writeSaved(arr); renderSaved();
+}
+function clearAllSaved(){
+  if(!loadSaved().length) return;
+  if(confirm('保存した記録をすべて削除します。よろしいですか？')){
+    writeSaved([]); renderSaved();
+  }
+}
+function copySaved(id, btn){
+  var r=loadSaved().filter(function(x){return x.id===id;})[0];
+  if(!r) return;
+  var done=function(){ btn.classList.add('copied'); btn.textContent='コピー済'; setTimeout(function(){btn.classList.remove('copied');btn.textContent='コピー';},1400); };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(r.text).then(done).catch(function(){ fallbackCopyText(r.text, done); });
+  } else { fallbackCopyText(r.text, done); }
+}
+function fallbackCopyText(text, cb){
+  var ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.select();
+  try{ document.execCommand('copy'); }catch(e){}
+  document.body.removeChild(ta); if(cb) cb();
+}
+function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function renderSaved(){
+  var arr=loadSaved();
+  var sec=document.getElementById('saved-sec');
+  var list=document.getElementById('saved-list');
+  var cnt=document.getElementById('saved-count');
+  cnt.textContent=arr.length;
+  if(!arr.length){ sec.classList.remove('show'); list.innerHTML=''; return; }
+  sec.classList.add('show');
+  list.innerHTML='';
+  arr.forEach(function(r,i){
+    var card=document.createElement('div'); card.className='rec-card';
+    var head=document.createElement('div'); head.className='rec-head';
+    var t=document.createElement('span'); t.className='rec-title'; t.textContent=(i+1)+'件目　'+r.label;
+    var btns=document.createElement('div'); btns.className='rec-btns';
+    var cb=document.createElement('button'); cb.className='rec-copy'; cb.type='button'; cb.textContent='コピー';
+    cb.addEventListener('click',function(){ copySaved(r.id, cb); });
+    var db=document.createElement('button'); db.className='rec-del'; db.type='button'; db.textContent='削除';
+    db.addEventListener('click',function(){ if(confirm('この記録を削除しますか？')) deleteSaved(r.id); });
+    btns.appendChild(cb); btns.appendChild(db);
+    head.appendChild(t); head.appendChild(btns);
+    var body=document.createElement('div'); body.className='rec-body'; body.textContent=r.text;
+    card.appendChild(head); card.appendChild(body);
+    list.appendChild(card);
+  });
+}
+document.addEventListener('DOMContentLoaded', renderSaved);
+renderSaved();
+
 </script>
 </body>
 </html>
