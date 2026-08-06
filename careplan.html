@@ -46,12 +46,41 @@
   .cathead td{background:#eef2fa;color:var(--indigo-deep);font-weight:700;}
   .cpbtn{display:block;font:inherit;font-size:10.5px;font-weight:700;border:1px solid var(--indigo);color:var(--indigo-deep);background:#fff;border-radius:5px;padding:2px 8px;cursor:pointer;margin-top:6px;}
   .cpbtn:active{background:var(--indigo);color:#fff;}
+
+  .btn-danger{background:#fff;color:var(--red);border:2px solid var(--red);}
+  .btn-danger:hover{background:var(--red-bg);}
+  .draft-note{font-size:11px;color:var(--muted);margin-top:6px;}
+  .save-btn{background:var(--indigo);color:#fff;border:none;}
+  .save-btn:hover{background:var(--indigo-deep);}
+  .save-btn.saved{background:#2e7d4f;}
+  .saved-sec{margin-top:16px;padding-top:12px;border-top:1px solid var(--line);}
+  .saved-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;}
+  .saved-note{font-size:11px;color:var(--muted);margin:4px 0 10px;line-height:1.7;}
+  .clear-all-btn{padding:6px 12px;border-radius:8px;border:1.5px solid var(--red);background:#fff;color:var(--red);font-weight:700;font-size:12px;cursor:pointer;font:inherit;}
+  .rec-card{border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px;background:#fafbfe;}
+  .rec-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;}
+  .rec-title{font-weight:700;font-size:12.5px;color:var(--indigo-deep);}
+  .rec-btns{display:flex;gap:8px;}
+  .rec-copy{padding:5px 12px;border-radius:7px;border:1.5px solid var(--indigo);background:#fff;color:var(--indigo);font-weight:700;font-size:12px;cursor:pointer;font:inherit;}
+  .rec-copy.copied{border-color:#2e7d4f;color:#2e7d4f;}
+  .rec-del{padding:5px 12px;border-radius:7px;border:1.5px solid var(--red);background:#fff;color:var(--red);font-weight:700;font-size:12px;cursor:pointer;font:inherit;}
+  .rec-body{font-size:12px;color:#444;white-space:pre-wrap;max-height:80px;overflow:auto;background:#fff;border-radius:6px;padding:8px;border:1px solid var(--line);}
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>ケアプラン作成支援</h1>
   <div class="sub">ベテランケアマネの思考をナビゲートするツール｜入力はこのパソコンの中だけで処理されます</div>
+
+  <div class="card" id="draftcard">
+    <div class="btnbar" style="margin:0;">
+      <button type="button" class="btn-sub" id="draft-save">途中保存</button>
+      <button type="button" class="btn-sub" id="draft-resume">保存した続きから再開</button>
+      <button type="button" class="btn-danger" id="draft-clear">新しく始める（クリア）</button>
+    </div>
+    <p class="draft-note" id="draft-status"></p>
+    <p class="draft-note">※選んだ項目・入力した希望欄だけを、この端末の中に保存します（外部には送信されません）。次の利用者を始めるときは、必ず「新しく始める（クリア）」を押してください。</p>
+  </div>
 
   <div class="card">
     <h2>STEP1　困りごとを選ぶ（複数可）</h2>
@@ -248,8 +277,20 @@
     <div id="flags"></div>
     <div id="tblbox"></div>
     <textarea id="output" placeholder="下にコピー用テキストも出ます。直接なおせます。"></textarea>
-    <button class="btn-sub" id="copy" style="margin-top:8px;">コピー</button>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+      <button class="btn-sub" id="copy">コピー</button>
+      <button class="save-btn" id="save-record">この記録を保存</button>
+    </div>
     <p class="note">※出るのは候補と叩き台です。本人の意向に合っているか、目標が本人の言葉になっているかは必ずご自身で確認を。回避語（安心・安全・快適など）はツール側では使わず文を作っています。赤は「生活の場の検討を切り出すきっかけ」の目安で、順位はつけていません。最終判断は必ず人の目で。</p>
+
+    <div class="saved-sec" id="saved-sec" style="display:none;">
+      <div class="saved-head">
+        <h2 style="border:none;padding:0;">保存した記録（<span id="saved-count">0</span>件）</h2>
+        <button type="button" class="clear-all-btn" id="clear-all-btn">すべて削除</button>
+      </div>
+      <p class="saved-note">保存した「第2表」「転記文」は、この端末（ブラウザ）の中だけに残ります。外部には送信されません。共有PCで使う場合は、使い終わったら削除してください。</p>
+      <div id="saved-list"></div>
+    </div>
   </div>
 </div>
 
@@ -713,6 +754,7 @@
   }
 
   var lastRows=[];
+  var lastOutputType='';
   var FIELD_LABEL={need:'ニーズ',lg:'長期目標',sh:'短期目標',svc:'サービス候補'};
   function fieldText(r,field){
     if(field==='need')return r.need;
@@ -774,6 +816,7 @@
     t+='</table>';
     document.getElementById('tblbox').innerHTML=t;
     document.getElementById('output').value=txt.trim();
+    lastOutputType='第2表';
     document.getElementById('tblbox').scrollIntoView({behavior:'smooth',block:'start'});
   });
 
@@ -813,22 +856,175 @@
     mlb.textContent='ケアカルテ　アセスメント特記欄への転記文（区分ごとに「この区分をコピー」でも貼り付けられます）';
     document.getElementById('tblbox').innerHTML=html;
     document.getElementById('output').value=txt.trim();
+    lastOutputType='転記文';
     document.getElementById('tblbox').scrollIntoView({behavior:'smooth',block:'start'});
   });
 
   document.getElementById('copy').addEventListener('click',function(){
     var o=document.getElementById('output');o.select();o.setSelectionRange(0,99999);
     if(navigator.clipboard)navigator.clipboard.writeText(o.value);else document.execCommand('copy');});
-  document.getElementById('clear').addEventListener('click',function(){
-    if(!confirm('入力内容を消して、次の利用者に移りますか？'))return;
+  function resetAll(){
     [].slice.call(document.querySelectorAll('.opt.on,.chip.on')).forEach(function(x){x.classList.remove('on');});
     [].slice.call(document.querySelectorAll('.panel')).forEach(function(x){x.classList.remove('active');});
     [].slice.call(document.querySelectorAll('.subblk')).forEach(function(x){x.classList.remove('on');});
     [].slice.call(document.querySelectorAll('input[type="text"]')).forEach(function(x){x.value='';});
     [].slice.call(document.querySelectorAll('.ng')).forEach(function(x){x.style.display='none';});
     document.getElementById('tblbox').innerHTML='';document.getElementById('flags').innerHTML='';document.getElementById('output').value='';document.getElementById('modelabel').textContent='';
-    lastRows=[];lastCats=[];modeManual=false;updateModeSuggestion();
+    lastRows=[];lastCats=[];lastOutputType='';modeManual=false;updateModeSuggestion();
+    clearDraft();
+  }
+  document.getElementById('clear').addEventListener('click',function(){
+    if(!confirm('入力内容を消して、次の利用者に移りますか？保存した続きも削除されます。'))return;
+    resetAll();
     window.scrollTo({top:0,behavior:'smooth'});});
+  document.getElementById('draft-clear').addEventListener('click',function(){
+    if(!confirm('入力内容を消して、新しく始めますか？保存した続きも削除されます。'))return;
+    resetAll();
+    window.scrollTo({top:0,behavior:'smooth'});});
+
+  // ===== 途中保存・再開（端末内・LocalStorageのみ／外部送信なし） =====
+  var DRAFT_KEY='careplan_draft_v1';
+  function nowLabel(){
+    var d=new Date();
+    var mm=('0'+(d.getMonth()+1)).slice(-2), dd=('0'+d.getDate()).slice(-2);
+    var hh=('0'+d.getHours()).slice(-2), mi=('0'+d.getMinutes()).slice(-2);
+    return mm+'/'+dd+' '+hh+':'+mi;
+  }
+  function captureState(){
+    var chips=[].slice.call(document.querySelectorAll('.chip[data-p].on')).map(function(c){return c.dataset.p;});
+    var opts={};
+    [].slice.call(document.querySelectorAll('.opts[data-g]')).forEach(function(box){
+      var idx=[].slice.call(box.children).reduce(function(acc,el,i){if(el.classList.contains('on'))acc.push(i);return acc;},[]);
+      if(idx.length)opts[box.dataset.g]=idx;
+    });
+    var texts={};
+    [].slice.call(document.querySelectorAll('input[type="text"][id]')).forEach(function(inp){
+      if(inp.value)texts[inp.id]=inp.value;
+    });
+    return {chips:chips,opts:opts,texts:texts,mode:currentMode,modeManual:modeManual};
+  }
+  function applyState(st){
+    if(!st)return;
+    [].slice.call(document.querySelectorAll('.chip.on')).forEach(function(x){x.classList.remove('on');});
+    [].slice.call(document.querySelectorAll('.panel')).forEach(function(x){x.classList.remove('active');});
+    [].slice.call(document.querySelectorAll('.opt.on')).forEach(function(x){x.classList.remove('on');});
+    [].slice.call(document.querySelectorAll('input[type="text"]')).forEach(function(x){x.value='';});
+    (st.chips||[]).forEach(function(p){
+      var c=document.querySelector('.chip[data-p="'+p+'"]');
+      var panel=document.getElementById('p-'+p);
+      if(c)c.classList.add('on');
+      if(panel)panel.classList.add('active');
+    });
+    Object.keys(st.opts||{}).forEach(function(g){
+      var box=document.querySelector('.opts[data-g="'+g+'"]');
+      if(!box)return;
+      (st.opts[g]||[]).forEach(function(i){
+        var el=box.children[i];
+        if(el)el.classList.add('on');
+      });
+    });
+    Object.keys(st.texts||{}).forEach(function(id){
+      var inp=document.getElementById(id);
+      if(inp){inp.value=st.texts[id];inp.dispatchEvent(new Event('input'));}
+    });
+    syncSub();
+    currentMode=st.mode||'jiritsu';
+    modeManual=!!st.modeManual;
+    renderModeUI();
+  }
+  function loadDraft(){
+    try{var s=localStorage.getItem(DRAFT_KEY);return s?JSON.parse(s):null;}catch(e){return null;}
+  }
+  function saveDraft(){
+    try{
+      localStorage.setItem(DRAFT_KEY, JSON.stringify({savedAt:nowLabel(),state:captureState()}));
+    }catch(e){alert('保存に失敗しました。');return;}
+    renderDraftStatus();
+    var b=document.getElementById('draft-save');
+    var orig=b.textContent;b.textContent='保存しました';
+    setTimeout(function(){b.textContent=orig;},1400);
+  }
+  function resumeDraft(){
+    var d=loadDraft();
+    if(!d){alert('保存された続きが見つかりません。');return;}
+    applyState(d.state);
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  function clearDraft(){
+    localStorage.removeItem(DRAFT_KEY);
+    renderDraftStatus();
+  }
+  function renderDraftStatus(){
+    var d=loadDraft();
+    var el=document.getElementById('draft-status');
+    if(!el)return;
+    el.textContent = d ? ('保存済みの続きがあります（'+d.savedAt+'）') : '保存された続きはありません。';
+  }
+  document.getElementById('draft-save').addEventListener('click', saveDraft);
+  document.getElementById('draft-resume').addEventListener('click', resumeDraft);
+  renderDraftStatus();
+
+  // ===== 完成品（第2表・転記文）の保存（端末内・LocalStorageのみ／外部送信なし） =====
+  var SAVE_KEY='careplan_saved_v1';
+  function loadSavedRecords(){
+    try{var s=localStorage.getItem(SAVE_KEY);return s?JSON.parse(s):[];}catch(e){return [];}
+  }
+  function writeSavedRecords(arr){
+    try{localStorage.setItem(SAVE_KEY, JSON.stringify(arr));}catch(e){}
+  }
+  function saveRecord(){
+    var out=document.getElementById('output');
+    if(!out||!out.value.trim()){alert('先に「思考の叩き台を出す」または「ケアカルテ特記欄に転記」で文章を作ってください。');return;}
+    var arr=loadSavedRecords();
+    arr.push({id:Date.now(), label:nowLabel()+'　'+(lastOutputType||'記録'), text:out.value});
+    writeSavedRecords(arr);
+    renderSavedRecords();
+    var b=document.getElementById('save-record');
+    b.classList.add('saved');b.textContent='保存しました';
+    setTimeout(function(){b.classList.remove('saved');b.textContent='この記録を保存';},1400);
+  }
+  function deleteSavedRecord(id){
+    writeSavedRecords(loadSavedRecords().filter(function(r){return r.id!==id;}));
+    renderSavedRecords();
+  }
+  function clearAllSavedRecords(){
+    if(!loadSavedRecords().length)return;
+    if(confirm('保存した記録をすべて削除します。よろしいですか？')){writeSavedRecords([]);renderSavedRecords();}
+  }
+  function copySavedRecord(id,btn){
+    var r=loadSavedRecords().filter(function(x){return x.id===id;})[0];
+    if(!r)return;
+    copyText(r.text);
+    btn.classList.add('copied');btn.textContent='コピー済';
+    setTimeout(function(){btn.classList.remove('copied');btn.textContent='コピー';},1400);
+  }
+  function renderSavedRecords(){
+    var arr=loadSavedRecords();
+    var sec=document.getElementById('saved-sec');
+    var list=document.getElementById('saved-list');
+    var cnt=document.getElementById('saved-count');
+    cnt.textContent=arr.length;
+    sec.style.display=arr.length?'block':'none';
+    list.innerHTML='';
+    arr.forEach(function(r,i){
+      var card=document.createElement('div');card.className='rec-card';
+      var head=document.createElement('div');head.className='rec-head';
+      var t=document.createElement('span');t.className='rec-title';t.textContent=(i+1)+'件目　'+r.label;
+      var btns=document.createElement('div');btns.className='rec-btns';
+      var cb=document.createElement('button');cb.type='button';cb.className='rec-copy';cb.textContent='コピー';
+      cb.addEventListener('click',function(){copySavedRecord(r.id,cb);});
+      var db=document.createElement('button');db.type='button';db.className='rec-del';db.textContent='削除';
+      db.addEventListener('click',function(){if(confirm('この記録を削除しますか？'))deleteSavedRecord(r.id);});
+      btns.appendChild(cb);btns.appendChild(db);
+      head.appendChild(t);head.appendChild(btns);
+      var body=document.createElement('div');body.className='rec-body';body.textContent=r.text;
+      card.appendChild(head);card.appendChild(body);
+      list.appendChild(card);
+    });
+  }
+  document.getElementById('save-record').addEventListener('click', saveRecord);
+  document.getElementById('clear-all-btn').addEventListener('click', clearAllSavedRecords);
+  renderSavedRecords();
 })();
 </script>
 </body>
