@@ -1,0 +1,105 @@
+:root {
+  --new-paper: #f4efe4;
+  --new-paper-2: #ebe7dd;
+  --new-ink: #27383e;
+  --new-blue: #416b7b;
+  --new-blue-deep: #2f5361;
+  --new-blue-soft: #dfe8e8;
+  --new-line: rgba(54, 95, 112, .20);
+  --new-shadow: 0 16px 46px rgba(43, 65, 73, .07);
+  --new-serif: "Shippori Mincho", "Yu Mincho", "Hiragino Mincho ProN", serif;
+  --new-sans: "Noto Sans JP", "Yu Gothic", sans-serif;
+}
+
+html { background: var(--new-paper) !important; }
+body {
+  color: var(--new-ink) !important;
+  background:
+    radial-gradient(circle at 8% 12%, rgba(65,107,123,.04), transparent 30%),
+    radial-gradient(circle at 92% 34%, rgba(112,143,153,.05), transparent 32%),
+    var(--new-paper) !important;
+  font-family: var(--new-sans) !important;
+}
+
+h1, h2, h3, .brand, .mark, .head { font-family: var(--new-serif) !important; }
+h1 { color: var(--new-blue-deep) !important; letter-spacing: .08em !important; }
+h2, h3 { color: var(--new-blue-deep); }
+a { color: var(--new-blue-deep); }
+
+.renew-back {
+  display: inline-flex;
+  align-items: center;
+  margin: 18px 24px 0;
+  padding: 8px 15px;
+  border: 1px solid var(--new-line);
+  border-radius: 999px;
+  background: rgba(244,239,228,.86);
+  color: var(--new-blue-deep) !important;
+  font-size: 12px;
+  letter-spacing: .06em;
+  text-decoration: none;
+  position: relative;
+  z-index: 50;
+}
+.renew-back::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  margin-right: 2px;
+  border-left: 1px solid currentColor;
+  border-bottom: 1px solid currentColor;
+  transform: rotate(45deg);
+}
+
+.wrap, .main { position: relative; }
+.card, .panel, .controls, .notice, .note, .voice, .sheet {
+  border-color: var(--new-line) !important;
+  box-shadow: var(--new-shadow) !important;
+}
+.card, .panel, .controls, .notice, .note, .voice {
+  background: rgba(255,255,255,.45) !important;
+  border-radius: 26px 10px 26px 10px !important;
+}
+
+input, select, textarea {
+  border-color: var(--new-line) !important;
+  border-radius: 12px !important;
+  background: rgba(255,255,255,.72) !important;
+  color: var(--new-ink) !important;
+}
+input:focus, select:focus, textarea:focus {
+  outline: 2px solid rgba(65,107,123,.22) !important;
+  border-color: var(--new-blue) !important;
+}
+
+button, .btn, .calc-btn, .tab, .chip, .stopbtn, .btn-print, .btn-next {
+  border-color: var(--new-blue) !important;
+  border-radius: 999px !important;
+}
+button:not(.ghost), .btn:not(.ghost), .calc-btn, .btn-print {
+  background: var(--new-blue) !important;
+  color: #fff !important;
+}
+button:hover, .btn:hover, .calc-btn:hover { filter: brightness(.94); }
+.tab.active, .chip.active, input:checked + label {
+  background: var(--new-blue) !important;
+  color: #fff !important;
+}
+
+.req, .badge, .accent, .gold, .today, .k, .eyebrow {
+  color: var(--new-blue) !important;
+}
+.req { background: var(--new-blue) !important; color: #fff !important; border-radius: 999px !important; }
+
+table, th, td { border-color: rgba(54,95,112,.28) !important; }
+th { background: var(--new-blue-soft) !important; color: var(--new-ink) !important; }
+
+@media (max-width: 760px) {
+  .card, .panel, .controls, .notice, .note, .voice { border-radius: 20px 8px 20px 8px !important; }
+  button, .btn, .calc-btn { min-height: 44px; }
+}
+
+@media print {
+  body { background: #fff !important; }
+  .sheet { box-shadow: none !important; }
+}

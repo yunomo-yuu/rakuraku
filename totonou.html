@@ -1,131 +1,24 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>整う部屋 ｜ 結ゆう</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg:#070a16;--ink:#ece7d8;--muted:#9aa0bd;
-    --gold:#e8c877;--gold-bright:#FFD580;--line:rgba(232,200,119,.22);
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html{-webkit-text-size-adjust:100%}
-  body{
-    font-family:'Shippori Mincho',serif;color:var(--ink);min-height:100vh;
-    background:
-      radial-gradient(1100px 640px at 50% -12%, #141b40 0%, transparent 60%),
-      linear-gradient(180deg,#070a16 0%,#05060e 100%);
-    overflow-x:hidden;position:relative;padding:0 20px 70px;
-  }
-  #stars{position:fixed;inset:0;pointer-events:none;z-index:0}
-  .star{position:absolute;border-radius:50%;background:#fff;animation:tw 4.5s ease-in-out infinite}
-  @keyframes tw{0%,100%{opacity:.14}50%{opacity:.65}}
-  .wrap{position:relative;z-index:1;max-width:560px;margin:0 auto}
+<link rel="icon" href="favicon.svg?v=2" type="image/svg+xml">
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="呼吸と音で、自分の感覚へ静かに戻るための道具。">
+  <title>整う部屋｜結</title><link rel="stylesheet" href="styles.css">
 
-  header{text-align:center;padding:58px 0 6px}
-  .eyebrow{font-size:11px;letter-spacing:.44em;color:var(--gold);opacity:.85;margin-bottom:20px}
-  h1{font-weight:600;font-size:34px;letter-spacing:.3em;color:#fff;text-indent:.3em}
-  .lead{margin:24px auto 0;max-width:400px;font-size:13.5px;color:var(--muted);line-height:2.05;letter-spacing:.05em}
-  .lead .warm{color:var(--ink)}
-
-  /* 中心軸に並ぶ扉 */
-  .axis{position:relative;margin:48px auto 0;max-width:460px;padding:8px 0}
-  .axis::before{
-    content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;transform:translateX(-50%);
-    background:linear-gradient(180deg,transparent,var(--line) 10%,var(--line) 90%,transparent);
-  }
-  .door{
-    position:relative;display:block;text-decoration:none;color:inherit;
-    margin:0 auto 26px;padding:22px 24px;max-width:440px;
-    border:1px solid var(--line);border-radius:16px;
-    background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012));
-    -webkit-tap-highlight-color:transparent;
-    transition:transform .3s ease, border-color .3s, box-shadow .3s;
-    overflow:hidden;
-  }
-  .door::before{
-    content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c);
-    box-shadow:0 0 18px 0 var(--c);opacity:.85;
-  }
-  .door:hover{transform:translateY(-3px);border-color:rgba(232,200,119,.45);
-    box-shadow:0 14px 40px -22px var(--c)}
-  .tag{font-size:10.5px;letter-spacing:.28em;color:var(--c);opacity:.95;margin-bottom:10px}
-  .dtitle{font-size:20px;font-weight:600;letter-spacing:.14em;color:#fff}
-  .ddesc{margin-top:10px;font-size:12.5px;color:var(--muted);line-height:1.85;letter-spacing:.03em}
-  .enter{margin-top:16px;font-size:12px;letter-spacing:.22em;color:var(--gold-bright);display:inline-flex;align-items:center;gap:8px}
-  .enter::after{content:"→";transition:transform .3s}
-  .door:hover .enter::after{transform:translateX(5px)}
-
-  .divide{text-align:center;margin:6px 0 30px;font-size:11px;letter-spacing:.4em;color:var(--muted);opacity:.7}
-
-  footer{text-align:center;margin-top:44px}
-  footer a{color:var(--gold);text-decoration:none;font-size:12px;letter-spacing:.2em;border-bottom:1px solid var(--line);padding-bottom:3px;transition:.25s}
-  footer a:hover{color:var(--gold-bright)}
-  .whisper{margin-top:30px;font-size:11px;color:#6f7492;line-height:1.95;letter-spacing:.04em;max-width:400px;margin-left:auto;margin-right:auto}
-
-  @media (prefers-reduced-motion:reduce){.star{animation:none;opacity:.4}.door:hover{transform:none}}
-  @media (max-width:440px){h1{font-size:28px}.axis::before{left:26px}.door{margin-left:0}}
-</style>
 </head>
 <body>
-<div id="stars"></div>
-<div class="wrap">
-  <header>
-    <div class="eyebrow">結 ゆ う</div>
-    <h1>整う部屋</h1>
-    <p class="lead">ここは、わたしが自分を<span class="warm">整える</span>ための部屋。<br>
-    音で、息で、からだで。精神とフィジカルは、ほんとうは地続き。<br>
-    よかったら、あなたも入っていって。</p>
-  </header>
-
-  <div class="axis">
-    <div class="divide">― 精神をととのえる ―</div>
-
-    <a class="door" href="chakra.html" style="--c:#A66BD4">
-      <div class="tag">音 ／ チャクラ</div>
-      <div class="dtitle">七つの音</div>
-      <div class="ddesc">チャクラに寄り添うバイノーラルビート。ひとつ選んで、目を閉じて。イヤホンでどうぞ。</div>
-      <span class="enter">音をきく</span>
-    </a>
-
-    <div class="divide">― フィジカルをととのえる ―</div>
-
-    <a class="door" href="breath.html" style="--c:#3FA9C9">
-      <div class="tag">息 ／ 呼吸法　🔒</div>
-      <div class="dtitle">呼吸 三十六</div>
-      <div class="ddesc">吸って、吐いて、三十六回。圧をかけて、限界まで。ゆるめる呼吸じゃない、通す呼吸。<br><span style="color:#7f849c;font-size:11px">※ 合言葉を持つ方への部屋</span></div>
-      <span class="enter">呼吸する</span>
-    </a>
-
-    <a class="door" href="diaphragm.html" style="--c:#35B36B">
-      <div class="tag">からだ ／ 声とからだ　🔒</div>
-      <div class="dtitle">横隔膜トレーニング</div>
-      <div class="ddesc">音階にのせて、横隔膜を上下に。声とからだの、いちばん下の土台をつくる。<br><span style="color:#7f849c;font-size:11px">※ 合言葉を持つ方への部屋</span></div>
-      <span class="enter">ととのえる</span>
-    </a>
-  </div>
-
-  <footer>
-    <a href="index.html">結ゆうの入口へもどる</a>
-    <p class="whisper">やる日も、やらない日も、どっちも正解。<br>身体の声を、いちばん先に聞いてあげて。</p>
-  </footer>
-</div>
-
-<script>
-(function(){
-  const s=document.getElementById('stars'),f=document.createDocumentFragment();
-  for(let i=0;i<64;i++){
-    const d=document.createElement('div');d.className='star';
-    const sz=Math.random()*1.8+.4;d.style.width=d.style.height=sz+'px';
-    d.style.left=Math.random()*100+'%';d.style.top=Math.random()*100+'%';
-    d.style.animationDelay=(Math.random()*4.5)+'s';f.appendChild(d);
-  }
-  s.appendChild(f);
-})();
-</script>
-</body>
-</html>
+  <header class="site-header"><a class="brand" href="index.html"><span class="brand-mark">結</span><span><span class="brand-name">整う部屋</span><br><span class="brand-sub">ひと息つくところ</span></span></a><a class="header-back" href="index.html">← 玄関へ</a></header>
+  <main>
+    <section class="room-hero calm-hero"><div class="thread-line"></div><div class="eyebrow">みっつめのへや・こきゅうとおと</div><h1>からだの声が聞こえる<br>静けさへ。</h1><p>うまく整えようとしなくて大丈夫。呼吸や音に意識を向けて、いまの自分の感覚へ戻るための小さな方法を置いています。</p></section>
+    <section class="care-tools calm-tools">
+      <div class="section-head"><h2>今の感覚から選ぶ</h2><p>無理をせず、心地よい範囲でお試しください。</p></div>
+      <div class="calm-grid">
+        <a class="calm-card" href="chakra.html"><span class="num">01 · おと</span><h2>チャクラの音</h2><p>七つの場所に対応する音へ、静かに耳を澄ませる。</p><span class="arrow">ひらく →</span></a>
+        <a class="calm-card" href="breath.html"><span class="num">02 · こきゅう</span><h2>呼吸のメソッド</h2><p>呼吸のリズムを使って、心とからだに余白をつくる。</p><span class="arrow">ひらく →</span></a>
+        <a class="calm-card" href="diaphragm.html"><span class="num">03 · からだ</span><h2>横隔膜をゆるめる</h2><p>呼吸を支える場所へ、やさしく意識を戻していく。</p><span class="arrow">ひらく →</span></a>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer"><a href="index.html">← 玄関へ</a><span>結 ｜ you-no-oto.jp</span></footer>
+</body></html>

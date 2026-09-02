@@ -1,242 +1,45 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>占いの部屋 ｜ 結ゆう</title>
-  <!-- ファビコン -->
-<link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-:root{
-  --yozora-ue:#0b1626; --yozora-naka:#152944; --yozora-shita:#1b3a5b;
-  --kin:#c9a24b; --hoshi:#f2ede1;
-  --moji:#e9e5d9; --usumoji:#b9b4a6; --sen:rgba(242,237,225,.18);
-  --kaado:rgba(242,237,225,.05);
-  --line:#06C755;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
-  background:linear-gradient(180deg,var(--yozora-ue) 0%,var(--yozora-naka) 45%,var(--yozora-shita) 100%);
-  background-attachment:fixed;
-  color:var(--moji); line-height:1.9;
-  min-height:100vh;
-  position:relative;
-}
-/* 星空 */
-body::before{
-  content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
-  background-image:
-    radial-gradient(1px 1px at 15% 12%, rgba(242,237,225,.8) 50%, transparent 51%),
-    radial-gradient(1.5px 1.5px at 80% 8%, rgba(201,162,75,.7) 50%, transparent 51%),
-    radial-gradient(1px 1px at 60% 22%, rgba(242,237,225,.5) 50%, transparent 51%),
-    radial-gradient(1px 1px at 30% 35%, rgba(242,237,225,.4) 50%, transparent 51%),
-    radial-gradient(1.5px 1.5px at 90% 30%, rgba(242,237,225,.45) 50%, transparent 51%),
-    radial-gradient(1px 1px at 10% 55%, rgba(242,237,225,.5) 50%, transparent 51%),
-    radial-gradient(1.5px 1.5px at 45% 62%, rgba(201,162,75,.5) 50%, transparent 51%),
-    radial-gradient(1px 1px at 75% 58%, rgba(242,237,225,.4) 50%, transparent 51%),
-    radial-gradient(1px 1px at 25% 78%, rgba(242,237,225,.45) 50%, transparent 51%),
-    radial-gradient(1.5px 1.5px at 65% 85%, rgba(242,237,225,.4) 50%, transparent 51%),
-    radial-gradient(1px 1px at 88% 92%, rgba(201,162,75,.45) 50%, transparent 51%);
-}
-main,header,footer,.modori{position:relative; z-index:1}
-.modori{
-  display:inline-block; font-size:12px; color:var(--usumoji); text-decoration:none;
-  letter-spacing:.15em; padding:16px 20px;
-}
-.modori:hover{color:var(--kin)}
-header{
-  color:var(--hoshi); text-align:center;
-  padding:42px 20px 36px;
-}
-header h1{font-size:22px; font-weight:600; letter-spacing:.25em}
-header p{font-size:12px; opacity:.72; margin-top:12px; letter-spacing:.12em; line-height:1.8}
-main{max-width:560px; margin:0 auto; padding:10px 20px 60px}
-section{
-  background:var(--kaado); border:1px solid var(--sen); border-radius:2px;
-  padding:26px 24px; margin:20px 0;
-}
-section h2{
-  font-size:15px; color:var(--kin); letter-spacing:.2em; font-weight:600;
-  border-bottom:1px solid var(--sen); padding-bottom:10px; margin-bottom:16px;
-}
-section p{font-size:13px; color:var(--usumoji); letter-spacing:.04em}
-.btn{
-  display:block; text-align:center; text-decoration:none;
-  padding:14px; margin-top:18px; font-size:15px; letter-spacing:.2em;
-  border-radius:2px; transition:opacity .2s;
-}
-.btn:hover{opacity:.85}
-.btn.line{background:var(--line); color:#fff}
-.btn.shiro{background:transparent; color:var(--hoshi); border:1px solid var(--hoshi)}
-.dogu{
-  display:block; text-decoration:none; color:inherit;
-  border:1px solid var(--sen); border-radius:2px;
-  padding:18px 18px; margin:12px 0;
-  transition:border-color .2s;
-}
-.dogu:hover{border-color:var(--kin)}
-.dogu h3{font-size:15px; color:var(--hoshi); font-weight:600; letter-spacing:.1em}
-.dogu p{font-size:12px; color:var(--usumoji); margin-top:6px}
-.dogu .kagi{
-  display:inline-block; font-size:11px; color:var(--kin);
-  border:1px solid var(--kin); border-radius:2px;
-  padding:1px 8px; margin-left:8px; letter-spacing:.1em;
-}
-.dogu .atarasii{
-  display:inline-block; font-size:11px; color:#0b1626; background:var(--kin);
-  border-radius:2px; padding:1px 8px; margin-left:8px; letter-spacing:.1em;
-}
-.soeb{font-size:11px; color:var(--usumoji); opacity:.8; margin-top:14px; line-height:1.8; letter-spacing:.03em}
-/* ===== 結ゆうの本棚 ===== */
-.hondana-pr{
-  font-size:11px; color:var(--usumoji); letter-spacing:.08em;
-  margin:-6px 0 16px;
-}
-.hon{
-  display:flex; gap:16px; align-items:flex-start;
-  border-top:1px solid var(--sen);
-  padding:18px 2px;
-}
-.hon:first-of-type{border-top:none; padding-top:6px}
-.hon-hyoshi{flex:0 0 80px}
-.hon-hyoshi img{
-  display:block; width:80px; height:auto;
-  background:#fff; border-radius:2px;
-  box-shadow:0 4px 14px rgba(0,0,0,.5);
-}
-.hon-naka{flex:1; min-width:0}
-.hon-dai{font-size:14px; line-height:1.6; margin-bottom:6px}
-.hon-dai a{
-  color:var(--hoshi); text-decoration:none;
-  border-bottom:1px solid rgba(201,162,75,.5);
-}
-.hon-dai a:hover{color:var(--kin)}
-.hon-koto{font-size:12px; color:var(--usumoji); line-height:1.8; margin-bottom:10px}
-.hon-btn{
-  display:inline-block; font-size:12px; letter-spacing:.15em;
-  color:var(--kin); border:1px solid var(--kin); border-radius:2px;
-  padding:6px 16px; text-decoration:none; transition:opacity .2s;
-}
-.hon-btn:hover{opacity:.8}
-@media (max-width:400px){
-  .hon{gap:12px}
-}
-footer{
-  text-align:center; font-size:11px; color:var(--usumoji); opacity:.7;
-  padding:26px 20px; letter-spacing:.2em; border-top:1px solid var(--sen);
-}
-</style>
+<link rel="icon" href="favicon.svg?v=2" type="image/svg+xml">
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="占いと対話で、困りごとを扱える形に組み替える。結ゆうのセッションと占いの道具。">
+  <title>占いの部屋｜結ゆう</title><link rel="stylesheet" href="styles.css">
+
 </head>
 <body>
-<a class="modori" href="index.html">← 玄関へもどる</a>
-
-<header>
-  <h1>占いの部屋</h1>
-  <p>困りごとを、その人が扱える形に、組み替える。<br>タロット・音叉・紫微斗数・四柱推命・西洋占星術・奇門遁甲・九星気学・マヤ暦・カバラ。</p>
-</header>
-
-<main>
-  <section>
-    <h2>セッションのご案内</h2>
-    <p>対面・ビデオ・通話でのセッションを行っています。初めての方は20分のお試しから。詳しいご案内と料金は、紹介ページをご覧ください。</p>
-    <a class="btn shiro" href="yuu.html">結ゆうについて・料金 →</a>
-    <a class="btn line" href="https://lin.ee/sV1Dkxl">公式LINEで相談する</a>
-  </section>
-
-  <section>
-    <h2>星と命の道具箱</h2>
-    <p>結ゆうがセッションで使っている道具を、そのまま置いています。たどり着いた方は、ご自由にどうぞ。</p>
-
-    <a class="dogu" href="horoscope.html">
-      <h3>出生図（ホロスコープ）</h3>
-      <p>生まれた時空の星の配置を写しとる。西洋占星術の出生図と、天体の一覧・アスペクトを表示。AIに読み解いてもらうための発注文つき。</p>
-    </a>
-
-    <a class="dogu" href="kimon.html">
-      <h3>奇門遁甲 時盤</h3>
-      <p>今この時の盤を立てる。日々変わる時間の吉凶をたしかめる道具。AIへの発注文つき。</p>
-    </a>
-
-    <a class="dogu" href="kyusei.html">
-      <h3>星のめぐり（九星気学・八宅）<span class="kagi">合言葉</span><span class="atarasii">新しい道具</span></h3>
-      <p>生年月日から本命星・月命星・傾斜と、住まいの方位（本命卦）を写しとる。年盤・月盤・日盤のめぐりから、お出かけの吉方位・凶方位まで。AIへの発注文つき。</p>
-    </a>
-
-    <a class="dogu" href="maya.html">
-      <h3>マヤ暦 KINナビ</h3>
-      <p>生年月日から、あなたのKINを写しとる。太陽の紋章・ウェイブスペル・銀河の音と、ご縁を映す関係の紋章まで。AIへの発注文つき。</p>
-    </a>
-
-    <a class="dogu" href="tree.html">
-      <h3>生命の木（カバラ）</h3>
-      <p>10のセフィラと22の小径をたどる、宇宙の設計図。それぞれの座の意味・タロットとの対応と、自分を中心に人を配置する相関図ワークつき。</p>
-    </a>
-
-    <a class="dogu" href="meishiki.html">
-      <h3>四柱推命 命式ジェネレーター<span class="kagi">合言葉</span><span class="atarasii">新しい道具</span></h3>
-      <p>生年月日と時刻から「自分の取扱説明書」を読む、東洋の技法。命式表・特殊星から、10年ごと・1年ごとの運気の巡りまで精密に。AIへの発注文つき。合言葉は、公式LINEにご登録の方へお渡ししています。</p>
-    </a>
-
-    <a class="dogu" href="shibi.html">
-      <h3>紫微斗数 命盤<span class="kagi">合言葉</span></h3>
-      <p>東洋占星術の精密な命盤を生成。ご購入いただいた方に、合言葉をお渡ししています。</p>
-    </a>
-
-    <a class="dogu" href="spread.html">
-      <h3>生命の木スプレッド<span class="kagi">合言葉</span></h3>
-      <p>タロットを生命の木の座に展開し、その配置を読み解く。合言葉をお持ちの方に開いています。</p>
-    </a>
-
-    <a class="btn line" href="https://lin.ee/sV1Dkxl">公式LINEに登録して合言葉を受けとる</a>
-
-    <p class="soeb">どの道具も、入力した情報はどこにも送信されません。すべてお使いの端末の中だけで動きます。</p>
-  </section>
-
-  <section>
-    <h2>結ゆうの本棚</h2>
-    <p class="hondana-pr">［PR］紹介リンクには楽天アフィリエイトを利用しています。</p>
-    <p style="margin-bottom:18px">道具で写しとった結果を、自分の手で読み解きたくなったら。結ゆうが実際に開いている本を置いています。</p>
-
-    <div class="hon">
-      <div class="hon-hyoshi">
-        <a href="https://hb.afl.rakuten.co.jp/ichiba/0ee36173.3a647d04.0ee36174.96165ffb/?pc=https%3A%2F%2Fproduct.rakuten.co.jp%2Fproduct%2F-%2F309c0f54b5d9b4d98501eaf036bf0a48%2F&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiI4MHg4MCIsIm5hbSI6MSwibmFtcCI6InJpZ2h0IiwiY29tIjoxLCJjb21wIjoiZG93biIsInByaWNlIjoxLCJib3IiOjEsImNvbCI6MSwiYmJ0biI6MSwicHJvZCI6MSwiYW1wIjpmYWxzZX0%3D" target="_blank" rel="nofollow sponsored noopener"><img src="https://hbb.afl.rakuten.co.jp/hgb/55e76616.97d67b84.55e76617.1e93f959/?me_id=1213310&item_id=21357241&pc=https%3A%2F%2Fthumbnail.image.rakuten.co.jp%2F%400_mall%2Fbook%2Fcabinet%2F1576%2F9784046071576_1_5.jpg%3F_ex%3D80x80&s=80x80&t=picttext" border="0" alt="新装改訂版 古代マヤ暦「13の音」書影"></a>
+  <header class="site-header"><a class="brand" href="index.html"><span class="brand-mark">結</span><span><span class="brand-name">占いの部屋</span><br><span class="brand-sub">あなたのおと</span></span></a><a class="header-back" href="index.html">← 玄関へ</a></header>
+  <main>
+    <section class="room-hero dark">
+      <div class="thread-line"></div><div class="eyebrow">ひとつめのへや・うらないとたいわ</div>
+      <h1>答えを渡すのではなく、<br>あなたの答えが<br>立ち上がる場所。</h1>
+      <p>仕事、人間関係、これからの選択。占いと対話を入口に、こんがらがった気持ちを、その人が扱える形へ組み替えます。占術を選べなくても大丈夫です。</p>
+    </section>
+    <section class="path-section">
+      <div class="section-head"><h2>今のあなたに近い入口から</h2><p>相談したい、自分で確かめたい、もう少し深く知りたい。目的から選べるようにしました。</p></div>
+      <div class="path-grid">
+        <a class="path-card" href="yuu.html"><span class="num">01</span><h3>話して、ほどく</h3><p>対面・ビデオ・通話でのセッション。初めての方は20分のお試しから。</p><span class="price-tag">初回 20分 3,000円</span><span class="arrow">→</span></a>
+        <a class="path-card" href="#toolbox"><span class="num">02</span><h3>自分で、たしかめる</h3><p>生年月日や今の時刻から、星・命・方位を写しとる無料の道具。</p><span class="arrow">↓</span></a>
+        <a class="path-card" href="#books"><span class="num">03</span><h3>読んで、深める</h3><p>結果を自分の手で読み解くために、実際に開いている本をご紹介します。</p><span class="arrow">↓</span></a>
       </div>
-      <div class="hon-naka">
-        <p class="hon-dai"><a href="https://hb.afl.rakuten.co.jp/ichiba/0ee36173.3a647d04.0ee36174.96165ffb/?pc=https%3A%2F%2Fproduct.rakuten.co.jp%2Fproduct%2F-%2F309c0f54b5d9b4d98501eaf036bf0a48%2F&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiI4MHg4MCIsIm5hbSI6MSwibmFtcCI6InJpZ2h0IiwiY29tIjoxLCJjb21wIjoiZG93biIsInByaWNlIjoxLCJib3IiOjEsImNvbCI6MSwiYmJ0biI6MSwicHJvZCI6MSwiYW1wIjpmYWxzZX0%3D" target="_blank" rel="nofollow sponsored noopener">新装改訂版　古代マヤ暦「13の音」 ［越川宗亮］</a></p>
-        <p class="hon-koto">KINを構成するもうひとつの柱「銀河の音」を、一音ずつ丁寧に。自分の音の意味を知ると、リズムの取り方が変わります。</p>
-        <a class="hon-btn" href="https://hb.afl.rakuten.co.jp/ichiba/0ee36173.3a647d04.0ee36174.96165ffb/?pc=https%3A%2F%2Fproduct.rakuten.co.jp%2Fproduct%2F-%2F309c0f54b5d9b4d98501eaf036bf0a48%2F&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiI4MHg4MCIsIm5hbSI6MSwibmFtcCI6InJpZ2h0IiwiY29tIjoxLCJjb21wIjoiZG93biIsInByaWNlIjoxLCJib3IiOjEsImNvbCI6MSwiYmJ0biI6MSwicHJvZCI6MSwiYW1wIjpmYWxzZX0%3D" target="_blank" rel="nofollow sponsored noopener">楽天で見る</a>
+    </section>
+    <section class="tools" id="toolbox">
+      <div class="section-head"><h2>星と命の道具箱</h2><p>無料の道具はすぐに使えます。入力した情報は送信されず、お使いの端末の中だけで動きます。</p></div>
+      <div class="tool-groups">
+        <div class="tool-group"><h3>西洋の星</h3><div class="tool-list"><a class="tool-link" href="horoscope.html"><span>出生図（ホロスコープ）</span><span class="badge">無料 →</span></a><a class="tool-link" href="tree.html"><span>生命の木（カバラ）</span><span class="badge">無料 →</span></a><a class="tool-link" href="spread.html"><span>生命の木スプレッド</span><span class="badge">合言葉 →</span></a></div></div>
+        <div class="tool-group"><h3>東洋の命</h3><div class="tool-list"><a class="tool-link" href="meishiki.html"><span>四柱推命 命式</span><span class="badge">合言葉 →</span></a><a class="tool-link" href="shibi.html"><span>紫微斗数 命盤</span><span class="badge">購入者向け →</span></a></div></div>
+        <div class="tool-group"><h3>暦と方位</h3><div class="tool-list"><a class="tool-link" href="kimon.html"><span>奇門遁甲 時盤</span><span class="badge">無料 →</span></a><a class="tool-link" href="kyusei.html"><span>星のめぐり・九星気学</span><span class="badge">合言葉 →</span></a></div></div>
+        <div class="tool-group"><h3>古代の暦</h3><div class="tool-list"><a class="tool-link" href="maya.html"><span>マヤ暦 KINナビ</span><span class="badge">無料 →</span></a></div></div>
       </div>
-    </div>
-
-    <div class="hon">
-      <div class="hon-hyoshi">
-        <a href="https://hb.afl.rakuten.co.jp/ichiba/0ee36173.3a647d04.0ee36174.96165ffb/?pc=https%3A%2F%2Fproduct.rakuten.co.jp%2Fproduct%2F-%2Fae1e831ea8c4a36483aee91d50b394bd%2F&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiI4MHg4MCIsIm5hbSI6MSwibmFtcCI6InJpZ2h0IiwiY29tIjoxLCJjb21wIjoiZG93biIsInByaWNlIjowLCJib3IiOjEsImNvbCI6MSwiYmJ0biI6MSwicHJvZCI6MSwiYW1wIjpmYWxzZX0%3D" target="_blank" rel="nofollow sponsored noopener"><img src="https://hbb.afl.rakuten.co.jp/hgb/55e76616.97d67b84.55e76617.1e93f959/?me_id=1213310&item_id=20632164&pc=https%3A%2F%2Fthumbnail.image.rakuten.co.jp%2F%400_mall%2Fbook%2Fcabinet%2F7082%2F9784046057082_1_7.jpg%3F_ex%3D80x80&s=80x80&t=picttext" border="0" alt="新装改訂版 古代マヤ暦「20の刻印」書影"></a>
+    </section>
+    <section class="books" id="books">
+      <div class="section-head"><h2>結ゆうの本棚</h2><div><p>道具で写しとった結果を、自分の手で読み解きたくなったら。</p><p class="pr-note">［PR］紹介リンクには楽天アフィリエイトを利用しています。</p></div></div>
+      <div class="book-grid">
+        <a class="book-card" href="https://hb.afl.rakuten.co.jp/ichiba/0ee36173.3a647d04.0ee36174.96165ffb/?pc=https%3A%2F%2Fproduct.rakuten.co.jp%2Fproduct%2F-%2F309c0f54b5d9b4d98501eaf036bf0a48%2F&amp;link_type=picttext" target="_blank" rel="nofollow sponsored noopener"><span class="num">まやれき</span><h3>古代マヤ暦<br>「13の音」</h3><p>自分の音の意味を知り、リズムの取り方を深める一冊。</p><span>楽天で見る →</span></a>
+        <a class="book-card" href="https://hb.afl.rakuten.co.jp/ichiba/0ee36173.3a647d04.0ee36174.96165ffb/?pc=https%3A%2F%2Fproduct.rakuten.co.jp%2Fproduct%2F-%2Fae1e831ea8c4a36483aee91d50b394bd%2F&amp;link_type=picttext" target="_blank" rel="nofollow sponsored noopener"><span class="num">まやれき</span><h3>古代マヤ暦<br>「20の刻印」</h3><p>太陽の紋章20を一つずつ深く読み解くための一冊。</p><span>楽天で見る →</span></a>
+        <a class="book-card" href="https://hb.afl.rakuten.co.jp/ichiba/0ee36173.3a647d04.0ee36174.96165ffb/?pc=https%3A%2F%2Fproduct.rakuten.co.jp%2Fproduct%2F-%2F1a717bdd2db0b68d232e4aa320037ffb%2F&amp;link_type=picttext" target="_blank" rel="nofollow sponsored noopener"><span class="num">しちゅうすいめい</span><h3>一番わかりやすい<br>はじめての四柱推命</h3><p>命式を手を動かしながら読めるようになる入門書。</p><span>楽天で見る →</span></a>
       </div>
-      <div class="hon-naka">
-        <p class="hon-dai"><a href="https://hb.afl.rakuten.co.jp/ichiba/0ee36173.3a647d04.0ee36174.96165ffb/?pc=https%3A%2F%2Fproduct.rakuten.co.jp%2Fproduct%2F-%2Fae1e831ea8c4a36483aee91d50b394bd%2F&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiI4MHg4MCIsIm5hbSI6MSwibmFtcCI6InJpZ2h0IiwiY29tIjoxLCJjb21wIjoiZG93biIsInByaWNlIjowLCJib3IiOjEsImNvbCI6MSwiYmJ0biI6MSwicHJvZCI6MSwiYW1wIjpmYWxzZX0%3D" target="_blank" rel="nofollow sponsored noopener">新装改訂版　古代マヤ暦「20の刻印」 ［越川宗亮］</a></p>
-        <p class="hon-koto">太陽の紋章20を一つずつ深掘りする一冊。まずは自分の紋章のページから。「13の音」と対で揃えると、読み解きが立体になります。</p>
-        <a class="hon-btn" href="https://hb.afl.rakuten.co.jp/ichiba/0ee36173.3a647d04.0ee36174.96165ffb/?pc=https%3A%2F%2Fproduct.rakuten.co.jp%2Fproduct%2F-%2Fae1e831ea8c4a36483aee91d50b394bd%2F&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiI4MHg4MCIsIm5hbSI6MSwibmFtcCI6InJpZ2h0IiwiY29tIjoxLCJjb21wIjoiZG93biIsInByaWNlIjowLCJib3IiOjEsImNvbCI6MSwiYmJ0biI6MSwicHJvZCI6MSwiYW1wIjpmYWxzZX0%3D" target="_blank" rel="nofollow sponsored noopener">楽天で見る</a>
-      </div>
-    </div>
-
-    <div class="hon">
-      <div class="hon-hyoshi">
-        <a href="https://hb.afl.rakuten.co.jp/ichiba/0ee36173.3a647d04.0ee36174.96165ffb/?pc=https%3A%2F%2Fproduct.rakuten.co.jp%2Fproduct%2F-%2F1a717bdd2db0b68d232e4aa320037ffb%2F&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiI4MHg4MCIsIm5hbSI6MSwibmFtcCI6InJpZ2h0IiwiY29tIjoxLCJjb21wIjoiZG93biIsInByaWNlIjowLCJib3IiOjEsImNvbCI6MSwiYmJ0biI6MSwicHJvZCI6MSwiYW1wIjpmYWxzZX0%3D" target="_blank" rel="nofollow sponsored noopener"><img src="https://hbb.afl.rakuten.co.jp/hgb/55e76616.97d67b84.55e76617.1e93f959/?me_id=1213310&item_id=21200366&pc=https%3A%2F%2Fthumbnail.image.rakuten.co.jp%2F%400_mall%2Fbook%2Fcabinet%2F2111%2F9784537222111_1_6.jpg%3F_ex%3D80x80&s=80x80&t=picttext" border="0" alt="一番わかりやすい はじめての四柱推命 書影"></a>
-      </div>
-      <div class="hon-naka">
-        <p class="hon-dai"><a href="https://hb.afl.rakuten.co.jp/ichiba/0ee36173.3a647d04.0ee36174.96165ffb/?pc=https%3A%2F%2Fproduct.rakuten.co.jp%2Fproduct%2F-%2F1a717bdd2db0b68d232e4aa320037ffb%2F&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiI4MHg4MCIsIm5hbSI6MSwibmFtcCI6InJpZ2h0IiwiY29tIjoxLCJjb21wIjoiZG93biIsInByaWNlIjowLCJib3IiOjEsImNvbCI6MSwiYmJ0biI6MSwicHJvZCI6MSwiYW1wIjpmYWxzZX0%3D" target="_blank" rel="nofollow sponsored noopener">一番わかりやすい はじめての四柱推命 ［愛新覚羅ゆうはん］</a></p>
-        <p class="hon-koto">書き込み式ワークつきで、自分の命式を手を動かしながら読めるようになる入門書。最初の一冊に迷ったらこれ。</p>
-        <a class="hon-btn" href="https://hb.afl.rakuten.co.jp/ichiba/0ee36173.3a647d04.0ee36174.96165ffb/?pc=https%3A%2F%2Fproduct.rakuten.co.jp%2Fproduct%2F-%2F1a717bdd2db0b68d232e4aa320037ffb%2F&link_type=picttext&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiI4MHg4MCIsIm5hbSI6MSwibmFtcCI6InJpZ2h0IiwiY29tIjoxLCJjb21wIjoiZG93biIsInByaWNlIjowLCJib3IiOjEsImNvbCI6MSwiYmJ0biI6MSwicHJvZCI6MSwiYW1wIjpmYWxzZX0%3D" target="_blank" rel="nofollow sponsored noopener">楽天で見る</a>
-      </div>
-    </div>
-  </section>
-</main>
-
-<footer>結ゆう ｜ you-no-oto.jp<br><a href="legal.html" style="color:inherit;">特定商取引法・プライバシー・利用規約</a></footer>
-</body>
-</html>
+    </section>
+  </main>
+  <footer class="site-footer"><a href="index.html">← 玄関へ</a><a href="legal.html">特定商取引法・プライバシー・利用規約</a></footer>
+</body></html>
