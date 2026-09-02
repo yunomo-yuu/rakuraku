@@ -16,9 +16,9 @@ The site is organized as two sibling sections reachable from the entry pages `in
 
 1. **占いの部屋 (fortune-telling room)** — session-booking/info pages and calculator tools: `uranai.html` (index), `shibi.html` (紫微斗数), `horoscope.html`/`meishiki.html`/`tree.html`/`spread.html` (western astrology), `kimon.html` (奇門遁甲), `maya.html` (マヤ暦), `kyusei.html` (九星気学). Several of these (`meishiki.html`, `kimon.html`, `shibi.html`) are large (300–900+ lines) because they embed non-trivial date/astronomical/numerological calculation logic directly in `<script>` tags.
 2. **らくらくの部屋 (care-manager tools room)** — free documentation-generator tools forケアマネジャー (care managers), entry page `rakuraku.html`, linking to:
-   - `monitoring.html` — モニタリング記録 (monitoring record) generator
+   - `monitoring.html` — モニタリング記録 (monitoring record) generator (free; a second "らくるん版" skin is published at `rakuraku-mrkk-vol3.html` and linked from `rakuraku.html`)
    - `houkokusho.html` — 通所・訪問・施設対応の月次報告書 (monthly report) generator, printable A4 layout
-   - `keika.html` — 支援経過記録 (support process record) generator
+   - `keika.html` — 支援経過記録 (support process record) generator. No longer linked from `rakuraku.html` or any other page — see the working rule below.
 
 `profile.html` is the operator's bio page. `ogp.jpg` / `favicon*` / `apple-touch-icon.png` are shared site assets referenced with root-relative paths (`/favicon.ico`, etc.) from `<head>`.
 
@@ -40,3 +40,5 @@ The site is organized as two sibling sections reachable from the entry pages `in
 - ケアマネ書類の文面に「安心・安全」という表現を使わない。
 - 鍵付きページのパスフレーズ判定ロジックは、明示的に指示されたときだけ触る。
 - らくらくのツールでサービス名を入力する欄は、事業所の正式名称を書くための欄。サービス種別の候補表示（datalist等）は提案しない。
+- `keika.html` は有料版移行のため意図的にリンクを外している（2026-09、`rakuraku.html`のカードを削除、`<meta name="robots" content="noindex,nofollow">`を追加済み）。ファイル自体はURL直打ちで開ける状態で残す。孤立ページとして検出されても、指示なくリンクを張り直さないこと。
+- ランダム名のHTMLファイル（`w2n8-r5j3.html.html` / `x7k9-m3q2.html.html`）は有料版ツール。リンクを張らない・リネームしない・削除しない。`<meta name="robots" content="noindex,nofollow">`を追加済み。`rakuraku-mrkk-vol3.html`も同系統の別名ファイルだが、こちらは`rakuraku.html`から意図的にリンクされている無料公開版（noindex対象外）なので混同しないこと。

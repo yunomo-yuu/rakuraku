@@ -138,5 +138,6 @@ function again(){reset();setTimeout(draw,120);}
 function reset(){phase="ready";document.getElementById("cardInner").classList.remove("flipped");document.getElementById("cardFront").classList.remove("glow");document.getElementById("result").style.display="none";document.getElementById("btns").innerHTML='<button class="draw-btn" onclick="draw()">カードを引く<\/button>';}
 function renderHist(){if(!hist.length)return;document.getElementById("histSec").style.display="block";var h="";for(var i=0;i<hist.length;i++){var x=hist[i];h+='<div class="hist-row"><span class="hist-time">'+x.t+'</span><span class="hist-name">'+x.card.n+" "+x.card.name+'</span><span class="hist-pos '+(x.rv?"rv":"up")+'">'+(x.rv?"逆":"正")+"</span></div>";}document.getElementById("histList").innerHTML=h;}
 </script>
+<footer style="text-align:center;font-size:11px;color:rgba(232,224,208,.35);letter-spacing:.1em;margin:24px 0 12px;">結ゆう ｜ you-no-oto.jp<br><a href="legal.html" style="color:inherit;">特定商取引法・プライバシー・利用規約</a></footer>
 </body>
 </html>
