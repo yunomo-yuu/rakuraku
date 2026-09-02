@@ -90,6 +90,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   writing-mode: vertical-rl;
   font: 500 clamp(48px, 8vw, 104px)/1 var(--serif);
   letter-spacing: .18em;
+  color: rgba(54, 95, 112, .18);
 }
 .eyebrow { color: var(--red); font-size: 12px; letter-spacing: .22em; text-transform: uppercase; }
 .hero-copy h1,
@@ -344,7 +345,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .site-header { min-height: 66px; padding: 0 20px; }
   .brand-sub { display: none; }
   .home-hero { min-height: 0; display: block; padding: 76px 28px 88px; }
-  .home-hero .vertical-title { position: absolute; left: 22px; top: 198px; writing-mode: horizontal-tb; font-size: 116px; opacity: .07; }
+  .home-hero .vertical-title { position: absolute; left: 22px; top: 198px; writing-mode: horizontal-tb; font-size: 116px; color: rgba(54, 95, 112, .08); }
   .hero-copy { position: relative; z-index: 1; }
   .hero-copy h1 { font-size: 30px; line-height: 1.6; letter-spacing: .035em; }
   .room-hero h1 { font-size: 32px; }
