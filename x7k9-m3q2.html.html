@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>らくらく経過記録</title>
+<style>
+  :root{
+    --ink:#22304a;--indigo:#3a5ba0;--indigo-deep:#2b4577;
+    --paper:#f6f7f9;--line:#c9d2e0;--muted:#6b7891;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic Medium","Yu Gothic",Meiryo,sans-serif;
+    background:var(--paper);color:var(--ink);line-height:1.7;padding:18px 10px 60px;font-size:14px;
+  }
+  .wrap{max-width:760px;margin:0 auto;}
+  h1{text-align:center;font-size:18px;letter-spacing:.3em;color:var(--indigo-deep);margin-bottom:4px;}
+  .sub{text-align:center;font-size:11px;color:var(--muted);margin-bottom:14px;}
+  .card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:12px;}
+  .card h2{font-size:13px;color:var(--indigo-deep);letter-spacing:.15em;border-left:4px solid var(--indigo);padding-left:8px;margin-bottom:10px;}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;}
+  .chips label{border:1.5px solid var(--line);border-radius:20px;padding:6px 14px;font-size:13px;cursor:pointer;background:#fff;user-select:none;}
+  .chips input{display:none;}
+  .chips label:has(input:checked){background:var(--indigo);color:#fff;border-color:var(--indigo);}
+  .row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:8px;align-items:flex-end;}
+  .field{display:flex;flex-direction:column;gap:2px;}
+  .field label{font-size:11px;color:var(--muted);}
+  input[type="text"],input[type="number"],input[type="date"],input[type="time"],select,textarea{
+    font:inherit;font-size:14px;color:var(--ink);border:1px solid var(--line);
+    border-radius:6px;padding:7px 9px;background:#fff;
+  }
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--indigo);border-color:var(--indigo);}
+  textarea{width:100%;min-height:64px;resize:vertical;line-height:1.7;}
+  .w-s{width:110px;} .w-m{width:190px;} .w-l{width:100%;}
+  .checks{display:flex;flex-wrap:wrap;gap:10px 16px;}
+  .checks label{display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;}
+  .checks input{width:16px;height:16px;accent-color:var(--indigo);}
+  .panel{display:none;} .panel.active{display:block;}
+  .judge{font-size:13px;font-weight:700;padding:8px 12px;border-radius:8px;background:#eef2fa;color:var(--indigo-deep);display:inline-block;margin-top:4px;}
+  .judge.ok1{background:#e2efdc;color:#33691e;}
+  .judge.ok2{background:#fff3d6;color:#8a6d00;}
+  .judge.ng{background:#fde4e4;color:#a33;}
+  .hint{font-size:11px;color:var(--muted);margin-top:4px;}
+  .btnbar{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0;}
+  button{font:inherit;font-weight:700;letter-spacing:.08em;border-radius:8px;padding:11px 22px;cursor:pointer;font-size:14px;}
+  .btn-main{background:var(--indigo);color:#fff;border:none;flex:1;min-width:160px;}
+  .btn-main:hover{background:var(--indigo-deep);}
+  .btn-sub{background:#fff;color:var(--indigo-deep);border:2px solid var(--indigo);}
+  .btn-sub:hover{background:#eef2fa;}
+  #output{min-height:170px;font-size:14px;}
+  .copied{display:none;font-size:12px;color:#33691e;font-weight:700;align-self:center;}
+  .ai-card{border:2px dashed var(--indigo);}
+  .ai-note{font-size:12px;color:var(--muted);margin:2px 0 10px;line-height:1.6;}
+  #ai-input{min-height:120px;font-size:14px;width:100%;box-sizing:border-box;}
+  .ai-toggle{display:flex;align-items:center;gap:8px;margin:12px 0;padding:10px 12px;background:#eef2fa;border-radius:8px;font-size:13px;font-weight:700;color:var(--indigo-deep);cursor:pointer;}
+  .ai-toggle input{width:18px;height:18px;}
+  .btn-ai{background:var(--indigo-deep);color:#fff;border:none;}
+  .btn-ai:hover{opacity:.88;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>らくらく経過記録</h1>
+  <div class="sub">入力した内容は、このパソコンの中だけで処理されます。どこにも送信されません。</div>
+
+  <div class="card">
+    <h2>記録の種類</h2>
+    <div class="chips" id="type-chips">
+      <label><input type="radio" name="rtype" value="normal" checked><span>通常の記録</span></label>
+      <label><input type="radio" name="rtype" value="soudan"><span>初回相談</span></label>
+      <label><input type="radio" name="rtype" value="keiyaku"><span>居宅契約</span></label>
+      <label><input type="radio" name="rtype" value="kaigi"><span>担当者会議</span></label>
+      <label><input type="radio" name="rtype" value="keibi"><span>軽微な変更</span></label>
+      <label><input type="radio" name="rtype" value="kubun"><span>区分変更申請</span></label>
+      <label><input type="radio" name="rtype" value="nyuin"><span>入院時情報連携</span></label>
+      <label><input type="radio" name="rtype" value="tsuin"><span>通院時情報連携</span></label>
+      <label><input type="radio" name="rtype" value="taiin"><span>退院・退所</span></label>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>日時・場所</h2>
+    <div class="row">
+      <div class="field"><label>日付</label><input type="date" id="c-date"></div>
+      <div class="field"><label>時刻</label><input type="time" id="c-time"></div>
+      <div class="field"><label>場所</label>
+        <select id="c-place">
+          <option>自宅</option><option>居室</option><option>当事業所</option>
+          <option>事業所</option><option>病院</option><option>施設</option><option value="">（記載しない）</option>
+        </select>
+      </div>
+    </div>
+    <div class="checks" style="margin-top:6px;">
+      <span style="font-size:11px;color:var(--muted);width:100%;">同席した人（本人以外）</span>
+      <label><input type="checkbox" class="who" value="家族">家族</label>
+      <label><input type="checkbox" class="who" value="施設職員">施設職員</label>
+      <label><input type="checkbox" class="who" value="サービス事業所">サービス事業所</label>
+      <label><input type="checkbox" class="who" value="医療機関">医療機関</label>
+      <label><input type="checkbox" class="who" value="保険者・行政">保険者・行政</label>
+      <label><input type="checkbox" class="who" value="包括">包括</label>
+    </div>
+  </div>
+
+  <div class="card panel active" id="p-normal">
+    <h2>通常の記録</h2>
+    <div class="row">
+      <div class="field"><label>どうやって</label>
+        <select id="n-how"><option>訪問</option><option>電話（受）</option><option>電話（発）</option><option>来所</option><option>FAX・メール</option><option>同行</option></select>
+      </div>
+      <div class="field"><label>何のために</label>
+        <select id="n-why">
+          <option>状態確認・様子伺い</option><option>モニタリング</option><option>サービス調整</option>
+          <option>情報共有・報告</option><option>相談対応</option><option>制度手続き</option>
+          <option>入退院対応</option><option>苦情・事故対応</option>
+        </select>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field"><label>きっかけ：誰から</label><input type="text" id="n-src" class="w-m" placeholder="例：次女"></div>
+      <div class="field" style="flex:1;min-width:220px;"><label>どんな連絡だった？</label><input type="text" id="n-heard" class="w-l" placeholder="例：電話が繋がらない"></div>
+    </div>
+    <p class="hint">連絡が発端でなければ、この2つは空のままでOK。</p>
+    <div class="field" style="margin-top:8px;"><label>そこで何があった？</label><textarea id="n-saw"></textarea></div>
+    <div class="field" style="margin-top:8px;"><label>自分はどうした？</label><textarea id="n-act"></textarea></div>
+    <div class="field" style="margin-top:8px;"><label>結果及び方針（一行）</label><input type="text" id="n-res" class="w-l"></div>
+  </div>
+
+  <div class="card panel" id="p-soudan">
+    <h2>初回相談</h2>
+    <div class="row">
+      <div class="field"><label>相談経路</label>
+        <select id="s-route">
+          <option>地域包括支援センター</option><option>病院（相談員・MSW）</option><option>家族</option>
+          <option>本人</option><option>サービス事業所</option><option>市町村</option><option>その他</option>
+        </select>
+      </div>
+      <div class="field" style="flex:1;min-width:200px;"><label>相談者（所属・氏名・続柄）</label><input type="text" id="s-who" class="w-l" placeholder="例：〇〇包括 〇〇氏"></div>
+    </div>
+    <div class="field"><label>相談内容・経緯</label><textarea id="s-body"></textarea></div>
+    <div class="checks" style="margin-top:8px;">
+      <label><input type="checkbox" id="s-next" checked>末尾に「今後、日程を調整のうえ訪問し、状況確認と契約について相談することとした。」を入れる</label>
+    </div>
+  </div>
+
+  <div class="card panel" id="p-keiyaku">
+    <h2>居宅契約</h2>
+    <p class="hint">契約時に説明する6項目をまとめて書き出します。入力は日時・場所・同席者だけでOK。</p>
+    <div class="field" style="margin-top:8px;"><label>備考（任意）</label><textarea id="k-biko" style="min-height:50px;"></textarea></div>
+  </div>
+
+  <div class="card panel" id="p-kaigi">
+    <h2>担当者会議</h2>
+    <div class="field"><label>参加者（本人・事業所名・担当者名など）</label><input type="text" id="g-join" class="w-l" placeholder="例：本人、〇〇福祉用具：〇〇様、担当CM"></div>
+    <div class="row" style="margin-top:8px;">
+      <div class="field"><label>開催理由</label>
+        <select id="g-why">
+          <option>担当者変更のための会議開催</option><option>更新認定に伴う会議開催</option>
+          <option>目標期間満了に伴う会議開催</option>
+          <option>区分変更認定に伴う会議開催</option><option>状態変化に伴う会議開催</option>
+          <option>新規計画作成のための会議開催</option><option>サービス追加・変更に伴う会議開催</option>
+        </select>
+      </div>
+      <div class="field"><label>利用票別表（〇月分）</label><input type="text" id="g-month" class="w-s" placeholder="例：9"></div>
+    </div>
+  </div>
+
+  <div class="card panel" id="p-keibi">
+    <h2>軽微な変更</h2>
+    <div class="field"><label>該当する事由（厚労省 介護保険最新情報Vol.155の例示）</label>
+      <select id="b-reason" class="w-l">
+        <option value="">（選択しない）</option>
+        <option value="サービス提供の曜日・時間帯の変更（利用者の体調不良や家族の都合などによる一時的なもの）">サービス提供の曜日変更（一時的なもの）</option>
+        <option value="同一事業所における週1回程度のサービス利用回数の増減">サービス提供の回数変更（週1回程度の増減）</option>
+        <option value="利用者の住所変更">利用者の住所変更</option>
+        <option value="単なる事業所の名称変更">事業所の名称変更</option>
+        <option value="課題や期間を変更する必要がなく、単に目標期間を延長するもの">目標期間の延長</option>
+        <option value="同等の福祉用具への変更で、単位数のみが異なるもの">福祉用具の変更（同等品・単位数のみ）</option>
+        <option value="目標・サービスの変更を伴わず、利用者の状況以外の原因による事業所の変更">事業所の変更（目標・サービス変更なし）</option>
+        <option value="解決すべき課題・目標・サービス種別が変わらない範囲での、サービス内容の変更">サービス内容の変更（課題・目標は不変）</option>
+        <option value="同一事業所内での担当介護支援専門員の変更（新担当者が利用者・各担当者と面識あり）">担当介護支援専門員の変更（同一事業所内）</option>
+      </select>
+    </div>
+    <p class="hint">※これらは例示です。継続的な変更や、課題・目標の見直しが必要な場合は軽微な変更に該当しません。最終判断はケアマネジャーが行ってください。</p>
+    <div class="row" style="margin-top:8px;">
+      <div class="field" style="flex:1;min-width:200px;"><label>何について</label><input type="text" id="b-what" class="w-l" placeholder="例：訪問介護の利用回数"></div>
+      <div class="field" style="flex:1;min-width:200px;"><label>どう変更した</label><input type="text" id="b-how" class="w-l" placeholder="例：週2回から週3回へ"></div>
+    </div>
+    <div class="field" style="margin-top:8px;"><label>備考（任意）</label><textarea id="b-biko" style="min-height:50px;"></textarea></div>
+  </div>
+
+  <div class="card panel" id="p-kubun">
+    <h2>区分変更申請</h2>
+    <div class="field"><label>申請理由（状態の変化）</label><input type="text" id="q-why" class="w-l" placeholder="例：転倒が増え、日常生活動作に介助を要する場面が増えた"></div>
+    <div class="row" style="margin-top:8px;">
+      <div class="field"><label>提出先（保険者）</label><input type="text" id="q-city" class="w-m" placeholder="例：佐賀市"></div>
+      <div class="field"><label>提出日</label><input type="date" id="q-date"></div>
+      <div class="field"><label>提出</label>
+        <select id="q-type"><option>代行して提出した</option><option>代行して提出する予定である</option><option>本人・家族が提出することとなった</option></select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card panel" id="p-nyuin">
+    <h2>入院時情報連携</h2>
+    <div class="row">
+      <div class="field"><label>入院日</label><input type="date" id="y-in"></div>
+      <div class="field"><label>情報提供日</label><input type="date" id="y-out"></div>
+      <div class="field"><label>提供時刻（任意）</label><input type="time" id="y-time"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>病院名</label><input type="text" id="y-hosp" class="w-m" placeholder="例：〇〇病院"></div>
+      <div class="field"><label>提供先</label>
+        <select id="y-to"><option>相談員（MSW）</option><option>地域連携室</option><option>看護師</option><option>病棟職員</option><option>担当医</option></select>
+      </div>
+      <div class="field"><label>提供方法</label>
+        <select id="y-way"><option>入院時情報提供書の送付</option><option>面談</option><option>電話</option><option>FAX</option><option>メール</option><option>電子的システム</option></select>
+      </div>
+    </div>
+    <div class="checks"><label><input type="checkbox" id="y-gai">入院が営業時間終了後・営業日以外だった</label></div>
+    <div class="judge" id="y-judge">入院日と情報提供日を入れると加算区分を判定します</div>
+    <p class="hint">Ⅰ：入院日のうちに提供（営業時間終了後・営業日以外の入院は翌日提供も含む）／Ⅱ：入院日の翌日または翌々日。最終判断は最新の算定要件と保険者確認でお願いします。</p>
+  </div>
+
+  <div class="card panel" id="p-tsuin">
+    <h2>通院時情報連携</h2>
+    <div class="row">
+      <div class="field"><label>医療機関</label><input type="text" id="t-hosp" class="w-m" placeholder="例：〇〇クリニック"></div>
+      <div class="field"><label>診察科・医師（任意）</label><input type="text" id="t-dr" class="w-m" placeholder="例：内科 〇〇医師"></div>
+    </div>
+    <div class="field"><label>医師へ伝えた内容</label><textarea id="t-give" placeholder="心身の状況、生活環境、サービスの利用状況など"></textarea></div>
+    <div class="field" style="margin-top:8px;"><label>医師から得た助言</label><textarea id="t-get"></textarea></div>
+    <p class="hint">利用者1人につき月1回が上限。診察に同席し、情報提供した事実を記録に残すこと。</p>
+  </div>
+
+  <div class="card panel" id="p-taiin">
+    <h2>退院・退所</h2>
+    <div class="row">
+      <div class="field"><label>退院・退所日</label><input type="date" id="r-out"></div>
+      <div class="field"><label>最後に情報を得た日</label><input type="date" id="r-last"></div>
+      <div class="field"><label>カンファ以外の回数</label><input type="number" id="r-n1" class="w-s" min="0" value="1"></div>
+      <div class="field"><label>カンファの回数</label><input type="number" id="r-n2" class="w-s" min="0" value="0"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>医療機関・施設名</label><input type="text" id="r-hosp" class="w-m" placeholder="例：〇〇病院"></div>
+      <div class="field" style="flex:1;min-width:200px;"><label>面談した相手</label><input type="text" id="r-who" class="w-l" placeholder="例：〇〇MSW、〇〇看護師"></div>
+    </div>
+    <div class="field"><label>得た情報の要点</label><textarea id="r-body" placeholder="治療経過、退院後の医療的管理、生活上の留意点など"></textarea></div>
+    <div class="judge" id="r-judge">回数を入れると加算区分を判定します</div>
+    <p class="hint">同一日に複数回受けても1回。原則は退院・退所前だが、退院後7日以内に得た情報でも算定可。初回加算とは併算定不可。最終判断は最新の算定要件と保険者確認でお願いします。</p>
+  </div>
+
+  <div class="btnbar">
+    <button class="btn-main" id="make">記録を作る</button>
+    <button class="btn-sub" id="copy">コピー</button>
+    <button class="btn-sub" id="clear">次の利用者へ</button>
+    <span class="copied" id="copied">コピーしました</span>
+  </div>
+
+  <div class="card">
+    <h2>できあがり</h2>
+    <textarea id="output" placeholder="ここに記録が出ます。直接なおしてから、コピーもできます。"></textarea>
+  </div>
+
+  <div class="card ai-card" id="ai-card">
+    <h2 id="ai-title">AIで整える</h2>
+    <p class="ai-note" id="ai-none" style="display:none;">この記録は「そのままコピー」でお使いください（AI整形の対象外です）。</p>
+    <div id="ai-body">
+      <p class="ai-note">下の欄に、音声入力でも手打ちでもOK。バーッと話した（書いた）内容を、選んだ記録の種類に合わせたAI整形プロンプト付きでコピーします。それをお使いのAI（ChatGPT等）に貼り付けてください。<br>※この欄も、内容はこのパソコンの中だけで処理されます。</p>
+      <textarea id="ai-input" placeholder="ここに、話した（または打ち込んだ）記録の下書きを入れてください。"></textarea>
+      <label class="ai-toggle" id="ai-hint-wrap">
+        <input type="checkbox" id="ai-hint">
+        <span>ひょっとしたら、こうかも？（AIに気づき・確認事項も出してもらう）</span>
+      </label>
+      <div class="btnbar">
+        <button class="btn-main btn-ai" id="ai-copy">AI整形用にコピー</button>
+        <span class="copied" id="ai-copied">コピーしました</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var W=['日','月','火','水','木','金','土'];
+  var p2=function(x){return ('0'+x).slice(-2);};
+  function today(){var d=new Date();return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());}
+  function now(){var d=new Date();return p2(d.getHours())+':'+p2(d.getMinutes());}
+  document.getElementById('c-date').value=today();
+  document.getElementById('c-time').value=now();
+
+  function v(id){var e=document.getElementById(id);return e?(e.value||'').trim():'';}
+  function type(){return document.querySelector('input[name="rtype"]:checked').value;}
+  function jp(s){if(!s)return '';var q=s.split('-');var o=new Date(+q[0],+q[1]-1,+q[2]);return (+q[1])+'/'+(+q[2])+'（'+W[o.getDay()]+'）';}
+  function whoList(){return [].slice.call(document.querySelectorAll('.who:checked')).map(function(c){return c.value;});}
+  function dt(){var s=jp(v('c-date'));if(v('c-time'))s=(s?s+' ':'')+v('c-time');return s;}
+  function meta(){var w=whoList();return [dt(),v('c-place'),(w.length?w.join('・')+'同席':'')].filter(Boolean).join('／');}
+  function person(x){x=(x||'').replace(/(より|から)$/,'');if(!x)return '';return /様|さん|殿|氏|CM/.test(x)?x:x+'様';}
+
+  function judgeNyuin(){
+    var el=document.getElementById('y-judge');el.className='judge';
+    var a=v('y-in'),b=v('y-out');
+    if(!a||!b){el.textContent='入院日と情報提供日を入れると加算区分を判定します';return '';}
+    var d=Math.round((new Date(b)-new Date(a))/86400000),r='';
+    if(d<0){el.textContent='情報提供日が入院日より前になっています';el.classList.add('ng');return '';}
+    if(d===0){r='入院時情報連携加算（Ⅰ）該当見込み';el.classList.add('ok1');}
+    else if(d===1&&document.getElementById('y-gai').checked){r='入院時情報連携加算（Ⅰ）該当見込み（営業時間終了後・営業日以外の入院のため）';el.classList.add('ok1');}
+    else if(d<=2){r='入院時情報連携加算（Ⅱ）該当見込み';el.classList.add('ok2');}
+    else{r='入院から'+d+'日経過：加算対象外の可能性';el.classList.add('ng');}
+    el.textContent=r;return r;
+  }
+  function judgeTaiin(){
+    var el=document.getElementById('r-judge');el.className='judge';
+    var n1=parseInt(v('r-n1')||'0',10),n2=parseInt(v('r-n2')||'0',10),t=n1+n2,r='';
+    if(t===0){el.textContent='回数を入れると加算区分を判定します';return '';}
+    if(t===1){r=n2>=1?'退院・退所加算（Ⅰ）ロ 該当見込み':'退院・退所加算（Ⅰ）イ 該当見込み';el.classList.add('ok1');}
+    else if(t===2){r=n2>=1?'退院・退所加算（Ⅱ）ロ 該当見込み':'退院・退所加算（Ⅱ）イ 該当見込み';el.classList.add('ok1');}
+    else{r=n2>=1?'退院・退所加算（Ⅲ）該当見込み':'退院・退所加算（Ⅱ）イ 該当見込み（カンファレンスなしのため）';el.classList.add('ok2');}
+    var a=v('r-out'),b=v('r-last');
+    if(a&&b){
+      var d=Math.round((new Date(b)-new Date(a))/86400000);
+      if(d>7){r='退院後'+d+'日経過：加算対象外の可能性';el.className='judge ng';}
+    }
+    el.textContent=r;return r;
+  }
+  ['y-in','y-out','y-gai'].forEach(function(id){var e=document.getElementById(id);e.addEventListener('change',judgeNyuin);});
+  ['r-n1','r-n2','r-out','r-last'].forEach(function(id){var e=document.getElementById(id);e.addEventListener('input',judgeTaiin);e.addEventListener('change',judgeTaiin);});
+
+  function normal(){
+    var t='【目的】'+v('n-why')+'（'+v('n-how')+'）';
+    if(v('n-res'))t+='\n【結果及び方針】'+v('n-res');
+    t+='\n【経過】';
+    if(meta())t+='\n'+meta();
+    if(v('n-heard'))t+='\n・'+(person(v('n-src'))||'関係者')+'より、'+v('n-heard')+'との連絡あり。';
+    if(v('n-saw'))t+='\n・'+v('n-saw');
+    if(v('n-act'))t+='\n・'+v('n-act');
+    return t;
+  }
+  function soudan(){
+    var t='【初回相談】';
+    if(dt())t+='\n'+dt();
+    t+='\n'+(v('s-who')?person(v('s-who')):v('s-route'))+'より、'+(v('s-body')?'下記について相談を受けた。':'相談を受けた。');
+    if(v('s-body'))t+='\n'+v('s-body');
+    t+='\n\n本人の状況および困りごとについて聞き取りを行い、介護保険制度の概要と居宅介護支援の内容について説明した。';
+    if(document.getElementById('s-next').checked)t+='今後、日程を調整のうえ訪問し、状況確認と契約について相談することとした。';
+    return t;
+  }
+  function keiyaku(){
+    var t='【目的】居宅介護支援契約（訪問）\n【経過】';
+    if(meta())t+='\n'+meta();
+    t+='\n\n【契約について】\nサービス利用開始にあたり、契約書および重要事項説明書等について利用者に説明し、同意を得て署名を頂き交付した。';
+    t+='\n\n【複数の事業所選択と選定理由】\n利用者及び家族に対し、複数の指定居宅サービス事業者等の中から利用者又はその家族がサービスを選択できることを説明した。あわせて、サービス事業所の選定理由について介護支援専門員に求めることが可能である旨を説明した。（重要事項説明書に同内容を記載しており、同意の署名を頂いている。）';
+    t+='\n\n【個人情報の取扱いについて】\nサービス担当者会議等において、利用者及びその家族の個人情報を必要な範囲で用いることについて説明し、同意を得て署名を頂いた。利用目的および開示の範囲についても併せて説明した。';
+    t+='\n\n【苦情申立てについて】\n苦情の相談窓口として、当事業所、保険者および国民健康保険団体連合会の連絡先を重要事項説明書に基づき説明した。';
+    t+='\n\n【緊急時の連絡について】\n緊急時および状態に変化があった場合の連絡方法について説明し、当事業所の連絡先を伝えた。';
+    t+='\n\n【入院時の連絡について】\n入院された場合には、担当介護支援専門員の氏名および連絡先を医療機関に伝えていただくよう、利用者及び家族に依頼した。あわせて、当事業所へも速やかにご連絡いただくようお願いした。';
+    if(v('k-biko'))t+='\n\n'+v('k-biko');
+    return t;
+  }
+  function kaigi(){
+    var pl=v('c-place');
+    var t='【サービス担当者会議実施】';
+    if(dt())t+='\n'+dt();
+    t+='\n参加者：'+v('g-join');
+    t+='\n'+v('g-why')+'：居宅サービス計画書作成のためのサービス担当者会議を'+(pl==='自宅'?'本人様ご自宅':(pl||'本人様ご自宅'))+'にて実施した。';
+    t+='\n利用者の状況等に関する情報を担当者と共有するとともに、ケアプランの原案内容について、担当者から、専門的な見地からの意見を求め調整を図った。';
+    t+='\n\n※詳細は担当者会議の要点（第4表）参照';
+    t+='\n※各事業所、主治医へ居宅サービス計画書を配布した。';
+    t+='\n※各事業所へ個別計画書の提出を依頼した。';
+    if(v('g-month'))t+='\n※'+v('g-month')+'月分の利用票別表の説明を行い、同意を得て署名を頂き、配布した。';
+    return t;
+  }
+  function keibi(){
+    var t='【軽微な変更】';
+    if(meta())t+='\n'+meta();
+    t+='\n'+(v('b-what')||'〇〇')+'について、'+(v('b-how')||'〇〇へ')+'変更した。';
+    if(v('b-reason'))t+='\n該当事由：'+v('b-reason')+'。';
+    t+='\n\n本変更については、アセスメントに変更がなく、利用者の目標や課題に影響を及ぼすものではないことから、軽微な変更に該当すると判断した。変更内容について利用者及び家族に説明し、同意を得た。関係事業所へも変更内容を連絡し、共有した。';
+    t+='\n\n※本変更は軽微な変更に該当するため、居宅サービス計画書の再作成は行わず、本経過記録への記載をもって対応した。';
+    t+='\n※アセスメント、サービス担当者会議、原案の説明・同意・交付は省略した。';
+    if(v('b-biko'))t+='\n\n'+v('b-biko');
+    return t;
+  }
+  function kubun(){
+    var t='【区分変更申請】';
+    if(meta())t+='\n'+meta();
+    t+='\n'+(v('q-why')||'状態の変化')+'のため、要介護認定の区分変更申請について本人及び家族に説明し、同意を得た。';
+    t+='\n\n申請の代行について同意を得たうえで、'+(v('q-date')?jp(v('q-date'))+'に':'')+(v('q-city')||'保険者')+'へ区分変更申請書を'+v('q-type')+'。認定調査の日程が決まり次第、立ち会う旨を伝えた。';
+    return t;
+  }
+  function nyuin(){
+    var j=judgeNyuin();
+    var t='【入院時情報連携】';
+    if(v('y-in'))t+='\n'+jp(v('y-in'))+'、'+(v('y-hosp')||'〇〇病院')+'へ入院された旨の連絡を受けた。';
+    t+='\n\n'+(v('y-out')?jp(v('y-out')):'')+(v('y-time')?' '+v('y-time'):'')+'、入院先の'+v('y-to')+'へ、本人の心身の状況、生活環境、サービスの利用状況および家族の状況等について、'+v('y-way')+'により情報提供を行った。今後の経過について情報提供を依頼した。';
+    if(j&&j.indexOf('対象外')<0&&j.indexOf('前に')<0)t+='\n（'+j.replace('該当見込み','該当')+'）';
+    return t;
+  }
+  function tsuin(){
+    var t='【通院時情報連携】';
+    if(dt())t+='\n'+dt();
+    t+='\n'+(v('t-hosp')||'〇〇病院')+'の受診に同行し、診察に同席した。';
+    t+='\n\n'+(v('t-dr')?v('t-dr'):'医師')+'に対し、'+(v('t-give')||'本人の心身の状況、生活環境およびサービスの利用状況等')+'について情報提供を行った。';
+    if(v('t-get'))t+='\n'+(v('t-dr')?v('t-dr'):'医師')+'より、'+v('t-get')+'との助言を得た。';
+    t+='\n得られた情報については、今後のケアプランに反映することとした。';
+    return t;
+  }
+  function taiin(){
+    var j=judgeTaiin();
+    var t='【退院・退所】';
+    if(dt())t+='\n'+dt();
+    t+='\n'+(v('r-hosp')||'〇〇病院')+'にて、'+(v('r-who')||'職員')+'と面談し、退院後の在宅生活に必要な情報の提供を受けた。';
+    if(v('r-body'))t+='\n'+v('r-body');
+    if(v('r-out'))t+='\n退院（退所）日：'+jp(v('r-out'));
+    t+='\n\n得られた情報をもとに居宅サービス計画を作成し、サービス事業所との調整を行った。';
+    if(parseInt(v('r-n2')||'0',10)>=1)t+='\n※カンファレンスの日時・場所・出席者・内容の要点は第4表等に記載し、利用者及び家族へ交付のうえ写しを保管する。';
+    if(j&&j.indexOf('対象外')<0)t+='\n（'+j.replace(' 該当見込み','該当').replace('該当見込み','該当')+'）';
+    return t;
+  }
+
+  function switchPanel(){
+    var t=type();
+    ['normal','soudan','keiyaku','kaigi','keibi','kubun','nyuin','tsuin','taiin'].forEach(function(k){
+      document.getElementById('p-'+k).classList.toggle('active',k===t);
+    });
+  }
+  [].slice.call(document.querySelectorAll('input[name="rtype"]')).forEach(function(r){r.addEventListener('change',switchPanel);});
+
+  document.getElementById('make').addEventListener('click',function(){
+    var t=type(),o='';
+    if(t==='normal')o=normal();
+    else if(t==='soudan')o=soudan();
+    else if(t==='keiyaku')o=keiyaku();
+    else if(t==='kaigi')o=kaigi();
+    else if(t==='keibi')o=keibi();
+    else if(t==='kubun')o=kubun();
+    else if(t==='nyuin')o=nyuin();
+    else if(t==='tsuin')o=tsuin();
+    else o=taiin();
+    var out=document.getElementById('output');
+    out.value=o;out.scrollIntoView({behavior:'smooth',block:'center'});
+  });
+
+  document.getElementById('copy').addEventListener('click',function(){
+    var o=document.getElementById('output');
+    o.select();o.setSelectionRange(0,99999);
+    if(navigator.clipboard){navigator.clipboard.writeText(o.value);}else{document.execCommand('copy');}
+    var c=document.getElementById('copied');c.style.display='inline';
+    setTimeout(function(){c.style.display='none';},1600);
+  });
+
+  document.getElementById('clear').addEventListener('click',function(){
+    if(!confirm('入力内容を消して、次の利用者の記録に移りますか？'))return;
+    ['n-src','n-heard','n-saw','n-act','n-res','s-who','s-body','k-biko','g-join','g-month',
+     'b-what','b-how','b-biko','b-reason','q-why','q-city','q-date','y-in','y-out','y-time','y-hosp',
+     't-hosp','t-dr','t-give','t-get','r-out','r-last','r-hosp','r-who','r-body','output']
+      .forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+    [].slice.call(document.querySelectorAll('.who')).forEach(function(c){c.checked=false;});
+    document.getElementById('y-gai').checked=false;
+    document.getElementById('r-n1').value='1';document.getElementById('r-n2').value='0';
+    document.getElementById('c-date').value=today();
+    document.getElementById('c-time').value=now();
+    judgeNyuin();judgeTaiin();
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+
+  // ===== AI整形用コピー（種別連動） =====
+  var AI_COMMON_RULES =
+'【最重要ルール｜厳守】\n'+
+'・あなたの役割は校正であり、代筆ではありません。\n'+
+'・下書きに存在しない情報の追加、憶測による肉付け、感情や状況の推測、内容を変える言い換えはしないこと。書かれていないことは一切書かないこと。\n'+
+'・利用者（ケアマネ）は専門職です。制度や様式の説明・解説は加えず、記録の整形に徹すること。\n\n'+
+'【出力形式｜厳守】\n'+
+'・プレーンテキスト（平文）で出力する。マークダウン記法（**、#、- 等の装飾記号）は一切使わない。見出しは「■」「〈〉」など、そのまま記録欄に貼れる文字のみ用いる。\n'+
+'・ゼロ幅スペース・制御文字・非標準の特殊文字を含めず、日本語入力（IME）に支障が出ないクリーンなテキストで出力する。\n'+
+'・文体は「〜した。」の常体、簡潔・客観的に。敬称は「様」を用いる。\n';
+
+  var AI_HINT_ON =
+'\n【気づき欄｜本文とは別に付ける】\n'+
+'本文（校正済みの記録）の後に、次の見出しを付けて別枠で示すこと：\n'+
+'― ひょっとしたら、こうかも？（※参考。事実ではありません）―\n'+
+'そこに、下書きの内容から気づけるリスクや変化の可能性、確認した方がよい情報の抜けを箇条書きで示す。すべて参考であり、事実として確定していないことを明記する。採用・削除はケアマネが判断する。本文には憶測を混ぜないこと。\n';
+
+  var AI_HINT_OFF =
+'\n【気づき欄】\n'+
+'憶測・推測・リスクの示唆・気づきの提示は一切行わない。校正のみとし、下書きにない判断や解釈を加えないこと。\n';
+
+  // 種別ごとの「整え方」パート
+  var AI_PROMPTS = {
+    normal: {
+      label:'通常の記録',
+      hasHint:true,
+      lead:'あなたは介護支援専門員の記録校正を補助するアシスタントです。以下の下書きを、居宅介護支援の経過記録として整えてください。\n\n'+
+        '【整え方】\n'+
+        '・5W1H（いつ・どこで・誰が・何を・なぜ・どうした）に沿って情報を整理する。話し言葉は書き言葉に、語順も整える。\n'+
+        '・場面や話題の変わり目で改行・段落分けし、必要に応じて箇条書きで整理する（読みやすさのための整形のみ。情報の追加・削除はしない）。\n\n'
+    },
+    kaigi: {
+      label:'担当者会議（第4表）',
+      hasHint:false,
+      lead:'あなたは介護支援専門員の記録作成を補助するアシスタントです。以下の担当者会議の下書きを、サービス担当者会議の要点（第4表）として整理してください。\n\n'+
+        '【テーマを基準に取捨選択】\n'+
+        '・まずこの会議のテーマ（開催理由）を下書きから読み取り、冒頭に「〈テーマ〉◯◯についての担当者会議」として明示する。読み取れない場合は「〈テーマ〉［要確認］」とし創作しない。\n'+
+        '・このテーマに沿う内容は抽出し、沿わない話（無関係な雑談・脱線）は削除する。テーマを取捨選択の基準とする。\n'+
+        '・発言のやり取りを長々書かず、各職種（医師・サービス事業所・家族等）の要点のみ簡潔に。読みやすさを最優先し、冗長・重複・雑談は省く。\n'+
+        '※テーマに沿った要約（ある情報を絞る）は行ってよいが、無い情報を足すのは禁止。\n\n'+
+        '【出力の構成】\n'+
+        '〈テーマ〉◯◯についての担当者会議\n■ 検討した項目\n■ 検討内容（各職種の要点：テーマに沿う発言のみ）\n■ 結論・決定事項\n■ 残された課題\n\n'
+    },
+    kubun: {
+      label:'区分変更（概況欄）',
+      hasHint:false,
+      lead:'あなたは介護支援専門員の記録作成を補助するアシスタントです。以下の下書きを、区分変更申請書の概況欄（特記事項）に記載する文章として整えてください。\n\n'+
+        '【前提｜重要】\n'+
+        '・区分変更は、利用者の状態や介護の必要量に変化が生じ、現在の区分が実態に合わなくなった場合に行うものです。\n'+
+        '・概況欄は「何が・いつから・どのように変化したか」と、その変化による日常生活上の支障を、変化前→現在→支障 の流れで明確に記述する。\n'+
+        '・下書きに変化（＝区分変更の根拠）が見当たらない場合は、末尾に「［！ 根拠が見当たりません。区分変更の根拠となる内容をご確認ください］」と示す。\n'+
+        '・AIは「区分変更が妥当である」等の結論・判断を断定しないこと。変化の事実を整理・文章化するのみとし、妥当性の判断はケアマネジャーが行う。\n\n'
+    },
+    // 軽校正（入院・通院・退院で共通）
+    _light: {
+      hasHint:false,
+      build:function(label){ return 'あなたは介護支援専門員の記録校正を補助するアシスタントです。以下は「'+label+'」の記録の下書きです。\n\n'+
+        '【役割｜軽い校正のみ】\n'+
+        '・内容と構成は保持したまま、誤字脱字の修正・不自然な表現の校正・読みやすさの調整のみ行う。\n'+
+        '・情報の追加・削除・並べ替え・要約はしない。憶測や気づきも足さない。元の項目の順序を変えない。\n\n'; }
+    }
+  };
+  var LIGHT_LABEL = { nyuin:'入院時情報連携', tsuin:'通院時情報連携', taiin:'退院・退所' };
+  // AI整形の対象外（そのまま使う種別）
+  var AI_NONE = { soudan:'初回相談', keiyaku:'居宅契約', keibi:'軽微な変更' };
+
+  function currentAIConfig(){
+    var t=type();
+    if(AI_PROMPTS[t]) return {lead:AI_PROMPTS[t].lead, hasHint:AI_PROMPTS[t].hasHint, label:AI_PROMPTS[t].label};
+    if(LIGHT_LABEL[t]) return {lead:AI_PROMPTS._light.build(LIGHT_LABEL[t]), hasHint:false, label:LIGHT_LABEL[t]};
+    return null; // AI不要種別
+  }
+
+  function refreshAIPanel(){
+    var cfg=currentAIConfig();
+    var card=document.getElementById('ai-card');
+    var title=document.getElementById('ai-title');
+    var hintWrap=document.getElementById('ai-hint-wrap');
+    var none=document.getElementById('ai-none');
+    if(!cfg){
+      card.style.display='block'; none.style.display='block';
+      document.getElementById('ai-body').style.display='none';
+      title.textContent='AIで整える';
+      none.textContent='この記録は「そのままコピー」でお使いください（AI整形の対象外です）。';
+      return;
+    }
+    card.style.display='block'; none.style.display='none';
+    document.getElementById('ai-body').style.display='block';
+    title.textContent='AIで整える（'+cfg.label+'）';
+    hintWrap.style.display = cfg.hasHint ? 'flex' : 'none';
+  }
+
+  [].slice.call(document.querySelectorAll('input[name="rtype"]')).forEach(function(r){
+    r.addEventListener('change', refreshAIPanel);
+  });
+  refreshAIPanel();
+
+  document.getElementById('ai-copy').addEventListener('click',function(){
+    var cfg=currentAIConfig();
+    if(!cfg){alert('この記録はAI整形の対象外です。「コピー」ボタンをお使いください。');return;}
+    var memo=document.getElementById('ai-input').value.trim();
+    if(!memo){alert('先に、整えたい記録の下書きを入力してください。');return;}
+    var hintPart='';
+    if(cfg.hasHint){ hintPart = document.getElementById('ai-hint').checked ? AI_HINT_ON : AI_HINT_OFF; }
+    var full=cfg.lead+AI_COMMON_RULES+hintPart+'\n【下書き】\n'+memo;
+    if(navigator.clipboard){navigator.clipboard.writeText(full);}
+    else{var ta=document.createElement('textarea');ta.value=full;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);}
+    var c=document.getElementById('ai-copied');c.style.display='inline';
+    setTimeout(function(){c.style.display='none';},1600);
+  });
+
+  window.addEventListener('beforeunload',function(e){
+    var dirty=['n-saw','n-act','n-res','s-body','g-join','b-what','q-why','y-hosp','t-give','r-body','output','ai-input']
+      .some(function(id){return v(id)!=='';});
+    if(dirty){e.preventDefault();e.returnValue='';}
+  });
+})();
+</script>
+</body>
+</html>

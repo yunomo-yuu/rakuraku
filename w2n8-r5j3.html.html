@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ケアプラン作成支援</title>
+<style>
+  :root{--ink:#22304a;--indigo:#3a5ba0;--indigo-deep:#2b4577;--paper:#f6f7f9;--line:#c9d2e0;--muted:#6b7891;
+        --red-bg:#fde4e4;--red:#a33;--yel-bg:#fff3d6;--yel:#8a6d00;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic Medium",Meiryo,sans-serif;
+       background:var(--paper);color:var(--ink);line-height:1.7;padding:18px 10px 60px;font-size:14px;}
+  .wrap{max-width:780px;margin:0 auto;}
+  h1{text-align:center;font-size:18px;letter-spacing:.25em;color:var(--indigo-deep);margin-bottom:4px;}
+  .sub{text-align:center;font-size:11px;color:var(--muted);margin-bottom:14px;}
+  .card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:12px;}
+  .card h2{font-size:13px;color:var(--indigo-deep);letter-spacing:.12em;border-left:4px solid var(--indigo);padding-left:8px;margin-bottom:10px;}
+  .lt{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.1em;margin:12px 0 6px;}
+  .chips,.opts{display:flex;flex-wrap:wrap;gap:7px;}
+  .chip,.opt{border:1.5px solid var(--line);border-radius:18px;padding:6px 13px;font-size:13px;cursor:pointer;background:#fff;user-select:none;}
+  .chip.on,.opt.on{background:var(--indigo);color:#fff;border-color:var(--indigo);}
+  .q{margin:0 0 12px;}
+  .qt{font-size:13px;font-weight:600;margin:0 0 5px;}
+  .qs{font-size:11px;color:var(--muted);margin:0 0 5px;}
+  .sec{font-size:12px;font-weight:700;color:var(--indigo);letter-spacing:.06em;margin:10px 0 8px;padding-left:8px;border-left:3px solid var(--indigo);}
+  .subblk{display:none;} .subblk.on{display:block;}
+  .panel{display:none;} .panel.active{display:block;}
+  input[type="text"]{font:inherit;font-size:14px;width:100%;border:1px solid var(--line);border-radius:6px;padding:7px 9px;}
+  input:focus{outline:2px solid var(--indigo);}
+  .ng{background:var(--yel-bg);color:var(--yel);font-size:11px;padding:7px 10px;border-radius:6px;display:none;margin-top:5px;}
+  .btnbar{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0;}
+  button{font:inherit;font-weight:700;border-radius:8px;padding:11px 20px;cursor:pointer;font-size:14px;letter-spacing:.06em;}
+  .btn-main{background:var(--indigo);color:#fff;border:none;flex:1;min-width:150px;}
+  .btn-main:hover{background:var(--indigo-deep);}
+  .btn-sub{background:#fff;color:var(--indigo-deep);border:2px solid var(--indigo);}
+  .flag{border-radius:8px;padding:9px 12px;margin:0 0 8px;font-size:13px;font-weight:600;line-height:1.6;}
+  .flag.red{background:var(--red-bg);color:var(--red);}
+  .flag.yellow{background:var(--yel-bg);color:var(--yel);}
+  .lead{background:#eef2fa;border-radius:8px;padding:10px 12px;font-size:12px;color:var(--indigo-deep);line-height:1.7;margin-bottom:8px;}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:6px;}
+  th,td{border:1px solid var(--line);padding:6px 8px;vertical-align:top;text-align:left;line-height:1.6;}
+  th{background:#eef2fa;color:var(--indigo-deep);white-space:nowrap;}
+  textarea{width:100%;min-height:150px;font:inherit;font-size:13px;border:1px solid var(--line);border-radius:6px;padding:8px;line-height:1.7;margin-top:8px;}
+  .note{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.7;}
+  .icf{font-size:11px;color:var(--muted);}
+  .cathead td{background:#eef2fa;color:var(--indigo-deep);font-weight:700;}
+  .cpbtn{display:block;font:inherit;font-size:10.5px;font-weight:700;border:1px solid var(--indigo);color:var(--indigo-deep);background:#fff;border-radius:5px;padding:2px 8px;cursor:pointer;margin-top:6px;}
+  .cpbtn:active{background:var(--indigo);color:#fff;}
+
+  .btn-danger{background:#fff;color:var(--red);border:2px solid var(--red);}
+  .btn-danger:hover{background:var(--red-bg);}
+  .draft-note{font-size:11px;color:var(--muted);margin-top:6px;}
+  .save-btn{background:var(--indigo);color:#fff;border:none;}
+  .save-btn:hover{background:var(--indigo-deep);}
+  .save-btn.saved{background:#2e7d4f;}
+  .saved-sec{margin-top:16px;padding-top:12px;border-top:1px solid var(--line);}
+  .saved-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;}
+  .saved-note{font-size:11px;color:var(--muted);margin:4px 0 10px;line-height:1.7;}
+  .clear-all-btn{padding:6px 12px;border-radius:8px;border:1.5px solid var(--red);background:#fff;color:var(--red);font-weight:700;font-size:12px;cursor:pointer;font:inherit;}
+  .rec-card{border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px;background:#fafbfe;}
+  .rec-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;}
+  .rec-title{font-weight:700;font-size:12.5px;color:var(--indigo-deep);}
+  .rec-btns{display:flex;gap:8px;}
+  .rec-copy{padding:5px 12px;border-radius:7px;border:1.5px solid var(--indigo);background:#fff;color:var(--indigo);font-weight:700;font-size:12px;cursor:pointer;font:inherit;}
+  .rec-copy.copied{border-color:#2e7d4f;color:#2e7d4f;}
+  .rec-del{padding:5px 12px;border-radius:7px;border:1.5px solid var(--red);background:#fff;color:var(--red);font-weight:700;font-size:12px;cursor:pointer;font:inherit;}
+  .rec-body{font-size:12px;color:#444;white-space:pre-wrap;max-height:80px;overflow:auto;background:#fff;border-radius:6px;padding:8px;border:1px solid var(--line);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>ケアプラン作成支援</h1>
+  <div class="sub">ベテランケアマネの思考をナビゲートするツール｜入力はこのパソコンの中だけで処理されます</div>
+
+  <div class="card" id="draftcard">
+    <div class="btnbar" style="margin:0;">
+      <button type="button" class="btn-sub" id="draft-save">途中保存</button>
+      <button type="button" class="btn-sub" id="draft-resume">保存した続きから再開</button>
+      <button type="button" class="btn-danger" id="draft-clear">新しく始める（クリア）</button>
+    </div>
+    <p class="draft-note" id="draft-status"></p>
+    <p class="draft-note">※選んだ項目・入力した希望欄だけを、この端末の中に保存します（外部には送信されません）。次の利用者を始めるときは、必ず「新しく始める（クリア）」を押してください。</p>
+  </div>
+
+  <div class="card">
+    <h2>STEP1　困りごとを選ぶ（複数可）</h2>
+    <div class="lt">ADL（からだの基本動作）── ここが中心なら身体介護が軸</div>
+    <div class="chips">
+      <span class="chip" data-p="idou">移動・転倒</span>
+      <span class="chip" data-p="izon">移乗（ベッド⇔車椅子など）</span>
+      <span class="chip" data-p="shokuji">食事（食べる）</span>
+      <span class="chip" data-p="haisetsu">排泄</span>
+      <span class="chip" data-p="nyuyoku">入浴</span>
+      <span class="chip" data-p="seiyou">整容・更衣</span>
+    </div>
+    <div class="lt">IADL（暮らしを回す動作）── ここだけなら軽度・生活援助が軸</div>
+    <div class="chips">
+      <span class="chip" data-p="kaji">家事（調理・掃除・洗濯・買い物）</span>
+      <span class="chip" data-p="shakai">社会参加（金銭・外出・閉じこもり）</span>
+      <span class="chip" data-p="fukuyaku">服薬・受診</span>
+    </div>
+    <div class="lt">生活全体（本人と家族の限界を見る）</div>
+    <div class="chips">
+      <span class="chip" data-p="ninchi">認知・見守り</span>
+      <span class="chip" data-p="kazoku">家族の介護負担</span>
+      <span class="chip" data-p="dokkyo">独居</span>
+    </div>
+  </div>
+
+  <div class="card panel" id="p-idou"><h2>移動・転倒</h2>
+    <div class="q"><p class="qt">介助の程度</p><div class="opts" data-g="i-lv">
+      <span class="opt" data-single="1">自立</span><span class="opt">見守り</span><span class="opt">一部介助（声かけ・準備）</span><span class="opt">一部介助（動作の手引き）</span><span class="opt">全介助</span></div></div>
+    <div class="q"><p class="qt">原因（複数可）</p><div class="opts" data-g="i-cause">
+      <span class="opt">筋力低下</span><span class="opt">麻痺</span><span class="opt">疼痛</span><span class="opt">認知機能低下</span><span class="opt">環境（段差・手すり）</span></div></div>
+    <div class="q"><p class="qt">どこでつまずく？（複数可）</p><div class="opts" data-g="i-pt">
+      <span class="opt">立ち上がり</span><span class="opt">段差・またぎ</span><span class="opt">長い距離</span><span class="opt">夜間・トイレ移動</span><span class="opt">屋外・外出</span></div></div>
+    <div class="q"><p class="qt">本人の希望</p><input type="text" id="i-sos" placeholder="本人の言葉のまま（例：転ばずに歩きたい）"><div class="ng" data-ng="i-sos"></div></div>
+  </div>
+
+  <div class="card panel" id="p-izon"><h2>移乗（ベッド⇔車椅子など）</h2>
+    <div class="q"><p class="qt">介助の程度</p><div class="opts" data-g="iz-lv">
+      <span class="opt" data-single="1">自立</span><span class="opt">見守り</span><span class="opt">一部介助（声かけ・準備）</span><span class="opt">一部介助（動作の手引き）</span><span class="opt">全介助</span></div></div>
+    <div class="q"><p class="qt">つまずき（複数可）</p><div class="opts" data-g="iz-pt">
+      <span class="opt">立ち上がり</span><span class="opt">立位保持</span><span class="opt">方向転換</span><span class="opt">座り込み</span><span class="opt">協力動作が得にくい</span></div></div>
+    <div class="q"><p class="qt">本人の希望</p><input type="text" id="iz-sos" placeholder="本人の言葉のまま"><div class="ng" data-ng="iz-sos"></div></div>
+  </div>
+
+  <div class="card panel" id="p-shokuji"><h2>食事（食べる）</h2>
+    <div class="q"><p class="qt">困りごと（複数可）</p><div class="opts" data-g="sh-mode">
+      <span class="opt">噛む・飲み込む</span><span class="opt">食欲・意欲</span><span class="opt">口腔・姿勢</span><span class="opt">水分</span></div></div>
+    <div class="q"><p class="qt">食べる動作の介助度</p><div class="opts" data-g="sh-lv">
+      <span class="opt" data-single="1">自立</span><span class="opt">見守り</span><span class="opt">一部介助（声かけ・準備）</span><span class="opt">一部介助（動作の手引き）</span><span class="opt">全介助</span></div></div>
+    <div class="subblk" data-sub="sh-eat"><p class="sec">噛む・飲み込む</p>
+      <div class="q"><div class="opts" data-g="sh-eat">
+        <span class="opt">むせる・咳き込む</span><span class="opt">水分でむせる</span><span class="opt">噛めない（歯・義歯）</span>
+        <span class="opt">飲み込みに時間</span><span class="opt">口に溜め込む・飲み込まない</span><span class="opt">誤嚥性肺炎の既往</span></div></div>
+      <div class="q"><p class="qt">食形態</p><div class="opts" data-g="sh-form">
+        <span class="opt" data-single="1">常食</span><span class="opt">刻み・軟菜</span><span class="opt">ミキサー・ペースト</span><span class="opt">とろみ使用</span></div></div></div>
+    <div class="subblk" data-sub="sh-app"><p class="sec">食欲・意欲</p>
+      <div class="q"><div class="opts" data-g="sh-app">
+        <span class="opt">食欲がない・量が減った</span><span class="opt">体重が減ってきた</span><span class="opt">一人だと食べない</span>
+        <span class="opt">食事を忘れる</span><span class="opt">特定のものしか食べない（偏食）</span><span class="opt">むせて疲れ、食べきれない</span></div></div></div>
+    <div class="subblk" data-sub="sh-mouth"><p class="sec">口腔・姿勢</p>
+      <div class="q"><div class="opts" data-g="sh-mouth">
+        <span class="opt">食べこぼしが多い（すくえない・運べない）</span><span class="opt">義歯を使わない・入れたがらない</span>
+        <span class="opt">口の中の汚れ・口臭</span><span class="opt">食事の姿勢が崩れる</span></div></div></div>
+    <div class="subblk" data-sub="sh-water"><p class="sec">水分</p>
+      <div class="q"><div class="opts" data-g="sh-water">
+        <span class="opt">水分摂取が少ない</span><span class="opt">飲むのを嫌がる・忘れる</span><span class="opt">脱水を起こしたことがある</span></div></div></div>
+    <div class="q"><p class="qt">本人の希望</p><input type="text" id="sh-sos" placeholder="本人の言葉のまま（例：口から食べ続けたい）"><div class="ng" data-ng="sh-sos"></div></div>
+  </div>
+
+  <div class="card panel" id="p-haisetsu"><h2>排泄</h2>
+    <div class="q"><p class="qt">排泄動作の介助度</p><div class="opts" data-g="ha-lv">
+      <span class="opt" data-single="1">見守り</span><span class="opt">軽介助</span><span class="opt">中介助</span><span class="opt">全介助</span></div></div>
+    <div class="q"><p class="qt">どの相談？</p><div class="opts" data-g="ha-mode">
+      <span class="opt" data-single="1">尿</span><span class="opt">便</span><span class="opt">両方</span></div></div>
+    <div class="q"><p class="qt">排泄経路・医療管理（複数可・該当時のみ）</p><div class="opts" data-g="ha-med">
+      <span class="opt">ストマ</span><span class="opt">膀胱留置カテーテル（ハルンカテ）</span></div></div>
+    <div class="subblk" data-sub="ha-u"><p class="sec">尿について</p>
+      <div class="q"><p class="qt">つまずき（複数可）</p><div class="opts" data-g="ha-u">
+        <span class="opt">間に合わない（失禁）</span><span class="opt">夜間頻尿</span><span class="opt">トイレまでの移動</span><span class="opt">残尿・出にくい</span><span class="opt">後始末・パッド交換</span></div></div></div>
+    <div class="subblk" data-sub="ha-b"><p class="sec">便について</p>
+      <div class="q"><p class="qt">状態（複数可）</p><div class="opts" data-g="ha-b">
+        <span class="opt">便秘がち</span><span class="opt">下痢がち</span><span class="opt">便失禁</span><span class="opt">後始末・清潔</span></div></div>
+      <div class="q"><p class="qt">便のコントロール</p><div class="opts" data-g="ha-ctrl">
+        <span class="opt" data-single="1">自制内</span><span class="opt">内服で調整中</span><span class="opt">坐薬・浣腸を使う</span><span class="opt">摘便が要ることがある</span></div></div></div>
+    <div class="q"><p class="qt">本人の希望</p><input type="text" id="ha-sos" placeholder="本人の言葉のまま（例：自分でトイレに行きたい）"><div class="ng" data-ng="ha-sos"></div></div>
+  </div>
+
+  <div class="card panel" id="p-nyuyoku"><h2>入浴</h2>
+    <div class="q"><p class="qt">介助の程度</p><div class="opts" data-g="ny-lv">
+      <span class="opt" data-single="1">自立</span><span class="opt">見守り</span><span class="opt">一部介助（声かけ・準備）</span><span class="opt">一部介助（動作の手引き）</span><span class="opt">全介助</span></div></div>
+    <div class="q"><p class="qt">つまずき（複数可）</p><div class="opts" data-g="ny-pt">
+      <span class="opt">浴槽のまたぎ</span><span class="opt">立ち座り</span><span class="opt">洗身・洗髪</span></div></div>
+    <div class="q"><p class="qt">環境・家族（複数可）</p><div class="opts" data-g="ny-env">
+      <span class="opt">手すりがない</span><span class="opt">家族の介助なし</span></div></div>
+    <div class="q"><p class="qt">本人の希望</p><input type="text" id="ny-sos" placeholder="本人の言葉のまま（例：自分で湯船につかりたい）"><div class="ng" data-ng="ny-sos"></div></div>
+  </div>
+
+  <div class="card panel" id="p-seiyou"><h2>整容・更衣</h2>
+    <div class="q"><p class="qt">介助の程度</p><div class="opts" data-g="se-lv">
+      <span class="opt" data-single="1">自立</span><span class="opt">見守り</span><span class="opt">一部介助（声かけ・準備）</span><span class="opt">一部介助（動作の手引き）</span><span class="opt">全介助</span></div></div>
+    <div class="q"><p class="qt">困りごと（複数可）</p><div class="opts" data-g="se-item">
+      <span class="opt">着替え（ボタン・かぶり）</span><span class="opt">整髪・ひげ・化粧</span><span class="opt">歯磨き・義歯</span><span class="opt">爪切り</span><span class="opt">同じ服・季節に合わない</span></div></div>
+    <div class="q"><p class="qt">原因（複数可）</p><div class="opts" data-g="se-cause">
+      <span class="opt">肩・腕が上がらない</span><span class="opt">手指の細かい動き</span><span class="opt">立位が不安定</span><span class="opt">認知機能低下</span><span class="opt">気にしなくなった（意欲低下）</span></div></div>
+    <div class="q"><p class="qt">本人の希望</p><input type="text" id="se-sos" placeholder="本人の言葉のまま"><div class="ng" data-ng="se-sos"></div></div>
+  </div>
+
+  <div class="card panel" id="p-kaji"><h2>家事</h2>
+    <div class="q"><p class="qt">困っている家事（複数可）</p><div class="opts" data-g="k-item">
+      <span class="opt">調理</span><span class="opt">掃除</span><span class="opt">洗濯</span><span class="opt">買い物</span><span class="opt">ゴミ出し</span></div></div>
+    <div class="q"><p class="qt">できる部分（残す力・複数可）</p><div class="opts" data-g="k-able">
+      <span class="opt">温め・盛り付けはできる</span><span class="opt">軽い掃除はできる</span><span class="opt">たたむのはできる</span><span class="opt">付き添えば買い物に行ける</span></div></div>
+    <div class="q"><p class="qt">世帯</p><div class="opts" data-g="k-fm">
+      <span class="opt" data-single="1">担える家族がいる</span><span class="opt">家族はいるが担えない</span><span class="opt">独居</span></div></div>
+    <div class="q"><p class="qt">本人の希望</p><input type="text" id="k-sos" placeholder="本人の言葉のまま（例：できる家事は続けたい）"><div class="ng" data-ng="k-sos"></div></div>
+  </div>
+
+  <div class="card panel" id="p-shakai"><h2>社会参加</h2>
+    <div class="q"><p class="qt">どの困りごと？（複数可）</p><div class="opts" data-g="s-mode">
+      <span class="opt">金銭の管理</span><span class="opt">外出・移動手段</span><span class="opt">閉じこもり</span></div></div>
+    <div class="subblk" data-sub="s-kin"><p class="sec">金銭の管理</p>
+      <div class="q"><div class="opts" data-g="s-kin">
+        <span class="opt">支払いを忘れる</span><span class="opt">計算・引き出しが難しい</span><span class="opt">高額契約・訪問販売が心配</span><span class="opt">実際に被害にあった</span><span class="opt">家族の使い込みが心配</span></div></div></div>
+    <div class="subblk" data-sub="s-gai"><p class="sec">外出・移動</p>
+      <div class="q"><div class="opts" data-g="s-gai">
+        <span class="opt">免許返納</span><span class="opt">バス・電車に乗れない</span><span class="opt">歩ける距離が短い</span><span class="opt">送迎する人がいない</span></div></div></div>
+    <div class="subblk" data-sub="s-toji"><p class="sec">閉じこもり</p>
+      <div class="q"><div class="opts" data-g="s-toji">
+        <span class="opt">ほとんど外に出ない</span><span class="opt">人と話す機会がない</span><span class="opt">趣味・役割をやめた</span><span class="opt">出たいがきっかけがない</span><span class="opt">出たくない・意欲がわかない</span></div></div></div>
+    <div class="q"><p class="qt">本人の希望</p><input type="text" id="s-sos" placeholder="本人の言葉のまま"><div class="ng" data-ng="s-sos"></div></div>
+  </div>
+
+  <div class="card panel" id="p-fukuyaku"><h2>服薬・受診</h2>
+    <div class="q"><p class="qt">服薬で起きていること（複数可）</p><div class="opts" data-g="f-med">
+      <span class="opt">飲み忘れがある</span><span class="opt">飲んだことを忘れて重複</span><span class="opt">自分でやめる（自己中断）</span><span class="opt">残薬がたまる</span><span class="opt">多剤</span><span class="opt">手指で取り出せない</span></div></div>
+    <div class="q"><p class="qt">今の管理</p><div class="opts" data-g="f-ctrl">
+      <span class="opt" data-single="1">自分で管理できる</span><span class="opt">カレンダー等があれば</span><span class="opt">声かけがあれば</span><span class="opt">手渡し・確認まで必要</span></div></div>
+    <div class="q"><p class="qt">受診の困りごと（複数可）</p><div class="opts" data-g="f-visit">
+      <span class="opt">通院の移動が難しい</span><span class="opt">受診日を忘れる</span><span class="opt">症状を伝えられない</span><span class="opt">受診を嫌がる</span></div></div>
+    <div class="q"><p class="qt">本人の希望</p><input type="text" id="f-sos" placeholder="本人の言葉のまま"><div class="ng" data-ng="f-sos"></div></div>
+  </div>
+
+  <div class="card panel" id="p-ninchi"><h2>認知・見守り</h2>
+    <div class="q"><p class="qt">見守りの体制</p><div class="opts" data-g="n-watch">
+      <span class="opt" data-single="1">常時見守りがいる</span><span class="opt">時々一人になる</span><span class="opt">基本一人（独居）</span></div></div>
+    <div class="q"><p class="qt">精神症状（1つ🟡・2つ以上🔴）</p><div class="opts" data-g="n-bpsd">
+      <span class="opt">介護拒否</span><span class="opt">興奮・暴言</span><span class="opt">幻覚・妄想</span><span class="opt">不潔行為・弄便</span><span class="opt">昼夜逆転で家族が眠れない</span></div></div>
+    <div class="q"><p class="qt">目が離せない（1つでも🔴）</p><div class="opts" data-g="n-eye">
+      <span class="opt">異食</span><span class="opt">歩けないのに立つ・歩く</span><span class="opt">点滴・カテーテルを抜く</span></div></div>
+    <div class="q"><p class="qt">身体的リスク（見守りあり🟡・独居🔴）</p><div class="opts" data-g="n-phys">
+      <span class="opt">徘徊</span><span class="opt">火の不始末</span><span class="opt">服薬・危険物の管理不能</span></div></div>
+    <div class="q"><p class="qt">本人・家族の希望</p><input type="text" id="n-sos" placeholder="本人・家族の言葉のまま"><div class="ng" data-ng="n-sos"></div></div>
+  </div>
+
+  <div class="card panel" id="p-kazoku"><h2>家族の介護負担</h2>
+    <div class="q"><p class="qt">主な介護者（複数可）</p><div class="opts" data-g="kz-who">
+      <span class="opt">配偶者（老老介護）</span><span class="opt">仕事をしながら</span><span class="opt">ダブルケア</span><span class="opt">介護者自身に持病・障害</span></div></div>
+    <div class="q"><p class="qt">負担のサイン（1つ🟡・2つ以上🔴）</p><div class="opts" data-g="kz-sign">
+      <span class="opt">夜眠れていない</span><span class="opt">体調が崩れてきた</span><span class="opt">「もう限界」と口にする</span><span class="opt">表情が硬い・涙が出る</span><span class="opt">自分の用事を後回し</span></div></div>
+    <div class="q"><p class="qt">急ぎのサイン（1つでも🔴）</p><div class="opts" data-g="kz-urg">
+      <span class="opt">手が出そうと本人が漏らす</span><span class="opt">介護離職しようとしている</span><span class="opt">代わりがいない</span></div></div>
+    <div class="q"><p class="qt">介護者の希望</p><input type="text" id="kz-sos" placeholder="介護者の言葉のまま"><div class="ng" data-ng="kz-sos"></div></div>
+  </div>
+
+  <div class="card panel" id="p-dokkyo"><h2>独居</h2>
+    <p class="qs">身体・家事の困りごとは各項目のチャートで。ここは「独居ならでは」の穴だけ。</p>
+    <div class="q"><p class="qt">心配なこと（複数可）</p><div class="opts" data-g="d-item">
+      <span class="opt">急変・転倒に気づく人がいない</span><span class="opt">安否確認の手段がない</span><span class="opt">災害時に避難できない</span><span class="opt">緊急時の駆けつけ・鍵</span><span class="opt">体調変化を自分で気づけない</span></div></div>
+    <div class="q"><p class="qt">本人の希望</p><input type="text" id="d-sos" placeholder="本人の言葉のまま"><div class="ng" data-ng="d-sos"></div></div>
+  </div>
+
+  <div class="card" id="p-modecard">
+    <h2>支援の方向性モード</h2>
+    <p class="qs">STEP1の入力（介助度など）から自動で提案します。どの方向を目指すかは、最終的に担当者が選び直してください。</p>
+    <div class="chips" id="mode-chips">
+      <span class="chip mode-chip" data-mode="jiritsu">自立支援</span>
+      <span class="chip mode-chip" data-mode="iji">維持</span>
+      <span class="chip mode-chip" data-mode="jumatsu">終末期・重度</span>
+    </div>
+    <p class="qs" id="mode-desc" style="margin-top:8px;"></p>
+    <div class="lead" id="mode-suggest" style="margin-top:8px;"></div>
+  </div>
+
+  <div class="btnbar">
+    <button class="btn-main" id="make">思考の叩き台を出す</button>
+    <button class="btn-sub" id="tenki">ケアカルテ特記欄に転記</button>
+    <button class="btn-sub" id="clear">次の利用者へ</button>
+  </div>
+
+  <div class="card">
+    <h2>思考の叩き台（ここから考える）</h2>
+    <div class="lead">これは完成した第2表ではありません。考えるきっかけです。ここから本人と話し、本人の言葉で目標を立て直して、プランを仕上げてください。</div>
+    <div id="modelabel" style="font-size:11px;font-weight:700;color:var(--indigo-deep);margin-bottom:6px;"></div>
+    <div id="flags"></div>
+    <div id="tblbox"></div>
+    <textarea id="output" placeholder="下にコピー用テキストも出ます。直接なおせます。"></textarea>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+      <button class="btn-sub" id="copy">コピー</button>
+      <button class="save-btn" id="save-record">この記録を保存</button>
+    </div>
+    <p class="note">※出るのは候補と叩き台です。本人の意向に合っているか、目標が本人の言葉になっているかは必ずご自身で確認を。回避語（安心・安全・快適など）はツール側では使わず文を作っています。赤は「生活の場の検討を切り出すきっかけ」の目安で、順位はつけていません。最終判断は必ず人の目で。</p>
+
+    <div class="saved-sec" id="saved-sec" style="display:none;">
+      <div class="saved-head">
+        <h2 style="border:none;padding:0;">保存した記録（<span id="saved-count">0</span>件）</h2>
+        <button type="button" class="clear-all-btn" id="clear-all-btn">すべて削除</button>
+      </div>
+      <p class="saved-note">保存した「第2表」「転記文」は、この端末（ブラウザ）の中だけに残ります。外部には送信されません。共有PCで使う場合は、使い終わったら削除してください。</p>
+      <div id="saved-list"></div>
+    </div>
+  </div>
+
+  <div class="card" id="p-aicard">
+    <h2>AIでケアプランの叩き台を作る（プロンプト生成）</h2>
+    <div class="lead">上で「思考の叩き台」か「転記」を出したうえで、ここに<b>照準（本人が本当に望む姿）</b>を入れて〈AI用プロンプトを作る〉を押すと、第1表・第2表を組ませるためのプロンプトができます。それをコピーして、お使いのAI（ChatGPTなど）に貼ってください。<br><span style="color:#9B3B3B;font-weight:700;">※このツールからAIへは送信しません。プロンプトの文章を作るだけです。</span></div>
+
+    <div class="q">
+      <p class="qt">照準：本人が本当に望む姿</p>
+      <p class="qs">「昔していて今できない・もう一度やりたい楽しかったこと」から。手段（歩く・送迎など）ではなく、望む暮らしの姿を書いてください。</p>
+      <input type="text" id="ai-aim" placeholder="例：孫と一緒に元気に出かけたい。昔していた畑をまた少しやりたい。">
+    </div>
+
+    <div class="q">
+      <p class="qt">意向の出どころ</p>
+      <div class="chips" id="ai-src-chips">
+        <span class="chip ai-src on" data-src="本人">本人</span>
+        <span class="chip ai-src" data-src="家族">家族</span>
+        <span class="chip ai-src" data-src="推定（読み解き）">推定（読み解き）</span>
+      </div>
+    </div>
+
+    <p class="qs" id="ai-mode-show" style="margin-top:8px;"></p>
+
+    <div class="btnbar">
+      <button class="btn-main" id="ai-make">AI用プロンプトを作る</button>
+    </div>
+
+    <textarea id="ai-output" placeholder="ここに、AIに貼るプロンプトが出ます。" style="min-height:220px;"></textarea>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
+      <button class="btn-sub" id="ai-copy">プロンプトをコピー</button>
+    </div>
+    <p class="note">※現状・第2表候補は、上の出力欄（思考の叩き台／転記文）の中身を自動で取り込みます。先に上を出してから押してください。モードは「支援の方向性モード」で選んだものを使います。</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  var NG=['安心','安全','快適','穏やか','自分らしく','生き生き','元気に'];
+  [].slice.call(document.querySelectorAll('.chip[data-p]')).forEach(function(c){
+    c.addEventListener('click',function(){c.classList.toggle('on');
+      document.getElementById('p-'+c.dataset.p).classList.toggle('active',c.classList.contains('on'));});
+  });
+  var singleGroups=['ha-ctrl','f-ctrl','n-watch','k-fm','sh-form','ny-lv','ha-mode','i-lv','iz-lv','sh-lv','se-lv','ha-lv'];
+  [].slice.call(document.querySelectorAll('.opts')).forEach(function(box){
+    box.addEventListener('click',function(e){
+      if(!e.target.classList.contains('opt'))return;
+      var g=box.dataset.g;
+      if(singleGroups.indexOf(g)>=0){[].slice.call(box.children).forEach(function(x){x.classList.remove('on');});e.target.classList.add('on');}
+      else e.target.classList.toggle('on');
+      syncSub();
+      updateModeSuggestion();
+    });
+  });
+  function sel(g){return [].slice.call(document.querySelectorAll('[data-g="'+g+'"] .opt.on')).map(function(e){return e.textContent;});}
+  function v(id){var e=document.getElementById(id);return e?(e.value||'').trim():'';}
+  function active(p){return document.getElementById('p-'+p).classList.contains('active');}
+  function uniq(a){return a.filter(function(x,i){return a.indexOf(x)===i;});}
+  function clean(s){return s.replace(/。$/,'');}
+
+  var MODES={
+    jiritsu:{label:'自立支援',desc:'できることを増やす・取り戻す（目標：〜できるように）'},
+    iji:{label:'維持',desc:'今の状態を保つ・悪化を防ぐ（目標：〜を保つ／〜の低下を防ぐ）'},
+    jumatsu:{label:'終末期・重度',desc:'尊厳を守りながら過ごす・介護者を支える（目標：〜で苦痛なく／介護負担の軽減）'}
+  };
+  var currentMode='jiritsu',modeManual=false;
+  var LV_FIELDS=['i-lv','iz-lv','sh-lv','ny-lv','se-lv','ha-lv'];
+  function fullAssistCount(){return LV_FIELDS.filter(function(g){return sel(g)[0]==='全介助';}).length;}
+  function suggestMode(){var f=fullAssistCount();if(f>=2)return 'jumatsu';if(f>=1)return 'iji';return 'jiritsu';}
+
+  function renderModeUI(){
+    [].slice.call(document.querySelectorAll('.mode-chip')).forEach(function(c){c.classList.toggle('on',c.dataset.mode===currentMode);});
+    document.getElementById('mode-desc').textContent=MODES[currentMode].label+'：'+MODES[currentMode].desc;
+    var sug=suggestMode(),note=document.getElementById('mode-suggest');
+    if(modeManual){
+      note.textContent=(sug===currentMode?'✔ ':'✋ ')+'現在は「'+MODES[currentMode].label+'」を手動で選択中です（自動提案は「'+MODES[sug].label+'」）。これはあくまで提案です。担当者の判断で選び直せます。';
+    }else{
+      note.textContent='💡 入力内容からの自動提案：「'+MODES[sug].label+'」。これはあくまで提案です。担当者が判断して、上のボタンで選び直してください。';
+    }
+  }
+  function updateModeSuggestion(){if(!modeManual)currentMode=suggestMode();renderModeUI();}
+  [].slice.call(document.querySelectorAll('.mode-chip')).forEach(function(c){
+    c.addEventListener('click',function(){currentMode=c.dataset.mode;modeManual=true;renderModeUI();});
+  });
+  renderModeUI();
+
+  function modeGoalText(text,mode){
+    if(!text||!mode||mode==='jiritsu')return text;
+    if(/ことができる$/.test(text))return text.replace(/ことができる$/,'')+(mode==='iji'?'ことができる状態を保つ':'ことができ、苦痛なく過ごせるよう支える');
+    if(/できる$/.test(text))return text.replace(/できる$/,'')+(mode==='iji'?'できる状態を保つ':'でき、苦痛なく過ごせるよう支える');
+    return text;
+  }
+  function modeNeedText(text,mode){
+    if(!text||!mode||mode==='jiritsu')return text;
+    return text+(mode==='iji'?'（現状維持・悪化予防を優先した支援の検討が必要）':'（苦痛の緩和・介護者支援を優先した支援の検討が必要）');
+  }
+
+  function syncSub(){
+    var shm=sel('sh-mode');
+    toggleSub('sh-eat',shm.indexOf('噛む・飲み込む')>=0);
+    toggleSub('sh-app',shm.indexOf('食欲・意欲')>=0);
+    toggleSub('sh-mouth',shm.indexOf('口腔・姿勢')>=0);
+    toggleSub('sh-water',shm.indexOf('水分')>=0);
+    var ham=sel('ha-mode')[0]||'';
+    toggleSub('ha-u',ham==='尿'||ham==='両方');
+    toggleSub('ha-b',ham==='便'||ham==='両方');
+    var sm=sel('s-mode');
+    toggleSub('s-kin',sm.indexOf('金銭の管理')>=0);
+    toggleSub('s-gai',sm.indexOf('外出・移動手段')>=0);
+    toggleSub('s-toji',sm.indexOf('閉じこもり')>=0);
+  }
+  function toggleSub(name,on){var el=document.querySelector('[data-sub="'+name+'"]');if(el)el.classList.toggle('on',on);}
+
+  [].slice.call(document.querySelectorAll('input[type="text"]')).forEach(function(inp){
+    inp.addEventListener('input',function(){
+      var box=document.querySelector('[data-ng="'+inp.id+'"]');if(!box)return;
+      var hit=NG.filter(function(n){return inp.value.indexOf(n)>=0;});
+      if(hit.length){box.style.display='block';box.textContent='「'+hit.join('」「')+'」は運営指導で"具体的には？"と問われやすい言葉。本人が実際にこう言ったなら、そのまま使ってOK。';}
+      else box.style.display='none';
+    });
+  });
+
+  function goal(so,base){return (so?clean(so)+'という希望に向けて、':'')+base;}
+
+  function rowIdou(){var c=sel('i-cause'),p=sel('i-pt'),lv=sel('i-lv')[0]||'',so=v('i-sos'),sv=[],sh=[];
+    if(c.indexOf('筋力低下')>=0||c.indexOf('麻痺')>=0)sv.push('通所・訪問リハビリ（下肢筋力・立ち上がり訓練）');
+    if(p.indexOf('立ち上がり')>=0)sv.push('福祉用具貸与（手すり・歩行器）');
+    if(p.indexOf('段差・またぎ')>=0||c.indexOf('環境（段差・手すり）')>=0)sv.push('住宅改修（手すり設置・段差解消）');
+    if(p.indexOf('夜間・トイレ移動')>=0)sv.push('福祉用具貸与（ポータブルトイレ・夜間の手すり）');
+    if(lv==='全介助'||lv==='一部介助（動作の手引き）')sv.push('訪問介護（移動の介助）');
+    else if(lv==='一部介助（声かけ・準備）')sv.push('訪問介護（声かけ・見守りでの移動支援）');
+    else if(lv==='見守り')sv.push('見守りでの移動支援');
+    if(!sv.length)sv.push('見守り・状態観察');
+    if(c.indexOf('筋力低下')>=0)sh.push('リハビリを続け、下肢の筋力を保つことができる');
+    if(p.indexOf('夜間・トイレ移動')>=0)sh.push('夜間、転ばずにトイレへ移動することができる');
+    if(!sh.length)sh.push('福祉用具を使い、安定して移動することができる');
+    return {item:'移動・転倒',need:(p.length?p.join('・'):'移動')+'で転倒の危険があり'+(lv?'（'+lv+'）':'')+'、支援を要する',
+      lg:goal(so,'転倒なく移動できる生活を続けることができる'),sh:uniq(sh),svc:uniq(sv),icf:'原因→心身機能／移動→活動'};}
+
+  function rowIzon(){var lv=sel('iz-lv')[0]||'',p=sel('iz-pt'),so=v('iz-sos'),sv=[],sh=[];
+    if(lv==='全介助'||lv==='一部介助（動作の手引き）')sv.push('訪問介護（移乗の介助）');
+    else if(lv==='一部介助（声かけ・準備）')sv.push('訪問介護（声かけ・準備の支援）');
+    else if(lv==='見守り')sv.push('見守りでの移乗支援');
+    if(p.indexOf('立ち上がり')>=0||p.indexOf('立位保持')>=0)sv.push('通所・訪問リハビリ（立ち上がり・立位保持訓練）');
+    if(p.indexOf('立ち上がり')>=0||p.indexOf('座り込み')>=0)sv.push('福祉用具貸与（手すり・スライディングボード・移乗用リフト）');
+    if(p.indexOf('方向転換')>=0)sv.push('住宅改修・福祉用具の配置見直し（動線・手すり）');
+    if(p.indexOf('協力動作が得にくい')>=0)sv.push('訪問看護・リハ職による介助方法の助言（協力動作の引き出し方）');
+    if(!sv.length)sv.push('移乗の状況確認');
+    if(p.indexOf('座り込み')>=0)sh.push('座り込みなく移乗することができる');
+    if(p.indexOf('立ち上がり')>=0||p.indexOf('立位保持')>=0)sh.push('立ち上がり・立位を保ち、移乗を行うことができる');
+    if(!sh.length)sh.push('介助を受けながら、転倒なく移乗することができる');
+    return {item:'移乗',need:(p.length?p.join('・'):'移乗動作')+'に'+(lv||'介助')+'を要し、ベッドと車椅子等の移乗が難しい',
+      lg:goal(so,'転倒なく移乗し、離床した生活を続けることができる'),sh:uniq(sh),svc:uniq(sv),icf:'移乗動作→活動'};}
+
+  function rowShokuji(){var m=sel('sh-mode'),eat=sel('sh-eat'),form=sel('sh-form')[0]||'',app=sel('sh-app'),mouth=sel('sh-mouth'),water=sel('sh-water'),lv=sel('sh-lv')[0]||'',so=v('sh-sos');
+    var sv=[],sh=[],flags=[],need=[];
+    if(lv&&lv!=='自立'){
+      need.push('食事動作（口へ運ぶ・咀嚼）は'+lv+'を要する状態');
+      if(lv==='全介助'||lv==='一部介助（動作の手引き）')sv.push('訪問介護（食事介助）');
+      else if(lv==='一部介助（声かけ・準備）')sv.push('訪問介護（食事の声かけ・準備の支援）');
+      else if(lv==='見守り')sv.push('食事場面の見守り');}
+    if(m.indexOf('噛む・飲み込む')>=0){
+      if(eat.indexOf('むせる・咳き込む')>=0||eat.indexOf('誤嚥性肺炎の既往')>=0){flags.push({t:'red',m:'誤嚥のリスクが高い。嚥下評価（訪問歯科・耳鼻科・ST）を早めに。'});need.push('むせ込みがあり、誤嚥のリスクを抱えながら食事をしている');sv.push('嚥下評価（訪問歯科・耳鼻科・言語聴覚士）');sv.push('訪問看護（食事中の観察・口腔ケア）');}
+      if(eat.indexOf('水分でむせる')>=0){flags.push({t:'yellow',m:'水分でむせるのは嚥下低下のサイン。とろみの検討を（専門職の評価のうえで）。'});need.push('水分でむせがあり、とろみ等の調整を要する');sv.push('食形態・とろみの調整（専門職の助言）');}
+      if(eat.indexOf('噛めない（歯・義歯）')>=0)sv.push('訪問歯科（義歯の調整・口腔ケア）');
+      if(eat.indexOf('口に溜め込む・飲み込まない')>=0){need.push('食物を口に溜め込み、飲み込みが進まないことがある');sv.push('食事介助の方法・一口量・ペースの見直し（専門職の助言）');}
+      if(form&&form!=='常食')need.push('食形態の調整（'+form+'）を要する状態で口から食べている');
+      sh.push('むせずに、口から食事をとり続けることができる');}
+    if(m.indexOf('食欲・意欲')>=0){
+      if(app.indexOf('体重が減ってきた')>=0){flags.push({t:'red',m:'体重減少あり。低栄養の評価（主治医・栄養士）を。'});need.push('食事量の低下で体重が減少し、低栄養のリスクがある');sv.push('主治医への相談／管理栄養士の助言');}
+      if(app.indexOf('一人だと食べない')>=0){need.push('一人での食事では食が進まず、食事の機会と環境の調整を要する');sv.push('通所介護（みんなで食べる機会の確保）');}
+      if(app.indexOf('食事を忘れる')>=0)sv.push('訪問介護（食事の声かけ・確認）／配食サービス');
+      if(app.indexOf('特定のものしか食べない（偏食）')>=0){need.push('偏食により栄養が偏り、低栄養のリスクがある');sv.push('好みを活かした献立の工夫／管理栄養士の助言');}
+      if(app.indexOf('むせて疲れ、食べきれない')>=0){need.push('食事中の疲労で食べきれず、摂取量が不足しがち');sv.push('少量高栄養の工夫・食事回数の分割／専門職の助言');}
+      sh.push('食事の機会と環境を整え、食べる量を保つことができる');}
+    if(m.indexOf('口腔・姿勢')>=0){
+      if(mouth.indexOf('食べこぼしが多い（すくえない・運べない）')>=0){need.push('食事動作（すくう・口へ運ぶ）が難しく、食べこぼしが多い');sv.push('自助具（すくいやすい食器・スプーン）／リハ職の助言');}
+      if(mouth.indexOf('義歯を使わない・入れたがらない')>=0){need.push('義歯を使わず、噛む力が十分に活かせていない');sv.push('訪問歯科（義歯の適合確認・調整）');}
+      if(mouth.indexOf('口の中の汚れ・口臭')>=0){flags.push({t:'yellow',m:'口腔内の汚れは誤嚥性肺炎の温床。口腔ケアの見直しを。'});need.push('口腔内の清潔が保ちにくく、誤嚥性肺炎のリスクにつながる');sv.push('口腔ケアの支援（訪問歯科・歯科衛生士・訪問介護）');}
+      if(mouth.indexOf('食事の姿勢が崩れる')>=0){need.push('食事姿勢が崩れやすく、誤嚥や食べこぼしにつながる');sv.push('姿勢の調整（いす・クッション・リハ職の助言）');}
+      sh.push('姿勢と口腔を整え、安定して食事をとることができる');}
+    if(m.indexOf('水分')>=0){
+      if(water.indexOf('脱水を起こしたことがある')>=0){flags.push({t:'red',m:'脱水の既往あり。水分摂取量の把握と、主治医・訪看との共有を。'});need.push('脱水の既往があり、水分摂取の見守りを要する');sv.push('訪問看護（水分・体調の観察）');}
+      if(water.indexOf('水分摂取が少ない')>=0){need.push('水分摂取が少なく、脱水のリスクがある');sv.push('こまめな水分摂取の声かけ・記録（訪問介護・家族）');}
+      if(water.indexOf('飲むのを嫌がる・忘れる')>=0)sv.push('好みの飲み物・ゼリー等での水分補給の工夫');
+      sh.push('必要な水分を、日々とることができる');}
+    if(!need.length)need.push('食事に支援を要する');if(!sh.length)sh.push('支援を受けながら食事をとり続けることができる');if(!sv.length)sv.push('食事の状況確認・助言');
+    return {item:'食事',flags:flags,need:need.join('。'),lg:goal(so,'口から食べる生活を続けることができる'),sh:uniq(sh),svc:uniq(sv),icf:'嚥下・食欲・口腔→心身機能／食事→活動'};}
+
+  function rowHaisetsu(){var m=sel('ha-mode')[0]||'',u=sel('ha-u'),b=sel('ha-b'),ctrl=sel('ha-ctrl')[0]||'',lv=sel('ha-lv')[0]||'',med=sel('ha-med'),so=v('ha-sos');
+    var sv=[],sh=[],flags=[],need=[],doU=(m==='尿'||m==='両方'),doB=(m==='便'||m==='両方');
+    if(lv){
+      need.push('排泄動作は'+lv+'を要する状態');
+      if(lv==='全介助')sv.push('訪問介護（排泄介助）');
+      else if(lv==='中介助')sv.push('訪問介護（排泄の一部介助）');
+      else if(lv==='軽介助')sv.push('訪問介護（声かけ・見守り程度の排泄支援）');
+      else if(lv==='見守り')sv.push('排泄場面の見守り');}
+    if(med.indexOf('ストマ')>=0){
+      need.push('ストマを造設しており、装具の管理を要する');
+      flags.push({t:'yellow',m:'装具交換・廃棄は、状態が安定していれば本人・家族・介護職も対応可能。皮膚トラブルや状態が不安定な時は医行為となるため、訪問看護・専門職と連携する。'});
+      sv.push('訪問看護（ストマ周囲の皮膚観察・トラブル時の対応）');}
+    if(med.indexOf('膀胱留置カテーテル（ハルンカテ）')>=0){
+      need.push('膀胱留置カテーテルを使用しており、管理を要する');
+      flags.push({t:'yellow',m:'尿の廃棄・尿量確認・皮膚の観察・清潔保持は介護の範囲。カテーテルの交換・抜き差しは医療行為（訪問看護・医師）であり介護職は行えない。抜けても入れ直せない。'});
+      sv.push('訪問看護（カテーテル管理・定期交換）');}
+    if(doU){
+      if(u.indexOf('間に合わない（失禁）')>=0){need.push('尿意に排泄が間に合わず失禁があり、本人の自尊心にも影響している');sh.push('声かけや誘導により、尿の失敗を減らすことができる');}
+      if(u.indexOf('夜間頻尿')>=0){need.push('夜間のトイレ移動に転倒の危険がある');sv.push('福祉用具貸与（ポータブルトイレ・夜間の手すり）');sh.push('夜間、転ばずにトイレを使うことができる');}
+      if(u.indexOf('トイレまでの移動')>=0)sv.push('福祉用具貸与（手すり・歩行器）／住宅改修');
+      if(u.indexOf('残尿・出にくい')>=0)sv.push('訪問看護（残尿・排尿の管理）／泌尿器科の受診');
+      if(u.indexOf('後始末・パッド交換')>=0)sv.push('訪問介護（陰部の清潔保持・パッド交換）');}
+    if(doB){
+      if(b.indexOf('便失禁')>=0)need.push('便失禁があり、清潔保持と本人の尊厳への配慮を要する');
+      if(b.indexOf('便秘がち')>=0)need.push('便秘傾向があり、定期的な排便コントロールを要する');
+      if(ctrl==='内服で調整中')sv.push('訪問看護（緩下剤の内服による排便リズムの把握・効果確認）');
+      else if(ctrl==='坐薬・浣腸を使う')sv.push('訪問看護（坐薬・浣腸の実施、腹部マッサージ、排便コントロール）');
+      else if(ctrl==='摘便が要ることがある')sv.push('訪問看護（摘便を含む排便管理、医師との連携）');
+      if(b.indexOf('後始末・清潔')>=0){sv.push('訪問介護（陰部の清潔保持）');sh.push('介助を受けながら、陰部の清潔を保つことができる');}
+      if(ctrl&&ctrl!=='自制内')sh.push('排便のリズムを整え、便秘や失敗を減らすことができる');}
+    if(!need.length)need.push('排泄に支援を要する');if(!sh.length)sh.push('見守りや声かけを受けながら排泄を行うことができる');if(!sv.length)sv.push('排泄の状況確認');
+    return {item:'排泄',flags:flags,need:need.join('。'),lg:goal(so,'できる範囲を保ちながら排泄を続けることができる'),sh:uniq(sh),svc:uniq(sv),icf:(ctrl&&ctrl!=='自制内'?'排便コントロール→健康状態・活動／':'')+'排泄→活動'};}
+
+  function rowNyuyoku(){var lv=sel('ny-lv')[0]||'',p=sel('ny-pt'),env=sel('ny-env'),so=v('ny-sos'),sv=[],sh=[];
+    if(lv==='全介助'||lv==='一部介助（動作の手引き）')sv.push('通所介護（入浴サービス）／訪問介護（入浴介助）');
+    else if(lv==='一部介助（声かけ・準備）')sv.push('通所介護（入浴サービス）／訪問介護（声かけ・準備の支援）');
+    else sv.push('通所介護（入浴サービス）');
+    if(lv==='全介助'&&env.indexOf('家族の介助なし')>=0)sv.push('訪問入浴介護（居宅での入浴が難しい場合）');
+    if(p.indexOf('浴槽のまたぎ')>=0){sv.push('福祉用具（バスボード・浴槽内いす・シャワーチェア）');sh.push('福祉用具を使い、浴槽の出入りを行うことができる');}
+    if(p.indexOf('立ち座り')>=0)sv.push('福祉用具（シャワーチェア）');
+    if(env.indexOf('手すりがない')>=0)sv.push('住宅改修（浴室・脱衣所への手すり設置）');
+    if(p.indexOf('洗身・洗髪')>=0)sh.push('届かない部分の介助を受けながら、できる部分は自分で洗うことができる');
+    if(!sh.length)sh.push('介助を受けながら、定期的に入浴することができる');
+    var freq=(env.indexOf('家族の介助なし')>=0?'週2回':'週1〜2回');
+    return {item:'入浴',need:(p.length?p.join('・'):'入浴動作')+'に'+(lv||'見守り')+'を要し、一人での入浴が難しい',
+      lg:goal(so,freq+'入浴し、身体の清潔を保つことができる'),sh:uniq(sh),svc:uniq(sv),icf:'入浴動作→活動'};}
+
+  function rowSeiyou(){var it=sel('se-item'),ca=sel('se-cause'),lv=sel('se-lv')[0]||'',so=v('se-sos'),sv=[],sh=[],flags=[],need=[];
+    if(it.length)need.push(it.join('・')+'が難しく、身だしなみを保つための支援を要する');
+    if(lv&&lv!=='自立')need.push('整容・更衣の動作は'+lv+'を要する状態');
+    if(ca.indexOf('肩・腕が上がらない')>=0||ca.indexOf('手指の細かい動き')>=0){sv.push('訪問介護（更衣・整容の一部介助）');sv.push('自助具・着やすい衣類への工夫（リハ職の助言）');}
+    if(ca.indexOf('立位が不安定')>=0)sv.push('座って着替える環境づくり（いす・手すり）');
+    if(ca.indexOf('認知機能低下')>=0)sv.push('訪問介護（声かけ・衣類の準備）');
+    if(ca.indexOf('気にしなくなった（意欲低下）')>=0){flags.push({t:'yellow',m:'身だしなみへの無関心は意欲低下・うつ・認知症の初期サインのことがある。背景を確認。'});sv.push('通所介護（人と会う機会＝身だしなみの動機づけ）');}
+    if(lv==='全介助'||lv==='一部介助（動作の手引き）')sv.push('訪問介護（更衣・整容の介助）');
+    else if(lv==='一部介助（声かけ・準備）')sv.push('訪問介護（声かけ・衣類等の準備の支援）');
+    else if(lv==='見守り')sv.push('整容・更衣場面の見守り');
+    if(it.indexOf('爪切り')>=0)sv.push('爪切り：肥厚爪・巻き爪・糖尿病がある場合は医療へ（介護職の範囲を超える）');
+    if(it.indexOf('歯磨き・義歯')>=0)sv.push('口腔ケアの支援／訪問歯科');
+    if(!need.length)need.push('整容・更衣に支援を要する');if(!sv.length)sv.push('整容・更衣の一部介助');
+    sh.push('できる部分は自分で行い、身だしなみを保つことができる');
+    return {item:'整容・更衣',flags:flags,need:need.join('。'),lg:goal(so,'身だしなみを保って生活することができる'),sh:sh,svc:uniq(sv),icf:'肩・手指・立位→心身機能／整容更衣→活動'};}
+
+  function rowKaji(){var it=sel('k-item'),ab=sel('k-able'),fm=sel('k-fm')[0]||'',so=v('k-sos'),sv=[],sh=[],flags=[];
+    if(fm==='担える家族がいる')flags.push({t:'yellow',m:'同居家族が家事を担える場合、生活援助は原則算定不可。担えない事情があるなら第1表・経過記録に理由を残すこと。'});
+    if(it.length)sv.push('訪問介護（生活援助：'+it.join('・')+'）');
+    if(it.indexOf('調理')>=0)sv.push('配食サービス');
+    if(it.indexOf('買い物')>=0)sv.push('買い物支援・移動販売の活用');
+    if(it.indexOf('ゴミ出し')>=0)sv.push('自治体の高齢者ゴミ出し支援の確認');
+    ab.forEach(function(a){sh.push(a.replace(/はできる$|に行ける$/,'')+'など、できる部分は自分で続けることができる');});
+    if(!sh.length)sh.push('支援を受けながら、生活に必要な家事を確保することができる');
+    if(!sv.length)sv.push('生活援助の必要性の確認');
+    return {item:'家事',flags:flags,need:(it.length?it.join('・'):'家事')+'を一人で行うことが難しく、生活維持に支援を要する'+(fm==='独居'?'（独居）':''),
+      lg:goal(so,'できる家事を続けながら自宅での生活を維持することができる'),sh:uniq(sh),svc:uniq(sv),icf:'家事→活動（IADL）／残る力→強み'};}
+
+  function rowShakai(){var m=sel('s-mode'),kin=sel('s-kin'),gai=sel('s-gai'),toji=sel('s-toji'),so=v('s-sos');
+    var sv=[],sh=[],flags=[],need=[];
+    if(m.indexOf('金銭の管理')>=0){
+      if(kin.indexOf('実際に被害にあった')>=0)flags.push({t:'red',m:'被害が起きています。包括・消費生活センター・警察へ。権利擁護として早急に。'});
+      if(kin.indexOf('家族の使い込みが心配')>=0)flags.push({t:'red',m:'経済的虐待の可能性。抱え込まず地域包括支援センターへ相談を。'});
+      if(kin.indexOf('支払いを忘れる')>=0||kin.indexOf('計算・引き出しが難しい')>=0){need.push('お金の管理が難しく、生活維持に支援を要する');sv.push('日常生活自立支援事業（社協：金銭管理・通帳預かり）');sv.push('公共料金の口座振替への切り替え');}
+      if(kin.indexOf('高額契約・訪問販売が心配')>=0){need.push('判断力の低下により契約・訪問販売の被害のおそれがある');sv.push('成年後見制度の検討（包括・社協へ相談）');}
+      flags.push({t:'yellow',m:'金銭をケアマネや事業所が直接預かることはできません。必ず公的な仕組み（社協・後見）へ。'});}
+    if(m.indexOf('外出・移動手段')>=0){if(gai.length)need.push('移動手段の確保が難しく外出が減っている');
+      if(gai.indexOf('免許返納')>=0)sv.push('自治体の返納者支援（タクシー券・バス割引）の確認');
+      if(gai.indexOf('バス・電車に乗れない')>=0||gai.indexOf('送迎する人がいない')>=0)sv.push('介護タクシー／通院等乗降介助／送迎付き通所');
+      if(gai.indexOf('歩ける距離が短い')>=0)sv.push('福祉用具（歩行車）／通所リハビリ');
+      sh.push('移動手段を確保し、必要な外出を続けることができる');}
+    if(m.indexOf('閉じこもり')>=0){
+      if(toji.indexOf('出たくない・意欲がわかない')>=0){need.push('外出・交流への意欲が低下している');sv.push('本人に合う場を探す（無理に通所を勧めない）／気分低下が続けば主治医へ');}
+      if(toji.indexOf('出たいがきっかけがない')>=0){need.push('意欲はあるが場がなく閉じこもりがち');sv.push('通所介護・地域サロン・老人クラブ（本人に合う場）');}
+      if(toji.indexOf('趣味・役割をやめた')>=0){need.push('趣味や役割を失い、生活の張り合いが薄れている');sh.push('以前の趣味・役割を、できる形で再開することができる');}
+      if(toji.indexOf('ほとんど外に出ない')>=0)sh.push('週に一度は外に出る機会を持つことができる');}
+    if(!need.length)need.push('社会とのつながりの確保に支援を要する');if(!sh.length)sh.push('人や地域とのつながりを保つことができる');if(!sv.length)sv.push('地域資源の情報提供');
+    return {item:'社会参加',flags:flags,need:need.join('。'),lg:goal(so,'社会とのつながりを保ちながら生活を続けることができる'),sh:uniq(sh),svc:uniq(sv),icf:'金銭・移動→活動／交流→参加'};}
+
+  function rowFukuyaku(){var med=sel('f-med'),ctrl=sel('f-ctrl')[0]||'',visit=sel('f-visit'),so=v('f-sos');
+    var sv=[],sh=[],flags=[],need=[];
+    if(med.indexOf('飲んだことを忘れて重複')>=0){flags.push({t:'red',m:'重複服用は過量のリスク。管理方法の見直しを早めに。'});need.push('服薬の重複があり過量のリスクがある');}
+    if(med.indexOf('自分でやめる（自己中断）')>=0){need.push('自己判断で服薬を中断し、病状悪化のリスクがある');sv.push('主治医・薬剤師への相談（中断理由の確認、処方の見直し）');}
+    if(med.indexOf('飲み忘れがある')>=0)need.push('飲み忘れがあり、服薬継続に支援を要する');
+    if(med.indexOf('残薬がたまる')>=0)sv.push('薬局・訪問薬剤師による残薬整理');
+    if(med.indexOf('多剤')>=0)sv.push('主治医・薬剤師への相談（一包化・処方の整理）');
+    if(med.indexOf('手指で取り出せない')>=0)sv.push('一包化・取り出しやすい形への変更（薬局へ相談）');
+    if(ctrl==='カレンダー等があれば'){sv.push('お薬カレンダー・服薬ボックスの導入');sh.push('お薬カレンダーを使い、自分で服薬を続けることができる');}
+    else if(ctrl==='声かけがあれば'){sv.push('訪問介護（服薬の声かけ・確認）');sh.push('声かけを受けながら、飲み忘れなく服薬できる');}
+    else if(ctrl==='手渡し・確認まで必要'){sv.push('訪問介護（服薬介助）／訪問看護（服薬管理）');sh.push('支援を受けながら確実に服薬できる');}
+    if(visit.indexOf('通院の移動が難しい')>=0){need.push('通院が難しく受診継続に支援を要する');sv.push('通院介助（訪問介護・介護タクシー）／訪問診療の検討');}
+    if(visit.indexOf('受診日を忘れる')>=0)sv.push('受診日の声かけ・カレンダー管理');
+    if(visit.indexOf('症状を伝えられない')>=0)sv.push('受診同行・連絡ノート（通院時情報連携）');
+    if(visit.indexOf('受診を嫌がる')>=0)sv.push('本人の思いの確認／主治医との関係調整・訪問診療の検討');
+    if(!need.length)need.push('服薬・受診の継続に支援を要する');if(!sh.length)sh.push('支援を受けながら服薬と受診を続けることができる');if(!sv.length)sv.push('服薬・受診状況の確認');
+    return {item:'服薬・受診',flags:flags,need:need.join('。'),lg:goal(so,'必要な薬と医療を続けながら生活することができる'),sh:uniq(sh),svc:uniq(sv),icf:'記憶・手指→心身機能／服薬受診→活動'};}
+
+  function rowNinchi(){var w=sel('n-watch')[0]||'',b=sel('n-bpsd'),e=sel('n-eye'),ph=sel('n-phys'),so=v('n-sos');
+    var solo=(w==='基本一人（独居）'),alone=(w==='時々一人になる'||solo),reds=[],yels=[],sv=[],sh=[];
+    if(e.length)reds.push('常時の危険行為（'+e.join('・')+'）で目が離せない');
+    if(b.length>=2)reds.push('精神症状が複数（'+b.join('・')+'）重なり介護者の心を削っている');
+    else if(b.length===1)yels.push('精神症状（'+b[0]+'）がみられる');
+    if(ph.length){if(alone)reds.push('身体的リスク（'+ph.join('・')+'）×'+(solo?'独居':'一人になる時間'));else yels.push('身体的リスク（'+ph.join('・')+'）は見守りと対策で維持可');}
+    if(reds.length){sv.push('短期入所（介護者のレスパイト）');sv.push('通所の回数・時間の拡大');if(b.length>=2)sv.push('認知症対応の医療（もの忘れ外来）／精神科訪問看護');sv.push('生活の場の情報提供・相談（施設・GH等）');sh.push('介護者が休息を取れる時間を確保し、介護を続けられる状態を保つことができる');}
+    else{if(ph.indexOf('徘徊')>=0)sv.push('見守り機器・GPS');if(ph.indexOf('火の不始末')>=0)sv.push('電磁調理器への変更');sv.push('通所介護（生活リズムの維持）');sh.push('声かけや見守りを受けながら、できる生活動作を続けることができる');}
+    return {item:'認知・見守り',reds:reds,yels:yels,need:reds.length?'複数の負担が重なり介護者の心身が限界に近づいている。生活の場も含めた検討段階の可能性':'認知機能の低下により見守りと支援体制の調整を要する',
+      lg:goal(so,'家族の負担にも配慮しながら、できる力を保って生活を続けることができる'),sh:sh,svc:uniq(sv),icf:'認知→心身機能／見守り体制→環境因子'};}
+
+  function rowKazoku(){var who=sel('kz-who'),sign=sel('kz-sign'),urg=sel('kz-urg'),so=v('kz-sos');
+    var reds=[],yels=[],sv=[],sh=[],flags=[];
+    if(urg.indexOf('手が出そうと本人が漏らす')>=0){reds.push('介護者が追い詰められ、虐待につながりかねない');flags.push({t:'red',m:'介護者を責めないこと。「そこまで頑張ってきた」の受け止めが先。抱え込まず包括と共有を。'});}
+    if(urg.indexOf('介護離職しようとしている')>=0){reds.push('介護離職を考える段階まで負担が来ている');sv.push('介護休業・介護休暇制度の確認（勢いで辞めない）');}
+    if(urg.indexOf('代わりがいない')>=0){reds.push('介護体制が一人に依存し、予備がない');sv.push('緊急時のショートステイ受け入れ先の確保（事前登録）');}
+    if(sign.length>=2)reds.push('負担のサインが複数（'+sign.join('・')+'）出ている');
+    else if(sign.length===1)yels.push('負担のサイン（'+sign[0]+'）がみられる');
+    if(who.indexOf('配偶者（老老介護）')>=0)yels.push('老老介護で介護者自身の体力に限りがある');
+    if(who.indexOf('ダブルケア')>=0)yels.push('ダブルケアで介護以外の負担も抱えている');
+    if(who.indexOf('介護者自身に持病・障害')>=0)yels.push('介護者自身が治療・配慮を要する');
+    if(reds.length){sv.push('短期入所（定期的なレスパイト：計画的に）');sv.push('通所の回数・時間の拡大（介護者が休める時間）');sv.push('包括との共有／家族介護者の相談窓口・家族会');sh.push('介護者が定期的に休息を取り、介護を続けられる状態を保つことができる');}
+    else if(yels.length){sv.push('ショート・デイの導入／既存の息抜きの定期化');sh.push('介護者が休める時間を、月の予定として確保できる');}
+    if(!sv.length)sv.push('介護者の負担の定期的な確認');
+    return {item:'家族の介護負担',reds:reds,yels:yels,flags:flags,need:reds.length?'介護者の負担が限界に近づいており、介護者を支えることが在宅継続に直結している':'介護者の負担が積み重なりつつあり、早めに休める体制を整える必要がある',
+      lg:(so?'介護者の「'+clean(so)+'」という思いを支えながら、':'')+'本人と介護者の双方が暮らしを続けることができる',sh:sh,svc:uniq(sv),icf:'介護者の状況→環境因子（人的環境）'};}
+
+  function rowDokkyo(){var d=sel('d-item'),so=v('d-sos'),sv=[],sh=[],need=[];
+    if(d.indexOf('急変・転倒に気づく人がいない')>=0||d.indexOf('安否確認の手段がない')>=0){need.push('独居であり、急変や転倒に気づける仕組みを要する');sv.push('緊急通報装置（自治体事業の確認）');sv.push('配食サービス（安否確認）／見守り訪問・民生委員');}
+    if(d.indexOf('体調変化を自分で気づけない')>=0)sv.push('訪問看護・訪問介護による定期的な状態確認（曜日を散らして空白を作らない）');
+    if(d.indexOf('緊急時の駆けつけ・鍵')>=0){need.push('緊急時の駆けつけと入室の手段を決めておく必要がある');sv.push('キーボックス等の設置と、誰が開けられるかの取り決め（文書で共有）');}
+    if(d.indexOf('災害時に避難できない')>=0)sv.push('避難行動要支援者名簿への登録確認／個別避難計画');
+    if(!need.length)need.push('独居であり、見守りの仕組みを要する');if(!sv.length)sv.push('見守り体制の確認');
+    sh.push('見守りの仕組みを整え、一人の時間の空白を減らすことができる');
+    return {item:'独居',need:need.join('。'),lg:goal(so,'支えを整えながら一人での生活を続けることができる'),sh:sh,svc:uniq(sv),icf:'独居→環境因子（人的環境の不足）'};}
+
+  var builders={idou:rowIdou,izon:rowIzon,shokuji:rowShokuji,haisetsu:rowHaisetsu,nyuyoku:rowNyuyoku,seiyou:rowSeiyou,
+                kaji:rowKaji,shakai:rowShakai,fukuyaku:rowFukuyaku,ninchi:rowNinchi,kazoku:rowKazoku,dokkyo:rowDokkyo};
+
+  function tenkiKihon(){
+    var parts=[];
+    if(active('idou')){
+      var c=sel('i-cause'),p=sel('i-pt'),lv=sel('i-lv')[0]||'',so=v('i-sos'),s='移動・転倒：';
+      if(lv)s+='介助度は'+lv+'。';
+      if(c.length)s+='原因は'+c.join('・')+'。';
+      if(p.length)s+=p.join('・')+'でつまずきが見られる。';
+      if(!c.length&&!p.length&&!lv)s+='移動に支援を要する状態がみられる。';
+      if(so)s+='本人の言葉：「'+clean(so)+'」。';
+      parts.push(s);
+    }
+    if(active('izon')){
+      var lv2=sel('iz-lv')[0]||'',pt=sel('iz-pt'),so2=v('iz-sos'),s2='移乗：';
+      if(lv2)s2+='介助度は'+lv2+'。';
+      if(pt.length)s2+=pt.join('・')+'でつまずきが見られる。';
+      if(!lv2&&!pt.length)s2+='移乗に支援を要する状態がみられる。';
+      if(so2)s2+='本人の言葉：「'+clean(so2)+'」。';
+      parts.push(s2);
+    }
+    if(active('seiyou')){
+      var it=sel('se-item'),ca=sel('se-cause'),lv3=sel('se-lv')[0]||'',so3=v('se-sos'),s3='整容・更衣：';
+      if(lv3)s3+='介助度は'+lv3+'。';
+      if(it.length)s3+=it.join('・')+'に困難がある。';
+      if(ca.length)s3+='背景として'+ca.join('・')+'がある。';
+      if(!it.length&&!ca.length&&!lv3)s3+='整容・更衣に支援を要する状態がみられる。';
+      if(so3)s3+='本人の言葉：「'+clean(so3)+'」。';
+      parts.push(s3);
+    }
+    return parts.join('\n');
+  }
+
+  function tenkiNyuyoku(){
+    if(!active('nyuyoku'))return '';
+    var lv=sel('ny-lv')[0]||'',p=sel('ny-pt'),env=sel('ny-env'),so=v('ny-sos'),s='';
+    s+='入浴は'+(lv||'見守り')+'を要する。';
+    if(p.length)s+=p.join('・')+'につまずきがある。';
+    if(env.length)s+=env.join('・')+'。';
+    if(so)s+='本人の言葉：「'+clean(so)+'」。';
+    return s;
+  }
+
+  function tenkiShokuji(){
+    if(!active('shokuji'))return '';
+    var eat=sel('sh-eat'),form=sel('sh-form')[0]||'',app=sel('sh-app'),mouth=sel('sh-mouth'),water=sel('sh-water'),lv=sel('sh-lv')[0]||'',so=v('sh-sos'),parts=[];
+    if(lv)parts.push('食べる動作の介助度：'+lv+'。');
+    if(eat.length||(form&&form!=='常食')){var s='嚥下：';if(eat.length)s+=eat.join('・')+'。';if(form&&form!=='常食')s+='食形態は'+form+'。';parts.push(s);}
+    if(app.length)parts.push('食欲・意欲：'+app.join('・')+'。');
+    if(mouth.length)parts.push('口腔・姿勢：'+mouth.join('・')+'。');
+    if(water.length)parts.push('水分：'+water.join('・')+'。');
+    if(!parts.length)parts.push('食事に支援を要する状態がみられる。');
+    if(so)parts.push('本人の言葉：「'+clean(so)+'」。');
+    return parts.join('\n');
+  }
+
+  function tenkiHaisetsu(){
+    if(!active('haisetsu'))return '';
+    var u=sel('ha-u'),b=sel('ha-b'),ctrl=sel('ha-ctrl')[0]||'',lv=sel('ha-lv')[0]||'',med=sel('ha-med'),so=v('ha-sos'),parts=[];
+    if(lv)parts.push('排泄動作の介助度：'+lv+'。');
+    if(med.length)parts.push('排泄経路・医療管理：'+med.join('・')+'。');
+    if(u.length)parts.push('尿：'+u.join('・')+'。');
+    if(b.length)parts.push('便：'+b.join('・')+'。');
+    if(ctrl&&ctrl!=='自制内')parts.push('便のコントロール：'+ctrl+'。');
+    if(!parts.length)parts.push('排泄に支援を要する状態がみられる。');
+    if(so)parts.push('本人の言葉：「'+clean(so)+'」。');
+    return parts.join('\n');
+  }
+
+  function tenkiGaishutsu(){
+    if(!active('shakai')||sel('s-mode').indexOf('外出・移動手段')<0)return '';
+    var gai=sel('s-gai'),so=v('s-sos'),s='';
+    s+=gai.length?gai.join('・')+'により外出が難しい状態。':'外出・移動手段に支援を要する状態がみられる。';
+    if(so)s+='本人の言葉：「'+clean(so)+'」。';
+    return s;
+  }
+
+  function tenkiNinchiBoth(){
+    if(!active('ninchi'))return {chu:'',bp:''};
+    var w=sel('n-watch')[0]||'',e=sel('n-eye'),ph=sel('n-phys'),b=sel('n-bpsd'),so=v('n-sos'),chuParts=[];
+    if(w)chuParts.push('見守りの体制：'+w+'。');
+    if(e.length)chuParts.push('目が離せない行動：'+e.join('・')+'。');
+    if(ph.length)chuParts.push('身体的リスク：'+ph.join('・')+'。');
+    var bp=b.length?'精神症状：'+b.join('・')+'。':'';
+    if(so){if(chuParts.length)chuParts.push('本人・家族の言葉：「'+clean(so)+'」。');else if(bp)bp+='本人・家族の言葉：「'+clean(so)+'」。';}
+    return {chu:chuParts.join('\n'),bp:bp};
+  }
+
+  function tenkiKaji(){
+    if(!active('kaji'))return '';
+    var it=sel('k-item'),ab=sel('k-able'),fm=sel('k-fm')[0]||'',so=v('k-sos'),s='家事：';
+    if(it.length)s+=it.join('・')+'が難しい。';
+    if(ab.length)s+='一方で'+ab.join('・')+'。';
+    if(fm)s+='世帯状況：'+fm+'。';
+    if(!it.length&&!ab.length&&!fm)s+='家事に支援を要する状態がみられる。';
+    if(so)s+='本人の言葉：「'+clean(so)+'」。';
+    return s;
+  }
+
+  function tenkiKinsen(){
+    if(!active('shakai')||sel('s-mode').indexOf('金銭の管理')<0)return '';
+    var kin=sel('s-kin'),so=v('s-sos'),s='金銭管理：';
+    s+=kin.length?kin.join('・')+'。':'金銭管理に支援を要する状態がみられる。';
+    if(so)s+='本人の言葉：「'+clean(so)+'」。';
+    return s;
+  }
+
+  function tenkiTojikomori(){
+    if(!active('shakai')||sel('s-mode').indexOf('閉じこもり')<0)return '';
+    var toji=sel('s-toji'),so=v('s-sos'),s='閉じこもり傾向：';
+    s+=toji.length?toji.join('・')+'。':'閉じこもり傾向がみられる。';
+    if(so)s+='本人の言葉：「'+clean(so)+'」。';
+    return s;
+  }
+
+  function tenkiFukuyakuBoth(){
+    if(!active('fukuyaku'))return {shakai:'',iryou:''};
+    var med=sel('f-med'),ctrl=sel('f-ctrl')[0]||'',visit=sel('f-visit'),so=v('f-sos');
+    var mgmtMed=['飲み忘れがある','残薬がたまる','手指で取り出せない'],riskMed=['飲んだことを忘れて重複','自分でやめる（自己中断）','多剤'];
+    var riskVisit=['通院の移動が難しい','症状を伝えられない','受診を嫌がる'];
+    var medMgmt=med.filter(function(x){return mgmtMed.indexOf(x)>=0;});
+    var medRisk=med.filter(function(x){return riskMed.indexOf(x)>=0;});
+    var visitMgmt=visit.filter(function(x){return x==='受診日を忘れる';});
+    var visitRisk=visit.filter(function(x){return riskVisit.indexOf(x)>=0;});
+    var shakaiParts=[];
+    if(medMgmt.length)shakaiParts.push('服薬管理：'+medMgmt.join('・')+'。');
+    if(ctrl)shakaiParts.push('管理の程度：'+ctrl+'。');
+    if(visitMgmt.length)shakaiParts.push('受診管理：'+visitMgmt.join('・')+'。');
+    var iryouParts=[];
+    if(medRisk.length)iryouParts.push('服薬面のリスク：'+medRisk.join('・')+'。');
+    if(visitRisk.length)iryouParts.push('受診面の課題：'+visitRisk.join('・')+'。');
+    if(so){if(shakaiParts.length)shakaiParts.push('本人の言葉：「'+clean(so)+'」。');else if(iryouParts.length)iryouParts.push('本人の言葉：「'+clean(so)+'」。');}
+    return {shakai:shakaiParts.join('\n'),iryou:iryouParts.join('\n')};
+  }
+
+  function tenkiZentai(){
+    var parts=[];
+    if(active('dokkyo')){
+      var d=sel('d-item'),so=v('d-sos'),s='独居：';
+      s+=d.length?d.join('・')+'といった心配がある。':'独居であり、見守りの仕組みを要する。';
+      if(so)s+='本人の言葉：「'+clean(so)+'」。';
+      parts.push(s);
+    }
+    if(active('kazoku')){
+      var who=sel('kz-who'),sign=sel('kz-sign'),urg=sel('kz-urg'),so2=v('kz-sos'),s2='家族の介護負担：';
+      if(who.length)s2+='主な介護者は'+who.join('・')+'。';
+      if(sign.length)s2+='負担のサイン：'+sign.join('・')+'。';
+      if(urg.length)s2+='急ぎのサイン：'+urg.join('・')+'。';
+      if(!who.length&&!sign.length&&!urg.length)s2+='介護者の負担に配慮を要する状態がみられる。';
+      if(so2)s2+='介護者の言葉：「'+clean(so2)+'」。';
+      parts.push(s2);
+    }
+    return parts.join('\n');
+  }
+
+  var lastRows=[];
+  var lastOutputType='';
+  var FIELD_LABEL={need:'ニーズ',lg:'長期目標',sh:'短期目標',svc:'サービス候補'};
+  function fieldText(r,field){
+    if(field==='need')return r.need;
+    if(field==='lg')return r.lg;
+    if(field==='sh')return r.sh.join('\n');
+    if(field==='svc')return r.svc.join('\n');
+    return '';
+  }
+  function copyText(text){
+    if(navigator.clipboard){navigator.clipboard.writeText(text);return;}
+    var tmp=document.createElement('textarea');
+    tmp.value=text;tmp.style.position='fixed';tmp.style.opacity='0';
+    document.body.appendChild(tmp);tmp.focus();tmp.select();
+    document.execCommand('copy');
+    document.body.removeChild(tmp);
+  }
+  function cpBtn(i,field){return '<button type="button" class="cpbtn" data-row="'+i+'" data-field="'+field+'">'+FIELD_LABEL[field]+'をコピー</button>';}
+  var lastCats=[];
+  function catCpBtn(i){return '<button type="button" class="cpbtn" data-cat="'+i+'">この区分をコピー</button>';}
+  document.getElementById('tblbox').addEventListener('click',function(e){
+    var btn=e.target.closest&&e.target.closest('.cpbtn');
+    if(!btn)return;
+    var text;
+    if(btn.dataset.row!==undefined){
+      var r=lastRows[+btn.dataset.row];if(!r)return;
+      text=fieldText(r,btn.dataset.field);
+    }else if(btn.dataset.cat!==undefined){
+      var c=lastCats[+btn.dataset.cat];if(!c)return;
+      text=c[1];
+    }else return;
+    copyText(text);
+    var orig=btn.textContent;btn.textContent='コピーしました';
+    setTimeout(function(){btn.textContent=orig;},1200);
+  });
+
+  document.getElementById('make').addEventListener('click',function(){
+    document.getElementById('modelabel').textContent='';
+    var order=['idou','izon','shokuji','haisetsu','nyuyoku','seiyou','kaji','shakai','fukuyaku','ninchi','kazoku','dokkyo'];
+    var rows=[];order.forEach(function(k){if(active(k))rows.push(builders[k]());});
+    var fb=document.getElementById('flags');fb.innerHTML='';
+    if(!rows.length){fb.innerHTML='<div class="flag yellow">STEP1で困りごとを選んでください。</div>';document.getElementById('tblbox').innerHTML='';document.getElementById('output').value='';lastRows=[];return;}
+    rows.forEach(function(r){
+      r.need=modeNeedText(r.need,currentMode);
+      r.lg=modeGoalText(r.lg,currentMode);
+      r.sh=r.sh.map(function(s){return modeGoalText(s,currentMode);});
+      (r.flags||[]).forEach(function(f){fb.innerHTML+='<div class="flag '+f.t+'">⚠ '+f.m+'</div>';});
+      if(r.reds&&r.reds.length)fb.innerHTML+='<div class="flag red">🔴 '+r.item+'：'+r.reds.join('／')+'<br><span style="font-weight:400;font-size:11px">※即施設ではありません。続いている期間・介護者の状態を見て、最終判断はご自身で。</span></div>';
+      if(r.yels&&r.yels.length)fb.innerHTML+='<div class="flag yellow">🟡 '+r.item+'：'+r.yels.join('／')+'</div>';
+    });
+    document.getElementById('modelabel').textContent='モード：'+MODES[currentMode].label+'（'+MODES[currentMode].desc+'）としての叩き台です。項目ごとに「〜をコピー」ボタンでも貼り付けられます。';
+    lastRows=rows;
+    var t='<table><tr><th>ニーズ（課題）</th><th>長期目標</th><th>短期目標</th><th>サービス内容（候補）</th></tr>';
+    var txt='【支援の方向性モード】'+MODES[currentMode].label+'（'+MODES[currentMode].desc+'）\n\n';
+    rows.forEach(function(r,i){
+      t+='<tr class="cathead"><td colspan="4">■'+r.item+'</td></tr>';
+      t+='<tr><td>'+r.need+'<br><span class="icf">［'+r.icf+'］</span>'+cpBtn(i,'need')+'</td><td>'+r.lg+cpBtn(i,'lg')+'</td><td>'+r.sh.join('<br>')+cpBtn(i,'sh')+'</td><td>'+r.svc.join('<br>')+cpBtn(i,'svc')+'</td></tr>';
+      txt+='■'+r.item+'\n【ニーズ】'+r.need+'\n【長期目標】'+r.lg+'\n【短期目標】\n'+r.sh.map(function(s){return '・'+s;}).join('\n')+'\n【サービス候補】\n'+r.svc.map(function(s){return '・'+s;}).join('\n')+'\n\n';
+    });
+    t+='</table>';
+    document.getElementById('tblbox').innerHTML=t;
+    document.getElementById('output').value=txt.trim();
+    lastOutputType='第2表';
+    document.getElementById('tblbox').scrollIntoView({behavior:'smooth',block:'start'});
+  });
+
+  document.getElementById('tenki').addEventListener('click',function(){
+    var order=['idou','izon','shokuji','haisetsu','nyuyoku','seiyou','kaji','shakai','fukuyaku','ninchi','kazoku','dokkyo'];
+    var rows=[];order.forEach(function(k){if(active(k))rows.push(builders[k]());});
+    var fb=document.getElementById('flags');fb.innerHTML='';
+    var mlb=document.getElementById('modelabel');
+    if(!rows.length){fb.innerHTML='<div class="flag yellow">STEP1で困りごとを選んでください。</div>';document.getElementById('tblbox').innerHTML='';document.getElementById('output').value='';mlb.textContent='';lastCats=[];return;}
+    rows.forEach(function(r){
+      (r.flags||[]).forEach(function(f){fb.innerHTML+='<div class="flag '+f.t+'">⚠ '+f.m+'</div>';});
+      if(r.reds&&r.reds.length)fb.innerHTML+='<div class="flag red">🔴 '+r.item+'：'+r.reds.join('／')+'</div>';
+      if(r.yels&&r.yels.length)fb.innerHTML+='<div class="flag yellow">🟡 '+r.item+'：'+r.yels.join('／')+'</div>';
+    });
+    var ninchi=tenkiNinchiBoth(),fuku=tenkiFukuyakuBoth();
+    var cats=[
+      ['6-①基本(身体機能・起居)動作',tenkiKihon()],
+      ['6-①入浴',tenkiNyuyoku()],
+      ['6-①コミュニケーション',''],
+      ['6-②食事',tenkiShokuji()],
+      ['6-②排泄',tenkiHaisetsu()],
+      ['6-②外出',tenkiGaishutsu()],
+      ['6-③認知機能',ninchi.chu],
+      ['6-④精神・行動障害',ninchi.bp],
+      ['6-⑤社会生活への適応',[tenkiKaji(),tenkiKinsen(),tenkiTojikomori(),fuku.shakai].filter(function(s){return s;}).join('\n')],
+      ['6-⑥医療・健康',fuku.iryou],
+      ['7全体のまとめ',tenkiZentai()]
+    ];
+    var used=cats.filter(function(c){return c[1]&&c[1].trim();});
+    if(!used.length){document.getElementById('tblbox').innerHTML='';document.getElementById('output').value='';mlb.textContent='該当する項目がありません。';lastCats=[];return;}
+    lastCats=used;
+    var html='',txt='';
+    used.forEach(function(c,i){
+      html+='<div class="lead"><strong>【'+c[0]+'】</strong><br>'+c[1].replace(/\n/g,'<br>')+catCpBtn(i)+'</div>';
+      txt+='【'+c[0]+'】\n'+c[1]+'\n\n';
+    });
+    mlb.textContent='ケアカルテ　アセスメント特記欄への転記文（区分ごとに「この区分をコピー」でも貼り付けられます）';
+    document.getElementById('tblbox').innerHTML=html;
+    document.getElementById('output').value=txt.trim();
+    lastOutputType='転記文';
+    document.getElementById('tblbox').scrollIntoView({behavior:'smooth',block:'start'});
+  });
+
+  document.getElementById('copy').addEventListener('click',function(){
+    var o=document.getElementById('output');o.select();o.setSelectionRange(0,99999);
+    if(navigator.clipboard)navigator.clipboard.writeText(o.value);else document.execCommand('copy');});
+  function resetAll(){
+    [].slice.call(document.querySelectorAll('.opt.on,.chip.on')).forEach(function(x){x.classList.remove('on');});
+    [].slice.call(document.querySelectorAll('.panel')).forEach(function(x){x.classList.remove('active');});
+    [].slice.call(document.querySelectorAll('.subblk')).forEach(function(x){x.classList.remove('on');});
+    [].slice.call(document.querySelectorAll('input[type="text"]')).forEach(function(x){x.value='';});
+    [].slice.call(document.querySelectorAll('.ng')).forEach(function(x){x.style.display='none';});
+    document.getElementById('tblbox').innerHTML='';document.getElementById('flags').innerHTML='';document.getElementById('output').value='';document.getElementById('modelabel').textContent='';
+    lastRows=[];lastCats=[];lastOutputType='';modeManual=false;updateModeSuggestion();
+    clearDraft();
+  }
+  document.getElementById('clear').addEventListener('click',function(){
+    if(!confirm('入力内容を消して、次の利用者に移りますか？保存した続きも削除されます。'))return;
+    resetAll();
+    window.scrollTo({top:0,behavior:'smooth'});});
+  document.getElementById('draft-clear').addEventListener('click',function(){
+    if(!confirm('入力内容を消して、新しく始めますか？保存した続きも削除されます。'))return;
+    resetAll();
+    window.scrollTo({top:0,behavior:'smooth'});});
+
+  // ===== 途中保存・再開（端末内・LocalStorageのみ／外部送信なし） =====
+  var DRAFT_KEY='careplan_draft_v1';
+  function nowLabel(){
+    var d=new Date();
+    var mm=('0'+(d.getMonth()+1)).slice(-2), dd=('0'+d.getDate()).slice(-2);
+    var hh=('0'+d.getHours()).slice(-2), mi=('0'+d.getMinutes()).slice(-2);
+    return mm+'/'+dd+' '+hh+':'+mi;
+  }
+  function captureState(){
+    var chips=[].slice.call(document.querySelectorAll('.chip[data-p].on')).map(function(c){return c.dataset.p;});
+    var opts={};
+    [].slice.call(document.querySelectorAll('.opts[data-g]')).forEach(function(box){
+      var idx=[].slice.call(box.children).reduce(function(acc,el,i){if(el.classList.contains('on'))acc.push(i);return acc;},[]);
+      if(idx.length)opts[box.dataset.g]=idx;
+    });
+    var texts={};
+    [].slice.call(document.querySelectorAll('input[type="text"][id]')).forEach(function(inp){
+      if(inp.value)texts[inp.id]=inp.value;
+    });
+    return {chips:chips,opts:opts,texts:texts,mode:currentMode,modeManual:modeManual};
+  }
+  function applyState(st){
+    if(!st)return;
+    [].slice.call(document.querySelectorAll('.chip.on')).forEach(function(x){x.classList.remove('on');});
+    [].slice.call(document.querySelectorAll('.panel')).forEach(function(x){x.classList.remove('active');});
+    [].slice.call(document.querySelectorAll('.opt.on')).forEach(function(x){x.classList.remove('on');});
+    [].slice.call(document.querySelectorAll('input[type="text"]')).forEach(function(x){x.value='';});
+    (st.chips||[]).forEach(function(p){
+      var c=document.querySelector('.chip[data-p="'+p+'"]');
+      var panel=document.getElementById('p-'+p);
+      if(c)c.classList.add('on');
+      if(panel)panel.classList.add('active');
+    });
+    Object.keys(st.opts||{}).forEach(function(g){
+      var box=document.querySelector('.opts[data-g="'+g+'"]');
+      if(!box)return;
+      (st.opts[g]||[]).forEach(function(i){
+        var el=box.children[i];
+        if(el)el.classList.add('on');
+      });
+    });
+    Object.keys(st.texts||{}).forEach(function(id){
+      var inp=document.getElementById(id);
+      if(inp){inp.value=st.texts[id];inp.dispatchEvent(new Event('input'));}
+    });
+    syncSub();
+    currentMode=st.mode||'jiritsu';
+    modeManual=!!st.modeManual;
+    renderModeUI();
+  }
+  function loadDraft(){
+    try{var s=localStorage.getItem(DRAFT_KEY);return s?JSON.parse(s):null;}catch(e){return null;}
+  }
+  function saveDraft(){
+    try{
+      localStorage.setItem(DRAFT_KEY, JSON.stringify({savedAt:nowLabel(),state:captureState()}));
+    }catch(e){alert('保存に失敗しました。');return;}
+    renderDraftStatus();
+    var b=document.getElementById('draft-save');
+    var orig=b.textContent;b.textContent='保存しました';
+    setTimeout(function(){b.textContent=orig;},1400);
+  }
+  function resumeDraft(){
+    var d=loadDraft();
+    if(!d){alert('保存された続きが見つかりません。');return;}
+    applyState(d.state);
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  function clearDraft(){
+    localStorage.removeItem(DRAFT_KEY);
+    renderDraftStatus();
+  }
+  function renderDraftStatus(){
+    var d=loadDraft();
+    var el=document.getElementById('draft-status');
+    if(!el)return;
+    el.textContent = d ? ('保存済みの続きがあります（'+d.savedAt+'）') : '保存された続きはありません。';
+  }
+  document.getElementById('draft-save').addEventListener('click', saveDraft);
+  document.getElementById('draft-resume').addEventListener('click', resumeDraft);
+  renderDraftStatus();
+
+  // ===== 完成品（第2表・転記文）の保存（端末内・LocalStorageのみ／外部送信なし） =====
+  var SAVE_KEY='careplan_saved_v1';
+  function loadSavedRecords(){
+    try{var s=localStorage.getItem(SAVE_KEY);return s?JSON.parse(s):[];}catch(e){return [];}
+  }
+  function writeSavedRecords(arr){
+    try{localStorage.setItem(SAVE_KEY, JSON.stringify(arr));}catch(e){}
+  }
+  function saveRecord(){
+    var out=document.getElementById('output');
+    if(!out||!out.value.trim()){alert('先に「思考の叩き台を出す」または「ケアカルテ特記欄に転記」で文章を作ってください。');return;}
+    var arr=loadSavedRecords();
+    arr.push({id:Date.now(), label:nowLabel()+'　'+(lastOutputType||'記録'), text:out.value});
+    writeSavedRecords(arr);
+    renderSavedRecords();
+    var b=document.getElementById('save-record');
+    b.classList.add('saved');b.textContent='保存しました';
+    setTimeout(function(){b.classList.remove('saved');b.textContent='この記録を保存';},1400);
+  }
+  function deleteSavedRecord(id){
+    writeSavedRecords(loadSavedRecords().filter(function(r){return r.id!==id;}));
+    renderSavedRecords();
+  }
+  function clearAllSavedRecords(){
+    if(!loadSavedRecords().length)return;
+    if(confirm('保存した記録をすべて削除します。よろしいですか？')){writeSavedRecords([]);renderSavedRecords();}
+  }
+  function copySavedRecord(id,btn){
+    var r=loadSavedRecords().filter(function(x){return x.id===id;})[0];
+    if(!r)return;
+    copyText(r.text);
+    btn.classList.add('copied');btn.textContent='コピー済';
+    setTimeout(function(){btn.classList.remove('copied');btn.textContent='コピー';},1400);
+  }
+  function renderSavedRecords(){
+    var arr=loadSavedRecords();
+    var sec=document.getElementById('saved-sec');
+    var list=document.getElementById('saved-list');
+    var cnt=document.getElementById('saved-count');
+    cnt.textContent=arr.length;
+    sec.style.display=arr.length?'block':'none';
+    list.innerHTML='';
+    arr.forEach(function(r,i){
+      var card=document.createElement('div');card.className='rec-card';
+      var head=document.createElement('div');head.className='rec-head';
+      var t=document.createElement('span');t.className='rec-title';t.textContent=(i+1)+'件目　'+r.label;
+      var btns=document.createElement('div');btns.className='rec-btns';
+      var cb=document.createElement('button');cb.type='button';cb.className='rec-copy';cb.textContent='コピー';
+      cb.addEventListener('click',function(){copySavedRecord(r.id,cb);});
+      var db=document.createElement('button');db.type='button';db.className='rec-del';db.textContent='削除';
+      db.addEventListener('click',function(){if(confirm('この記録を削除しますか？'))deleteSavedRecord(r.id);});
+      btns.appendChild(cb);btns.appendChild(db);
+      head.appendChild(t);head.appendChild(btns);
+      var body=document.createElement('div');body.className='rec-body';body.textContent=r.text;
+      card.appendChild(head);card.appendChild(body);
+      list.appendChild(card);
+    });
+  }
+  document.getElementById('save-record').addEventListener('click', saveRecord);
+  document.getElementById('clear-all-btn').addEventListener('click', clearAllSavedRecords);
+  renderSavedRecords();
+})();
+</script>
+
+<script>
+/* ②AI用プロンプト生成（API連携なし・プロンプトを組み立ててコピーさせるだけ） */
+(function(){
+  var SYSTEM_PROMPT = `あなたはケアプラン作成を補助するアシスタントです。下記の【絶対ルール】を厳守し、【出力様式】の通りにのみ日本語で出力してください。前置き・後書き・言い訳は書かないこと。
+
+■ 絶対ルール（最優先）
+1. あなたは「目標を読み解く係」ではない。本人が本当に望む姿（照準）は【照準】欄に記入済み。欄に書かれていない願いを推測で足したり、別の目標にすり替えたりしない。与えられた照準を様式に沿って整えるだけ。
+2. 目標は「大まか」に書く。手段（歩行／送迎／同行 等）を目標文の中で固定しない。理由：目標は最初はわざと大きく置き、モニタリングで絞っていくもの。今はその始まりの幅を書く段階。
+3. 因果を一本に通す：意向（どう生きたいか）→現状（今できること／困りごと）→その差＝ギャップ→埋める手段＝サービス。ニーズ＝意向と現状のギャップを「〜したい、しかし〜」で1文に。この筋が通らない目標・サービスは書かない。
+4. 欠点は隠すのでなく「照準に向かう途中の段」として扱う。できない現実を突きつける書き方をしない。
+5. 回避語（安心・安全・快適・見守り 等のふわっとした言葉）の扱いは、介護度でもモード名でもなく【本人の状態＝自力で動く余地があるか／完全に他力か】で切り分ける。
+   ・自力で動く余地がある人 → これらのふわっとした言葉に逃げない。本人の力に照準を合わせ「〜できる」で具体に書く。
+   ・完全に他力で動く重度の人 → 安全・安心・穏やかに過ごせること自体が支援の本来の目的。これらを目標に使ってよい。
+6. 支援の方向【モード】にトーンを合わせる。自立支援＝取り戻す・できるようになる方向／維持＝今の力を保つ方向／終末期・重度＝苦痛なく穏やかに過ごす方向。ただし合わない項目に機械的に語尾を付けない。
+7. 援助内容（サービス）は必ず3層で組む。フォーマルだけにしない。
+   ・セルフケア＝本人が取り組むこと（残っている力・自分でできること）。サービス種別は「本人」。最低1行入れる。
+   ・インフォーマル＝家族・友人・地域・民生委員など制度外の支え（面会・声かけ・買い物・見守り等）。サービス種別は「家族」「地域」等。可能な範囲で最低1行入れる。
+   ・フォーマル＝介護保険等の公的サービス（訪問介護・通所介護・訪問看護・福祉用具・居宅介護支援等）。
+   ・【医療】は状態に関わらず必ず1行入れる（この計画書は医師にも渡るため。医療との関わりがゼロのケースはない）。形は状態で変わる：元気な人＝通院・服薬管理、重度＝往診・訪問看護・居宅療養管理指導（医師・薬剤師）。訪問看護等のサービスの要否はアセスメント次第だが、医療の記載自体は省かない。
+   ※本人・家族が担う行は保険給付の対象外。
+8. ICFの視点で組む。目標を心身機能・ADL（できる／できない）だけに寄せない。
+   ・活動・参加の層（役割・楽しみ・人との交流・その人らしい生活）を必ず目標に1つ以上入れる。
+   ・環境因子（家族・地域資源・住まい）と個人因子（本人の強み・好み・照準）を支援に活かす。照準は個人因子として必ず目標に反映する。
+
+■ 出力様式（この形に固定。マークダウンで）
+## 第1表：総合的な援助の方針
+・【照準】と【モード】に沿って方針の"叩き台"を3〜4文で書く。構成＝①本人が目指す姿→②そこへ向けて何を支えるか→③緊急時・多職種連携の一言。断定しすぎず案として書く。
+・その直後に必ず次の1行を置く： **【ケアマネ確定欄】**（←最終文言は人が入れるため空欄のまま）
+
+## 第2表
+必ずマークダウンの表で、列は次の順・この見出しで固定：
+| 生活全般の解決すべき課題(ニーズ) | 長期目標 | (期間) | 短期目標 | (期間) | サービス内容 | サービス種別 | 頻度 |
+・ニーズ：1本。「〜したい、しかし〜」でギャップを1文に。
+・長期目標：2本に分ける。1つは「健康の維持管理」軸、もう1つは「活動・生活（照準に向かう）」軸。
+・短期目標：サービスごとに1本ずつ（目安3〜6本）。
+・自立している部分（セルフケア）はニーズに立てない。
+・援助内容は必ず3層を含める：本人が取り組むこと（種別「本人」）／家族・地域など制度外の支え（種別「家族」等）／介護保険等の公的サービス。フォーマルだけで終わらせない。
+・語尾：ニーズは「〜したい」、長期・短期目標は「〜できる／〜する」で締める。
+・期間：和暦略記スラッシュ（例 R08/03/17〜R09/02/28）。長期は約1年、短期は約3か月で切る。
+
+■ 正しい出力の見本（完全に他力＝重度のケース。安心・穏やかが正しい目標になっている例）
+入力例：モード=維持／照準=昔は近所の人とお茶をし編み物や塗り絵が好きだった、また誰かと穏やかに過ごしたい／出どころ=家族＋推定／現状=移動移乗入浴排泄すべて全介助（完全に他力）、意欲低下、認知機能低下。
+出力例：
+## 第1表：総合的な援助の方針
+環境の変化により意欲の低下がみられるため、心身の安定と生活リズムの再構築を図る。日々の中で役割や楽しみを持てるよう支え、馴染みの関わりや交流を通じて情緒の安定を目指す。健康管理と安全面に配慮し、家族・関係機関と連携して穏やかに過ごせるよう支援する。
+**【ケアマネ確定欄】**
+
+## 第2表
+| 生活全般の解決すべき課題(ニーズ) | 長期目標 | (期間) | 短期目標 | (期間) | サービス内容 | サービス種別 | 頻度 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 生活のリズムを整え、意欲を持って穏やかに過ごしたい | 健康に気を使い元気に過ごすことができる | R08/03/17〜R09/02/28 | 定期的な見守りのもと清潔に過ごすことができる | R08/03/17〜R08/08/31 | 体調確認・入浴介助・全身状態の確認 | 通所介護 | 週3回 |
+|  | 他者と交流しながら心身の活性化を図る | R08/03/17〜R09/02/28 | 好きな塗り絵や手作業に取り組むことができる | R08/03/17〜R08/08/31 | 余暇活動・声かけ・見守り | 住宅型有料老人ホーム | 毎日 |
+|  | 安心してその人らしい生活を続けることができる | R08/03/17〜R09/02/28 | 自分でできることを続けることができる | R08/03/17〜R08/08/31 | 残った力で塗り絵や手作業など好きなことに取り組む | 本人 | 随時 |
+|  | 安心してその人らしい生活を続けることができる | R08/03/17〜R09/02/28 | 家族との関わりの中で穏やかに過ごすことができる | R08/03/17〜R08/08/31 | 定期的な面会・話し相手・必要な物品の準備 | 家族 | 希望時 |
+|  | 健康に気を使い元気に過ごすことができる | R08/03/17〜R09/02/28 | 必要な医療を継続して受けることができる | R08/03/17〜R08/08/31 | 定期往診・薬剤処方・関係機関との情報共有 | 居宅療養管理指導（医師） | 月2回 |
+
+この見本の様式・語尾・期間の形を必ず踏襲すること。`;
+
+  var MODE_LABEL = {jiritsu:'自立支援', iji:'維持', jumatsu:'終末期・重度'};
+
+  var srcChips = [].slice.call(document.querySelectorAll('#ai-src-chips .ai-src'));
+  srcChips.forEach(function(c){
+    c.addEventListener('click', function(){
+      srcChips.forEach(function(x){x.classList.remove('on');});
+      c.classList.add('on');
+    });
+  });
+  function getSrc(){
+    var on = document.querySelector('#ai-src-chips .ai-src.on');
+    return on ? on.dataset.src : '本人';
+  }
+  function getMode(){
+    var on = document.querySelector('.mode-chip.on');
+    var key = on ? on.dataset.mode : 'jiritsu';
+    return MODE_LABEL[key] || '自立支援';
+  }
+  function showMode(){
+    var el = document.getElementById('ai-mode-show');
+    if(el) el.textContent = '現在のモード：' + getMode() + '（「支援の方向性モード」で変えられます）';
+  }
+  showMode();
+  [].slice.call(document.querySelectorAll('.mode-chip')).forEach(function(c){
+    c.addEventListener('click', showMode);
+  });
+
+  document.getElementById('ai-make').addEventListener('click', function(){
+    var aim = (document.getElementById('ai-aim').value || '').trim();
+    var src = getSrc();
+    var mode = getMode();
+    var toolOut = (document.getElementById('output').value || '').trim();
+
+    if(!toolOut){
+      alert('先に上の「思考の叩き台を出す」か「ケアカルテ特記欄に転記」を押して、出力欄に中身を出してから押してください。');
+      return;
+    }
+    if(!aim){
+      alert('照準（本人が本当に望む姿）を入れてください。ここが空だと、AIが目標を勝手に作ってしまいます。');
+      return;
+    }
+
+    var userMsg =
+      '【モード】：' + mode + '\n' +
+      '【照準（本人が本当に望む姿）】：' + aim + '\n' +
+      '【意向の出どころ】：' + src + '\n' +
+      '【現状・第2表候補（ツールの出力）】：\n' + toolOut + '\n\n' +
+      '上記をもとに、絶対ルールと出力様式に従って第1表の総合的な援助の方針と第2表を出力してください。';
+
+    document.getElementById('ai-output').value = SYSTEM_PROMPT + '\n\n----\n\n' + userMsg;
+  });
+
+  document.getElementById('ai-copy').addEventListener('click', function(){
+    var t = document.getElementById('ai-output');
+    if(!t.value){ alert('先に「AI用プロンプトを作る」を押してください。'); return; }
+    t.select();
+    try{ document.execCommand('copy'); }catch(e){}
+    if(navigator.clipboard){ try{ navigator.clipboard.writeText(t.value); }catch(e){} }
+    var b=document.getElementById('ai-copy'); var o=b.textContent;
+    b.textContent='コピーしました'; setTimeout(function(){b.textContent=o;},1400);
+  });
+})();
+</script>
+</body>
+</html>
