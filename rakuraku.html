@@ -10,6 +10,21 @@
   <meta name="description" content="ケアマネジャーの書類仕事を軽くする無料ツール。">
   <title>らくらくの部屋｜結</title><link rel="stylesheet" href="styles.css?v=4">
 
+  <style>
+    .rakurun-stamp { margin: 0 8vw 80px; padding: 28px; display: grid; grid-template-columns: 160px minmax(0, 1fr); align-items: center; gap: 30px; border: 1px solid var(--line); border-radius: 30px 12px 30px 12px; background: rgba(255,255,255,.38); }
+    .rakurun-stamp img { display: block; width: 100%; height: auto; border-radius: 18px; }
+    .rakurun-stamp .stamp-label { margin: 0 0 10px; color: var(--blue); font-size: 12px; letter-spacing: .12em; }
+    .rakurun-stamp h2 { margin: 0 0 12px; font: 500 clamp(21px, 2.5vw, 28px)/1.5 var(--serif); }
+    .rakurun-stamp .stamp-description { margin: 0; font-size: 14px; line-height: 1.9; }
+    .rakurun-stamp .stamp-link { display: inline-flex; align-items: center; justify-content: center; min-height: 46px; margin-top: 18px; padding: 10px 22px; border-radius: 999px; background: var(--blue); color: #fff; font-size: 14px; font-weight: 700; text-decoration: none; }
+    .rakurun-stamp .stamp-link:hover { background: #294b59; }
+    .rakurun-stamp .stamp-link:focus-visible { outline: 3px solid var(--blue); outline-offset: 4px; }
+    .rakurun-stamp .stamp-external { display: block; margin-top: 8px; font-size: 11px; color: #555; }
+    @media (max-width: 600px) {
+      .rakurun-stamp { margin: 0 20px 56px; padding: 24px 20px; grid-template-columns: minmax(0, 1fr); gap: 22px; text-align: center; }
+      .rakurun-stamp img { width: 144px; margin: auto; }
+    }
+  </style>
 </head>
 <body>
   <header class="site-header"><a class="brand" href="index.html"><span class="brand-mark">結</span><span><span class="brand-name">らくらく</span><br><span class="brand-sub">けあまねじゃーのどうぐ</span></span></a><a class="header-back" href="index.html">← 玄関へ</a></header>
@@ -27,6 +42,16 @@
       <div class="section-head"><h2>記録とアセスメントを、もう少しらくらく。</h2><p>必要な道具を単品でも、セットでも。HPでの直接販売を準備しています。</p></div>
       <a class="care-tool" href="rakuraku-shop.html" style="display:block"><span class="num">有料ツール · 販売準備中</span><h2>経過記録・アセスメント</h2><p>経過記録666円、アセスメント777円、2つセット1,111円。</p><span class="arrow">内容を見る →</span></a>
     </section>
+    <aside class="rakurun-stamp" aria-labelledby="rakurun-stamp-title">
+      <img src="assets/rakurun-line-stamp.jpg" width="1254" height="1254" loading="lazy" alt="ハートを添えて両手を合わせる、らくるんのスタンププレビュー">
+      <div>
+        <p class="stamp-label">らくらくシリーズから、ちょっとお知らせ</p>
+        <h2 id="rakurun-stamp-title">らくるんがLINEスタンプになりました</h2>
+        <p class="stamp-description">らくらくの案内役「らくるん」が、いつものトークにも。<br>仕事でも日常でも、気持ちをちょこっと届けます。</p>
+        <a class="stamp-link" href="https://line.me/S/sticker/36417645" target="_blank" rel="noopener noreferrer">LINEスタンプを見る</a>
+        <span class="stamp-external">LINEの販売ページが別タブで開きます</span>
+      </div>
+    </aside>
   </main>
   <footer class="site-footer"><a href="index.html">← 玄関へ</a><span>結 ｜ you-no-oto.jp</span></footer>
   <script src="motion.js?v=1"></script>
