@@ -146,15 +146,26 @@
   .compat-box .divi{height:1px;background:var(--line);margin:14px 0}
 </style>
 <link rel="stylesheet" href="redesign.css">
+<style>
+#gate > * { flex-shrink: 0; }
+#gate > :first-child { margin-top: auto; }
+#gate > :last-child { margin-bottom: auto; }
+#gate a:focus-visible { outline: 3px solid #e3c478; outline-offset: 3px; }
+</style>
 </head>
 <body>
-<a class="renew-back" href="uranai.html">← 占いの部屋へ</a><div id="gate" style="position:fixed;inset:0;background:#0d0b07;z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:24px 16px;overflow-y:auto;font-family:'Noto Serif JP',serif">
+<a class="renew-back" href="uranai.html">← 占いの部屋へ</a><div id="gate" style="position:fixed;inset:0;background:#0d0b07;z-index:99999;display:flex;align-items:center;justify-content:flex-start;flex-direction:column;padding:24px 16px;overflow-y:auto;font-family:'Noto Serif JP',serif">
   <div style="font-size:14px;letter-spacing:.25em;color:#c9a24b;margin-bottom:10px">結ゆう ／ 紫微斗数 相性（合盤）</div>
   <div style="font-size:12.5px;color:#8a7a55;margin-bottom:22px;letter-spacing:.08em">購入者向けツールです。合言葉を入力してください</div>
   <input id="gatePass" type="password" autocomplete="off" placeholder="合言葉" style="background:#1a1606;border:1px solid #3a3220;color:#e8dcc0;padding:11px 16px;border-radius:9px;font-size:15px;text-align:center;letter-spacing:.12em;width:220px;outline:none">
   <button id="gateBtn" style="margin-top:16px;background:#c9a24b;color:#1a1606;border:none;padding:10px 30px;border-radius:9px;font-weight:700;font-family:'Noto Serif JP',serif;font-size:14px;cursor:pointer">入る</button>
   <div id="gateErr" style="margin-top:14px;font-size:12px;color:#c0563a;min-height:16px"></div>
-  <nav aria-label="購入とお問い合わせ" style="margin-top:16px;text-align:center;font-size:16px;line-height:1.8;max-width:100%">
+  <nav aria-label="購入とお問い合わせ" style="margin-top:16px;text-align:center;font-size:16px;line-height:1.8;max-width:420px;width:100%">
+    <p style="margin-bottom:10px">まだ購入されていない方</p>
+    <a href="https://www.paypal.com/ncp/payment/UPSPJ7F7WNYQC" target="_blank" rel="noopener" style="display:inline-block;max-width:100%;padding:14px 20px;background:#ffc439;color:#172c4f;border-radius:6px;font-size:16px;font-weight:700;line-height:1.6;text-decoration:none;text-align:center;letter-spacing:normal">PayPalで購入する｜3,000円</a>
+    <p style="font-size:14px;margin-top:8px;color:#ece2cf">PayPalの支払いページが別タブで開きます。</p>
+    <p style="font-size:14px;margin-top:12px;color:#ece2cf">お支払い後、公式LINEで「紫微斗数」と決済時のお名前をお知らせください。確認後、ツールと合言葉をご案内します。</p>
+    <p><a href="https://lin.ee/sV1Dkxl" style="color:#e3c478;display:inline-block;padding:10px">支払い済み・受け取り連絡はこちら</a></p>
     <p><a href="yuu.html#shibi-purchase" style="color:#e3c478;display:inline-block;padding:8px">商品説明・購入の案内へ</a></p>
     <p><a href="https://lin.ee/sV1Dkxl" style="color:#ece2cf;display:inline-block;padding:8px">合言葉がわからない方は公式LINEへ</a></p>
     <p><a href="uranai.html#toolbox" style="color:#ece2cf;display:inline-block;padding:8px">← 占いの道具箱へ戻る</a></p>
