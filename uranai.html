@@ -10,6 +10,17 @@
   <meta name="description" content="占いと対話で、困りごとを扱える形に組み替える。結ゆうのセッションと占いの道具。">
   <title>占いの部屋｜結ゆう</title><link rel="stylesheet" href="styles.css?v=4">
 
+<style>
+#books .book-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+#books .book-card { display: flex; flex-direction: column; gap: 12px; min-width: 0; padding: 24px; }
+#books .book-cover { display: block; width: 100%; max-width: 240px; height: auto; aspect-ratio: 1; object-fit: contain; align-self: center; background: #fff; }
+#books .book-card h3 { margin: 4px 0 0; font-size: 22px; overflow-wrap: anywhere; }
+#books .book-card p { margin: 0; font-size: 16px; }
+#books .book-card .book-author { font-size: 14px; }
+#books .book-card > .book-cta { position: static; align-self: flex-end; margin-top: auto; padding-top: 12px; font-size: 16px; }
+#books .book-card:focus-visible { outline: 3px solid var(--blue); outline-offset: 4px; }
+@media (max-width: 640px) { #books .book-grid { grid-template-columns: minmax(0, 1fr); } }
+</style>
 </head>
 <body>
   <header class="site-header"><a class="brand" href="index.html"><span class="brand-mark">結</span><span><span class="brand-name">占いの部屋</span><br><span class="brand-sub">あなたのおと</span></span></a><a class="header-back" href="index.html">← 玄関へ</a></header>
@@ -24,7 +35,7 @@
       <div class="path-grid">
         <a class="path-card" href="yuu.html"><span class="num">01</span><h3>話して、ほどく</h3><p>対面・ビデオ・通話でのセッション。初めての方は20分のお試しから。</p><span class="price-tag">初回 20分 3,000円</span><span class="arrow">→</span></a>
         <a class="path-card" href="#toolbox"><span class="num">02</span><h3>自分で、たしかめる</h3><p>生年月日や今の時刻から、星・命・方位を写しとる無料の道具。</p><span class="arrow">↓</span></a>
-        <a class="path-card" href="#books"><span class="num">03</span><h3>読んで、深める</h3><p>結果を自分の手で読み解くために、実際に開いている本をご紹介します。</p><span class="arrow">↓</span></a>
+        <a class="path-card" href="#books"><span class="num">03</span><h3>読んで、深める</h3><p>タロット・紫微斗数・九星気学・四柱推命の本をご紹介します。</p><span class="arrow">↓</span></a>
       </div>
     </section>
     <section class="tools" id="toolbox">
@@ -39,10 +50,40 @@
     <section class="books" id="books">
       <div class="section-head"><h2>結ゆうの本棚</h2><div><p>道具で写しとった結果を、自分の手で読み解きたくなったら。</p><p class="pr-note">［PR］紹介リンクには楽天アフィリエイトを利用しています。</p></div></div>
       <div class="book-grid">
-        <a class="book-card" href="https://hb.afl.rakuten.co.jp/ichiba/0ee36173.3a647d04.0ee36174.96165ffb/?pc=https%3A%2F%2Fproduct.rakuten.co.jp%2Fproduct%2F-%2F309c0f54b5d9b4d98501eaf036bf0a48%2F&amp;link_type=picttext" target="_blank" rel="nofollow sponsored noopener"><span class="num">まやれき</span><h3>古代マヤ暦<br>「13の音」</h3><p>自分の音の意味を知り、リズムの取り方を深める一冊。</p><span>楽天で見る →</span></a>
-        <a class="book-card" href="https://hb.afl.rakuten.co.jp/ichiba/0ee36173.3a647d04.0ee36174.96165ffb/?pc=https%3A%2F%2Fproduct.rakuten.co.jp%2Fproduct%2F-%2Fae1e831ea8c4a36483aee91d50b394bd%2F&amp;link_type=picttext" target="_blank" rel="nofollow sponsored noopener"><span class="num">まやれき</span><h3>古代マヤ暦<br>「20の刻印」</h3><p>太陽の紋章20を一つずつ深く読み解くための一冊。</p><span>楽天で見る →</span></a>
-        <a class="book-card" href="https://hb.afl.rakuten.co.jp/ichiba/0ee36173.3a647d04.0ee36174.96165ffb/?pc=https%3A%2F%2Fproduct.rakuten.co.jp%2Fproduct%2F-%2F1a717bdd2db0b68d232e4aa320037ffb%2F&amp;link_type=picttext" target="_blank" rel="nofollow sponsored noopener"><span class="num">しちゅうすいめい</span><h3>一番わかりやすい<br>はじめての四柱推命</h3><p>命式を手を動かしながら読めるようになる入門書。</p><span>楽天で見る →</span></a>
+        <a class="book-card" href="https://hb.afl.rakuten.co.jp/ichiba/55e76616.97d67b84.55e76617.1e93f959/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F17836831%2F&amp;link_type=picttext&amp;ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiIyNDB4MjQwIiwibmFtIjoxLCJuYW1wIjoicmlnaHQiLCJjb20iOjEsImNvbXAiOiJkb3duIiwicHJpY2UiOjEsImJvciI6MSwiY29sIjoxLCJiYnRuIjoxLCJwcm9kIjowLCJhbXAiOmZhbHNlfQ%3D%3D" target="_blank" rel="nofollow sponsored noopener">
+          <span class="num">タロット</span>
+          <img class="book-cover" src="https://hbb.afl.rakuten.co.jp/hgb/55e76616.97d67b84.55e76617.1e93f959/?me_id=1213310&amp;item_id=21233040&amp;pc=https%3A%2F%2Fthumbnail.image.rakuten.co.jp%2F%400_mall%2Fbook%2Fcabinet%2F9121%2F9784780429121_1_4.jpg%3F_ex%3D240x240&amp;s=240x240&amp;t=picttext" width="240" height="240" loading="lazy" alt="本格的に占う タロットの表紙">
+          <h3>本格的に占う タロット</h3>
+          <p>基本の扱い方 カードの力を引き出すコツと実占例</p>
+          <p class="book-author">吉田 ルナ 著</p>
+          <span class="book-cta">楽天で見る →</span>
+        </a>
+        <a class="book-card" href="https://hb.afl.rakuten.co.jp/ichiba/55e76616.97d67b84.55e76617.1e93f959/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F17372258%2F&amp;link_type=picttext&amp;ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiIyNDB4MjQwIiwibmFtIjoxLCJuYW1wIjoicmlnaHQiLCJjb20iOjEsImNvbXAiOiJkb3duIiwicHJpY2UiOjEsImJvciI6MSwiY29sIjoxLCJiYnRuIjoxLCJwcm9kIjowLCJhbXAiOmZhbHNlfQ%3D%3D" target="_blank" rel="nofollow sponsored noopener">
+          <span class="num">紫微斗数</span>
+          <img class="book-cover" src="https://hbb.afl.rakuten.co.jp/hgb/55e76616.97d67b84.55e76617.1e93f959/?me_id=1213310&amp;item_id=20844735&amp;pc=https%3A%2F%2Fthumbnail.image.rakuten.co.jp%2F%400_mall%2Fbook%2Fcabinet%2F0827%2F9784537220827_1_7.jpg%3F_ex%3D240x240&amp;s=240x240&amp;t=picttext" width="240" height="240" loading="lazy" alt="一番わかりやすい はじめての紫微斗数占いの表紙">
+          <h3>一番わかりやすい はじめての紫微斗数占い</h3>
+          <p>「予言の神」である紫微星たちが導く、あなたの本質と運命。</p>
+          <p class="book-author">照葉 桜子 著</p>
+          <span class="book-cta">楽天で見る →</span>
+        </a>
+        <a class="book-card" href="https://hb.afl.rakuten.co.jp/ichiba/55e76616.97d67b84.55e76617.1e93f959/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F16911429%2F&amp;link_type=picttext&amp;ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiIyNDB4MjQwIiwibmFtIjoxLCJuYW1wIjoicmlnaHQiLCJjb20iOjEsImNvbXAiOiJkb3duIiwicHJpY2UiOjEsImJvciI6MSwiY29sIjoxLCJiYnRuIjoxLCJwcm9kIjowLCJhbXAiOmZhbHNlfQ%3D%3D" target="_blank" rel="nofollow sponsored noopener">
+          <span class="num">九星気学</span>
+          <img class="book-cover" src="https://hbb.afl.rakuten.co.jp/hgb/55e76616.97d67b84.55e76617.1e93f959/?me_id=1213310&amp;item_id=20487389&amp;pc=https%3A%2F%2Fthumbnail.image.rakuten.co.jp%2F%400_mall%2Fbook%2Fcabinet%2F8768%2F9784860768768_1_2.jpg%3F_ex%3D240x240&amp;s=240x240&amp;t=picttext" width="240" height="240" loading="lazy" alt="運を引き寄せる わかりやすい九星気学と吉方位の表紙">
+          <h3>運を引き寄せる わかりやすい九星気学と吉方位</h3>
+          
+          <p class="book-author">松本象湧 著</p>
+          <span class="book-cta">楽天で見る →</span>
+        </a>
+        <a class="book-card" href="https://hb.afl.rakuten.co.jp/ichiba/55e76616.97d67b84.55e76617.1e93f959/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F16741421%2F&amp;link_type=picttext&amp;ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJwaWN0dGV4dCIsInNpemUiOiIyNDB4MjQwIiwibmFtIjoxLCJuYW1wIjoicmlnaHQiLCJjb20iOjEsImNvbXAiOiJkb3duIiwicHJpY2UiOjEsImJvciI6MSwiY29sIjoxLCJiYnRuIjoxLCJwcm9kIjowLCJhbXAiOmZhbHNlfQ%3D%3D" target="_blank" rel="nofollow sponsored noopener">
+          <span class="num">四柱推命</span>
+          <img class="book-cover" src="https://hbb.afl.rakuten.co.jp/hgb/55e76616.97d67b84.55e76617.1e93f959/?me_id=1213310&amp;item_id=20360625&amp;pc=https%3A%2F%2Fthumbnail.image.rakuten.co.jp%2F%400_mall%2Fbook%2Fcabinet%2F0009%2F9784569850009.jpg%3F_ex%3D240x240&amp;s=240x240&amp;t=picttext" width="240" height="240" loading="lazy" alt="［改訂版］日本で一番わかりやすい四柱推命の本の表紙">
+          <h3>［改訂版］日本で一番わかりやすい四柱推命の本</h3>
+          
+          <p class="book-author">林 秀靜 著</p>
+          <span class="book-cta">楽天で見る →</span>
+        </a>
       </div>
+      <p class="pr-note" style="margin-top:18px">価格・在庫・送料は楽天の商品ページでご確認ください。</p>
     </section>
   </main>
   <footer class="site-footer"><a href="index.html">← 玄関へ</a><a href="legal.html">特定商取引法・プライバシー・利用規約</a></footer>
