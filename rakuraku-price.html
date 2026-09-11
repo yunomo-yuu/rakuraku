@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>らくらくモニタリング｜自由価格（0円可）｜結</title>
+  <meta name="description" content="らくらくモニタリングは自由価格（0円可）。すっきり版・らくるん版をすぐに使えます。お支払いは任意です。">
+  <link rel="canonical" href="https://you-no-oto.jp/rakuraku-price.html">
+  <link rel="icon" href="favicon.svg?v=4" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css?v=4">
+  <style>
+    .price-intro { min-height: 0; padding: 56px 8vw; }
+    .price-intro h1 { font-size: clamp(28px, 4vw, 48px); overflow-wrap: anywhere; }
+    .price-section { max-width: 1100px; margin: auto; padding: 40px 24px; }
+    .price-section h2 { margin-top: 0; font: 500 clamp(24px, 3vw, 32px)/1.5 var(--serif); color: var(--blue); }
+    .price-choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+    .price-card { padding: 28px; border: 1px solid var(--line); border-radius: 30px 10px; background: rgba(255,255,255,.45); box-shadow: var(--soft-shadow); }
+    .price-card h3 { margin: 0 0 14px; color: var(--blue); font: 500 25px/1.5 var(--serif); }
+    .price-card p { font-size: 14px; }
+    .price-action { display: inline-flex; justify-content: center; align-items: center; min-height: 48px; padding: 12px 24px; border-radius: 999px; background: var(--blue); color: #fff; font: 700 14px/1.6 var(--sans); text-align: center; }
+    .price-action:hover { background: #294b59; }
+    .price-section a:focus-visible { outline: 3px solid var(--blue); outline-offset: 4px; }
+    .price-note { font-size: 13px; color: #52636a; }
+    .price-payment { background: #e4ecec; }
+    .price-text-link { text-decoration: underline; text-underline-offset: 4px; }
+    [hidden] { display: none !important; }
+    @media (max-width: 760px) {
+      .price-intro { padding: 44px 24px; }
+      .price-section { padding: 30px 20px; }
+      .price-choices { grid-template-columns: 1fr; }
+      .price-card { padding: 24px; }
+      .price-action { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header"><a class="brand" href="index.html"><span class="brand-mark">結</span><span class="brand-name">らくらく</span></a><a class="header-back" href="rakuraku.html">← らくらくの部屋へ</a></header>
+  <main>
+    <section class="room-hero care price-intro">
+      <div class="eyebrow">自由価格 · 0円でも使えます</div>
+      <h1>らくらくモニタリング</h1>
+      <p>価格は、使うあなたが決めてください。<br>0円でそのまま使っても、使ってみてからお支払いいただいても大丈夫です。</p>
+    </section>
+    <section class="price-section" aria-labelledby="use-title">
+      <h2 id="use-title">まずは、使ってみる</h2>
+      <p>お支払い・登録なしで、すぐに開けます。お好きな見た目をお選びください。</p>
+      <div class="price-choices">
+        <article class="price-card"><h3>すっきり版</h3><p>シンプルな画面でモニタリング記録を作成。</p><a class="price-action" href="monitoring.html">0円で使う · すっきり版 →</a></article>
+        <article class="price-card"><h3>らくるん版</h3><p>案内役のらくるんと、モニタリング記録を作成。</p><a class="price-action" href="rakuraku-mrkk-vol3.html">0円で使う · らくるん版 →</a></article>
+      </div>
+    </section>
+    <section class="price-section" aria-labelledby="payment-title">
+      <div class="price-card price-payment">
+        <h2 id="payment-title">お支払いしたい方へ</h2>
+        <p>「役に立った」「これからも使いたい」と感じたら、ご自身で決めた金額をお支払いいただけます。お支払いは任意です。</p>
+        <a id="flexible-payment" class="price-action" hidden target="_blank" rel="noopener noreferrer">金額を決めてPayPalで支払う ↗</a>
+        <p id="payment-ready" class="price-note" hidden>PayPalの画面で金額を指定し、通貨・金額・お支払い先をご確認ください。支払いページは別タブで開きます。ツールは上のボタンからいつでも使えます。</p>
+        <p id="payment-pending" class="price-note">自由価格のお支払い窓口は準備中です。ツールは上のボタンから0円で使えます。</p>
+        <noscript><p class="price-note">お支払い窓口の表示にはJavaScriptが必要です。</p></noscript>
+      </div>
+    </section>
+    <section class="price-section" aria-labelledby="upcoming-title">
+      <div class="price-card"><span class="eyebrow">Coming soon ／ 準備中</span><h2 id="upcoming-title">要支援プラン作成支援</h2><p>公開の準備ができたら、こちらでご案内します。</p></div>
+      <p class="price-note">経過記録・アセスメントは固定価格です。<a class="price-text-link" href="rakuraku-shop.html">単品・セットの販売ページへ →</a></p>
+    </section>
+  </main>
+  <footer class="site-footer"><a href="rakuraku.html">← らくらくの部屋へ</a><span>結 ｜ you-no-oto.jp</span><a href="legal.html">特定商取引法・プライバシー・利用規約</a></footer>
+  <script>
+    // 所有者が発行した金額自由入力のPayPalリンクを設定する。
+    // 固定価格商品のリンクは流用しない。空欄の場合、決済ボタンは表示しない。
+    const flexiblePaymentUrl = '';
+    if (flexiblePaymentUrl) {
+      try {
+        const url = new URL(flexiblePaymentUrl);
+        if (url.protocol === 'https:' && ['www.paypal.com', 'paypal.com', 'paypal.me', 'www.paypal.me'].includes(url.hostname)) {
+          const link = document.getElementById('flexible-payment');
+          link.href = url.href;
+          link.hidden = false;
+          document.getElementById('payment-ready').hidden = false;
+          document.getElementById('payment-pending').hidden = true;
+        }
+      } catch (_) { /* 設定が不正な場合は準備中表示を維持 */ }
+    }
+  </script>
+  <script src="site-menu.js?v=1"></script>
+</body>
+</html>
