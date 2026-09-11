@@ -53,10 +53,9 @@
       <div class="price-card price-payment">
         <h2 id="payment-title">お支払いしたい方へ</h2>
         <p>「役に立った」「これからも使いたい」と感じたら、ご自身で決めた金額をお支払いいただけます。お支払いは任意です。</p>
-        <a id="flexible-payment" class="price-action" hidden target="_blank" rel="noopener noreferrer">金額を決めてPayPalで支払う ↗</a>
-        <p id="payment-ready" class="price-note" hidden>PayPalの画面で金額を指定し、通貨・金額・お支払い先をご確認ください。支払いページは別タブで開きます。ツールは上のボタンからいつでも使えます。</p>
-        <p id="payment-pending" class="price-note">自由価格のお支払い窓口は準備中です。ツールは上のボタンから0円で使えます。</p>
-        <noscript><p class="price-note">お支払い窓口の表示にはJavaScriptが必要です。</p></noscript>
+        <div id="paypal-container-ANGV3VEMWRVAN"></div>
+        <p id="paypal-status" class="price-note" role="status">決済ボタンを読み込んでいます。</p>
+        <noscript><p class="price-note">決済ボタンの表示にはJavaScriptが必要です。0円での利用は上のボタンからどうぞ。</p></noscript>
       </div>
     </section>
     <section class="price-section" aria-labelledby="upcoming-title">
@@ -65,22 +64,20 @@
     </section>
   </main>
   <footer class="site-footer"><a href="rakuraku.html">← らくらくの部屋へ</a><span>結 ｜ you-no-oto.jp</span><a href="legal.html">特定商取引法・プライバシー・利用規約</a></footer>
+  <script src="https://www.paypal.com/sdk/js?client-id=BAAAvWyYA_9u8FazRdndMTUQmimFOP9oV3clAooQKkBS4kg-TJnl6qxp7vlZ-rdamTdpwfnFJjoZRqhVVk&amp;components=hosted-buttons&amp;disable-funding=venmo&amp;currency=JPY"></script>
   <script>
-    // 所有者が発行した金額自由入力のPayPalリンクを設定する。
-    // 固定価格商品のリンクは流用しない。空欄の場合、決済ボタンは表示しない。
-    const flexiblePaymentUrl = '';
-    if (flexiblePaymentUrl) {
+    async function renderFlexiblePayment() {
+      const status = document.getElementById('paypal-status');
       try {
-        const url = new URL(flexiblePaymentUrl);
-        if (url.protocol === 'https:' && ['www.paypal.com', 'paypal.com', 'paypal.me', 'www.paypal.me'].includes(url.hostname)) {
-          const link = document.getElementById('flexible-payment');
-          link.href = url.href;
-          link.hidden = false;
-          document.getElementById('payment-ready').hidden = false;
-          document.getElementById('payment-pending').hidden = true;
-        }
-      } catch (_) { /* 設定が不正な場合は準備中表示を維持 */ }
+        await paypal.HostedButtons({
+          hostedButtonId: 'ANGV3VEMWRVAN'
+        }).render('#paypal-container-ANGV3VEMWRVAN');
+        status.hidden = true;
+      } catch (error) {
+        status.textContent = '決済ボタンを読み込めませんでした。時間をおいて再読み込みしてください。0円での利用は上のボタンからどうぞ。';
+      }
     }
+    renderFlexiblePayment();
   </script>
   <script src="site-menu.js?v=1"></script>
 </body>
