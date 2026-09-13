@@ -155,7 +155,7 @@ input,select{
       <fieldset class="result-options">
         <legend>結果の楽しみ方</legend>
         <label><input type="radio" name="resultMode" value="text" checked onchange="setResultMode()">テキストで読む</label>
-        <label><input type="radio" name="resultMode" value="portrait" onchange="setResultMode()">この結果を一枚絵にする</label>
+        <label><input type="radio" name="resultMode" value="portrait" onchange="setResultMode()">ふたりの星の肖像をつくる</label>
       </fieldset>
     </div>
 
@@ -210,9 +210,9 @@ input,select{
         <option value="masculine">男性的（masculine）</option>
         <option value="androgynous">中性的（androgynous）</option>
       </select>
-      <button type="button" class="btn" onclick="generatePortraitPrompt()">一枚絵のプロンプトを生成</button>
+      <button type="button" class="btn" onclick="generatePortraitPrompt()">ふたりの星の肖像のプロンプトをつくる</button>
       <div id="portraitOutput" hidden>
-        <label for="portraitPrompt">ふたりの星の肖像 プロンプト</label>
+        <label for="portraitPrompt">ふたりの星の肖像プロンプト</label>
         <textarea id="portraitPrompt" readonly></textarea>
         <button type="button" class="btn sub" onclick="copyPortraitPrompt()">プロンプトをコピー</button>
       </div>
@@ -532,7 +532,9 @@ function generatePortraitPrompt(){
     ?'出生時刻が不明な側は、奥付の時刻を「不明」と記し、ふたりの座標の帯にASCとハウスを掲載しない。正午の概算と明記し、時刻依存の解釈をその人の顔や情景の設計にも使わない。'
     :'奥付にはふたりの出生時刻を記載する。ふたりの座標の帯には、太陽と月に星座とハウスを、ASCに星座を掲載する。';
   const prompt=[
-    "以下の計算済みの出生図ふたつと、その重なりを読み解き、縦長4:5の「ふたりの星の肖像 — 関係を旅する一枚絵」を一枚の画像として制作してください。",
+    "【これは画像生成の依頼です】文章だけで答えず、必ず画像を1枚出力してください。読み解いた内容は、チャットの返信としてではなく、すべて画像の中の文字として描き込んでください。",
+    "",
+    "縦長4:5の「ふたりの星の肖像 — 関係を旅する一枚絵」を制作してください。以下の計算済みの出生図ふたつと、その重なりを読み解き、絵と誌面に落とし込みます。",
     "",
     "【最優先：人物表現】",
     'ひとり目（'+data.nameA+'）のポートレート表現：'+exprA,
