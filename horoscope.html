@@ -82,6 +82,13 @@ input,select{
 .foot{text-align:center;font-size:11px;color:#aaa;margin-top:30px;letter-spacing:.15em}
 #msg{text-align:center;color:#b00;font-size:13px;margin-top:10px}
 .copied{color:var(--kin)!important;font-size:12px;text-align:center;margin-top:8px;display:none;letter-spacing:.1em}
+[hidden]{display:none!important}
+.result-options{border:0;min-width:0}
+.result-options legend{font-size:15px;color:var(--ai)}
+.result-options label{display:flex;align-items:center;gap:8px;letter-spacing:0}
+.result-options input{width:auto;flex:none}
+#portraitPrompt{width:100%;min-height:280px;margin-top:8px;padding:12px;border:1px solid var(--sen);background:#fff;color:var(--sumi);font-family:inherit;font-size:14px;line-height:1.8;resize:vertical}
+#portraitStatus{font-size:12px;color:var(--ai);min-height:1.9em;margin-top:8px}
 </style>
 <link rel="stylesheet" href="redesign.css">
 
@@ -120,6 +127,14 @@ input,select{
 
   <div id="result">
     <div class="card">
+      <fieldset class="result-options">
+        <legend>鑑定結果の楽しみ方</legend>
+        <label><input type="radio" name="resultMode" value="text" checked onchange="setResultMode()">テキストで鑑定結果を読む</label>
+        <label><input type="radio" name="resultMode" value="portrait" onchange="setResultMode()">この結果を一枚絵にする</label>
+      </fieldset>
+    </div>
+    <div id="textResult">
+    <div class="card">
       <h2>あなたの出生図</h2>
       <div id="chart"></div>
     </div>
@@ -142,6 +157,25 @@ input,select{
       <div id="copied" class="copied">コピーしました</div>
     </div>
 
+    </div>
+    <div id="portraitResult" class="card" hidden>
+      <h2>この結果を一枚絵にする</h2>
+      <p class="note" style="margin-top:0">計算した出生図から、一枚絵を作るためのプロンプトを用意します。コピーして、画像生成に対応したAIに貼り付けてください。</p>
+      <label for="portraitExpression">ポートレート表現</label>
+      <select id="portraitExpression" onchange="clearPortraitPrompt()">
+        <option value="unspecified">指定なし（unspecified）</option>
+        <option value="feminine">女性的（feminine）</option>
+        <option value="masculine">男性的（masculine）</option>
+        <option value="androgynous">中性的（androgynous）</option>
+      </select>
+      <button type="button" class="btn" onclick="generatePortraitPrompt()">ポートレート用プロンプトを生成</button>
+      <div id="portraitOutput" hidden>
+        <label for="portraitPrompt">占星術図鑑ポートレート用プロンプト</label>
+        <textarea id="portraitPrompt" readonly></textarea>
+        <button type="button" class="btn sub" onclick="copyPortraitPrompt()">プロンプトをコピー</button>
+      </div>
+      <p id="portraitStatus" role="status" aria-live="polite"></p>
+    </div>
     <p class="foot"><a href="uranai.html" style="color:#b8860b;text-decoration:none;letter-spacing:.15em">← 占いの部屋へもどる</a></p>
     <p class="foot">結ゆう ｜ 入力した情報は、どこにも送信されません</p>
   </div>
@@ -192,6 +226,8 @@ const ASP_JP={conjunction:'合',opposition:'衝',trine:'三分',square:'矩',sex
 const ASP_DEG={conjunction:'0°',opposition:'180°',trine:'120°',square:'90°',sextile:'60°'};
 
 let lastResult=null;
+let lastPortraitData=null;
+let portraitCopyVersion=0;
 
 function initCities(){
   const sel=document.getElementById('city');
@@ -282,6 +318,17 @@ function calc(){
 
     // AI発注文を組み立て
     lastResult=buildPrompt(horoscope,y,mo,d,unk,h,mi,city,aspects);
+    // 同じ計算結果を保存し、入力欄を後から変更しても出生図と混在させない。
+    lastPortraitData={
+      reference:lastResult.slice(lastResult.indexOf('【出生データ】')),
+      unknown:unk,
+      focus:horoscope.CelestialBodies.all.filter(b=>b.key==='sun'||b.key==='moon')
+        .map(b=>BODY_JP[b.key]+'：'+SIGN_JP[b.Sign.label]+'座'+(unk?'（12:00の概算）':' / '+b.House.id+'ハウス'))
+        .concat(unk?['ASC：出生時刻不明のため掲載しない','MC：出生時刻不明のため掲載しない']:
+          ['ASC：'+SIGN_JP[horoscope.Ascendant.Sign.label]+'座','MC：'+SIGN_JP[horoscope.Midheaven.Sign.label]+'座']).join('\n')
+    };
+    clearPortraitPrompt();
+    setResultMode();
 
     document.getElementById('result').style.display='block';
     try{
@@ -313,6 +360,93 @@ function buildPrompt(horoscope,y,mo,d,unk,h,mi,city,aspects){
     p+=BODY_JP[a.point1Key]+' '+ASP_JP[a.aspectKey]+'('+ASP_DEG[a.aspectKey]+') '+BODY_JP[a.point2Key]+'（オーブ±'+a.orb.toFixed(1)+'°）\n';
   });
   return p;
+}
+
+function setResultMode(){
+  const portrait=document.querySelector('input[name="resultMode"]:checked').value==='portrait';
+  document.getElementById('textResult').hidden=portrait;
+  document.getElementById('portraitResult').hidden=!portrait;
+}
+
+function clearPortraitPrompt(){
+  portraitCopyVersion++;
+  document.getElementById('portraitPrompt').value='';
+  document.getElementById('portraitOutput').hidden=true;
+  document.getElementById('portraitStatus').textContent='';
+}
+
+function generatePortraitPrompt(){
+  if(!lastPortraitData)return;
+  clearPortraitPrompt();
+  const expressions={
+    feminine:'女性的（feminine）',
+    masculine:'男性的（masculine）',
+    androgynous:'中性的（androgynous）',
+    unspecified:'指定なし（unspecified）'
+  };
+  const expression=expressions[document.getElementById('portraitExpression').value]||expressions.unspecified;
+  let reference=lastPortraitData.reference;
+  if(lastPortraitData.unknown){
+    // 正午の仮ハウス・軸は画像生成AIへ確定データとして渡さない。
+    reference=reference.replace(/ \/ \d+ハウス/g,'')
+      .replace(/^(アセンダント|MC)：.*\n/gm,'')
+      .replace(/^※出生時刻.*$/m,'※出生時刻不明。天体配置と主要アスペクトは12:00の概算。月など時刻で変わりうる情報を断定せず、ハウス・ASC・MCは解釈にも使用しない。');
+  }
+  const prompt=[
+    '以下の計算済み出生図を読み解き、縦長4:5の「アンティーク占星術図鑑 × 幻想画集」を一枚の画像として制作してください。',
+    '',
+    '【最優先：人物表現】',
+    '選択されたポートレート表現：'+expression,
+    '中央には、鑑定結果を人格化した美しい成人人物を描く。人物表現は必ずこの選択を優先する。生年月日・星座・天体配置・氏名から性別や性自認を推測しない。指定なしは表現を限定しないという意味であり、性別を占う指示ではない。出生年に関係なく成人人物として描く。',
+    '',
+    '【読み解き方】',
+    '末尾の参照データにある天体配置・ハウス・主要アスペクトを全体として参照し、「性格の核」「才能と魅力」「人生のテーマ」「課題と成長」の4項目にまとめる。太陽星座だけで人物像を決めない。記載のない配置・アスペクトを作らず、新たな天体計算もしない。',
+    '4項目の解説は、それぞれ自然で読みやすい短い日本語1〜2文にする。専門用語の羅列や運命の断定を避け、課題は成長の可能性を含めて描く。',
+    '',
+    '【レイアウト・画像内の文字】',
+    '上部：「西洋占星術 / NATAL CHART」、参照データの生年月日・出生時刻・出生地、その人物を象徴する短い日本語のキャッチコピー。',
+    '中央：人物のポートレート。左右の解説が顔や体に重ならない余白を確保する。',
+    '左側：次の4項目の名称・配置と、それぞれの配置に基づく短い日本語解説。太陽は生き方の軸、月は感情と内面、ASCは外へ表れる雰囲気、MCは社会で目指す方向として読み解く。',
+    lastPortraitData.focus,
+    '右側：「性格の核」「才能と魅力」「人生のテーマ」「課題と成長」の見出しと、上記でまとめた解説。',
+    '下部：ホロスコープ全体を象徴する短い日本語コピー。',
+    '文字は読みやすく、余白を取り、画像内に全天体やアスペクトの一覧を羅列しない。参照データ自体は画像に転載しない。',
+    lastPortraitData.unknown?'出生時刻は「不明」と掲載する。左側のASC・MCと太陽・月のハウスは省略する。月は正午の概算と明記し、時刻依存の解釈や断定を避ける。':'太陽と月には星座とハウスを掲載し、ASCとMCには星座を掲載する。',
+    '',
+    '【ビジュアル】',
+    '高級占星術画集の1ページのような仕上がり。アンティーク紙、星図、天球儀、古書、月光、植物、キャンドルなどを鑑定結果に応じて適度に使用する。全員を同じ魔女・魔術師の姿にしない。',
+    '衣装、背景、表情、光、配色、小物、構図を、この出生図から読み取れる性質に合わせて選ぶ。幻想的だが威圧的すぎず、人物の知性、感性、個性、人生の雰囲気を表す。',
+    '誕生石、誕生花、誕生鳥、象徴動物、象徴魚、誕生色など、ホロスコープから直接算出していない情報は追加しない。装飾の植物や配色にも、誕生花・誕生色という意味付けをしない。',
+    '',
+    '【鑑定・制作のための参照データ（一覧は画像に掲載しない）】',
+    reference
+  ].join('\n');
+  document.getElementById('portraitPrompt').value=prompt;
+  document.getElementById('portraitOutput').hidden=false;
+}
+
+async function copyPortraitPrompt(){
+  const field=document.getElementById('portraitPrompt');
+  const text=field.value;
+  if(!text)return;
+  const version=++portraitCopyVersion;
+  let copied=false;
+  try{
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      await navigator.clipboard.writeText(text);
+      copied=true;
+    }
+  }catch(e){}
+  if(version!==portraitCopyVersion)return;
+  if(!copied){
+    field.focus();
+    field.select();
+    field.setSelectionRange(0,text.length);
+    try{copied=document.execCommand('copy');}catch(e){}
+  }
+  const status=document.getElementById('portraitStatus');
+  status.textContent=copied?'コピーしました':'コピーできませんでした。上の文章を選択して手動でコピーしてください。';
+  if(copied)setTimeout(()=>{if(version===portraitCopyVersion)status.textContent='';},2500);
 }
 
 function copyPrompt(){
