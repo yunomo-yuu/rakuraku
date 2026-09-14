@@ -52,6 +52,7 @@
     .yobou-notice { padding: 24px 28px; border-left: 4px solid var(--blue); background: #e4ecec; }
     .yobou-download { background: #e4ecec; border-radius: 30px 10px; }
     .yobou-section .yobou-note { font-size: 14px; color: #455c63; }
+    [hidden] { display: none !important; }
     @media (max-width: 760px) {
       .yobou-hero { padding: 28px 22px 38px; border-radius: 0 0 18px 40px !important; }
       .yobou-section { padding: 32px 20px; }
@@ -146,7 +147,10 @@
         <p>まずは、使ってみてください。役に立ったと感じたら、受け取った価値へのお返しを、ご自身で決めていただく仕組みです。</p>
         <p>同僚に紹介する。使ってみた感想や、改善のアイデアを届ける。お金で応援する。誰かに優しさを渡す。お返しは、お金だけでなく、あなたのできる形で。</p>
         <p>お返しは任意です。金額やお返しの有無で、使える機能は変わりません。どんなものが循環していくのか、一緒に見ていけたらうれしいです。</p>
-        <p class="yobou-note">感想・アイデアや、お金でのお返しについては、<a href="https://lin.ee/wsstwYE" target="_blank" rel="noopener noreferrer" style="text-decoration:underline;text-underline-offset:4px">結ゆうの公式LINE</a>へ「らくらく予防プラン」と添えてお知らせください。利用のための連絡やLINE登録は不要です。</p>
+        <p class="yobou-note">お金でのお返しをお考えの方は、こちらからどうぞ。金額はご自身で決めていただけます。ご利用のための登録やご連絡は不要です。</p>
+        <div id="paypal-container-ANGV3VEMWRVAN"></div>
+        <p id="paypal-status" class="yobou-note" role="status">決済ボタンを読み込んでいます。</p>
+        <noscript><p class="yobou-note">決済ボタンの表示にはJavaScriptが必要です。お返しがなくても、ツールはそのままお使いいただけます。</p></noscript>
       </div>
     </section>
 
@@ -156,11 +160,27 @@
         <p>ボタンを押すと、ブラウザでツールが開きます。ファイルの保存やインストールは不要です。操作に迷ったら、図入りマニュアルもどうぞ。</p>
         <div class="yobou-actions"><a class="yobou-action" href="downloads/らくらく予防プラン.html">そのまま開いて使う</a><a class="yobou-action secondary" href="downloads/らくらく予防プラン_使い方マニュアル_v1.0.pdf">使い方マニュアル v1.0（PDF）</a></div>
         <p class="yobou-note">オフラインで使いたい方へ：<a href="downloads/らくらく予防プラン.html" download="らくらく予防プラン.html" style="text-decoration:underline;text-underline-offset:4px;display:inline-block;padding:10px 0">HTMLファイルをダウンロード（約274KB）</a><br>保存したHTMLファイルをブラウザで開けば、完全オフラインで使えます。Webで使った入力内容を移す場合は、データの書き出し・貼り戻しをご利用ください。</p>
+        <p class="yobou-note">保存されずにそのまま開いてしまう場合は、上のリンクを長押し（パソコンは右クリック）して「リンク先を保存」をお選びください。</p>
         <p class="yobou-note">スマホでは端末やブラウザにより、ダウンロード後の開き方が異なります。プレビューで操作できない場合は、パソコンのブラウザで開いてください。</p>
       </div>
     </section>
   </main>
   <footer class="site-footer"><a href="rakuraku.html">← らくらくの部屋へ</a><span>結 ｜ you-no-oto.jp</span><a href="legal.html">特定商取引法・プライバシー・利用規約</a></footer>
+  <script src="https://www.paypal.com/sdk/js?client-id=BAAAvWyYA_9u8FazRdndMTUQmimFOP9oV3clAooQKkBS4kg-TJnl6qxp7vlZ-rdamTdpwfnFJjoZRqhVVk&amp;components=hosted-buttons&amp;disable-funding=venmo&amp;currency=JPY"></script>
+  <script>
+    async function renderGiftPayment() {
+      const status = document.getElementById('paypal-status');
+      try {
+        await paypal.HostedButtons({
+          hostedButtonId: 'ANGV3VEMWRVAN'
+        }).render('#paypal-container-ANGV3VEMWRVAN');
+        status.hidden = true;
+      } catch (error) {
+        status.textContent = '決済ボタンを読み込めませんでした。時間をおいて再読み込みしてください。お返しがなくても、ツールはそのままお使いいただけます。';
+      }
+    }
+    renderGiftPayment();
+  </script>
   <script src="site-menu.js?v=1"></script>
 </body>
 </html>
