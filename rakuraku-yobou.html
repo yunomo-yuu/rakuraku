@@ -148,7 +148,7 @@
         <p>同僚に紹介する。使ってみた感想や、改善のアイデアを届ける。お金で応援する。誰かに優しさを渡す。お返しは、お金だけでなく、あなたのできる形で。</p>
         <p>お返しは任意です。金額やお返しの有無で、使える機能は変わりません。どんなものが循環していくのか、一緒に見ていけたらうれしいです。</p>
         <p class="yobou-note">お金でのお返しをお考えの方は、こちらからどうぞ。金額はご自身で決めていただけます。ご利用のための登録やご連絡は不要です。</p>
-        <div id="paypal-container-ANGV3VEMWRVAN"></div>
+        <div id="paypal-container-N6FWRFCFBWTR2"></div>
         <p id="paypal-status" class="yobou-note" role="status">決済ボタンを読み込んでいます。</p>
         <noscript><p class="yobou-note">決済ボタンの表示にはJavaScriptが必要です。お返しがなくても、ツールはそのままお使いいただけます。</p></noscript>
       </div>
@@ -172,8 +172,8 @@
       const status = document.getElementById('paypal-status');
       try {
         await paypal.HostedButtons({
-          hostedButtonId: 'ANGV3VEMWRVAN'
-        }).render('#paypal-container-ANGV3VEMWRVAN');
+          hostedButtonId: 'N6FWRFCFBWTR2'
+        }).render('#paypal-container-N6FWRFCFBWTR2');
         status.hidden = true;
       } catch (error) {
         status.textContent = '決済ボタンを読み込めませんでした。時間をおいて再読み込みしてください。お返しがなくても、ツールはそのままお使いいただけます。';
