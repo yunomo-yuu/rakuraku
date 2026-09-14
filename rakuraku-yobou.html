@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>らくらく予防プラン｜できている力から考える予防プラン作成支援｜結</title>
+  <meta name="description" content="要支援の「できるけれど少し不自由」から考える、らくらく予防プラン。4領域から総合的課題・提案・意向・目標・支援内容まで整理。AI不使用・完全オフライン。ツールと使い方PDFをダウンロードできます。">
+  <meta property="og:title" content="らくらく予防プラン｜できている力から考える">
+  <meta property="og:description" content="できないことを探すのではなく、今できている力を残しながら、少しの困りごとを整理する。本人の言葉とケアマネジャーの判断を大切にする道具です。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://you-no-oto.jp/rakuraku-yobou.html">
+  <meta property="og:image" content="https://you-no-oto.jp/assets/rakurun.jpeg">
+  <meta name="twitter:card" content="summary">
+  <link rel="canonical" href="https://you-no-oto.jp/rakuraku-yobou.html">
+  <link rel="icon" href="favicon.svg?v=4" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css?v=4">
+  <style>
+    .yobou-hero { min-height: 0; padding: 52px 8vw 58px; }
+    .yobou-hero h1 { margin: 12px 0 20px; font-size: clamp(30px, 4.5vw, 52px); }
+    .yobou-hero .principle { margin: 0 0 18px; max-width: 800px; font: 500 clamp(23px, 3vw, 34px)/1.65 var(--serif); }
+    .yobou-hero .intro { font-size: 16px; }
+    .yobou-back { display: inline-block; margin-bottom: 20px; font-size: 14px; text-decoration: underline; text-underline-offset: 4px; }
+    .yobou-section { max-width: 1060px; margin: auto; padding: 46px 24px; }
+    .yobou-section h2 { margin: 0 0 22px; color: var(--blue); font: 500 clamp(25px, 3vw, 34px)/1.5 var(--serif); }
+    .yobou-section h3 { font-size: 19px; line-height: 1.6; margin: 0 0 10px; color: var(--blue); }
+    .yobou-section p, .yobou-section li { font-size: 16px; }
+    .yobou-section p { margin: 0 0 16px; }
+    .yobou-section ul { padding-left: 1.4em; }
+    .yobou-section li + li { margin-top: 10px; }
+    .yobou-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+    .yobou-card { padding: 28px; border: 1px solid var(--line); border-radius: 30px 10px; background: rgba(255,255,255,.45); }
+    .yobou-card p:last-child { margin-bottom: 0; }
+    .yobou-badges { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; list-style: none; margin: 22px 0; }
+    .yobou-badges li { font-size: 14px; padding: 5px 12px; border: 1px solid #718d94; border-radius: 999px; }
+    .yobou-actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 24px 0 12px; }
+    .yobou-action { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; padding: 13px 24px; border: 1px solid var(--blue); border-radius: 999px; background: var(--blue); color: white; font-size: 16px; font-weight: 700; text-align: center; }
+    .yobou-action.secondary { background: transparent; color: var(--blue); }
+    .yobou-action:hover { background: #294b59; color: white; }
+    a:focus-visible { outline: 3px solid var(--blue); outline-offset: 4px; }
+    .yobou-domains { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-bottom: 30px; }
+    .yobou-domain { padding: 18px 20px; border-left: 3px solid var(--blue); background: #e4ecec; }
+    .yobou-domain strong { display: block; color: var(--blue); }
+    .yobou-domain span { font-size: 14px; }
+    .yobou-stages, .yobou-flow { list-style: none; padding: 0 !important; }
+    .yobou-stages li { padding: 24px 0; border-top: 1px solid var(--line); }
+    .yobou-stages strong { display: block; margin-bottom: 8px; font-size: 18px; color: var(--blue); }
+    .yobou-flow { counter-reset: step; }
+    .yobou-flow li { position: relative; padding: 0 0 26px 58px; margin: 0 !important; border-left: 1px solid #9cb0b6; margin-left: 20px !important; }
+    .yobou-flow li::before { counter-increment: step; content: counter(step); position: absolute; left: -21px; top: 0; display: grid; place-items: center; width: 42px; height: 42px; background: var(--blue); color: white; border-radius: 50%; }
+    .yobou-flow li:last-child { border-left-color: transparent; padding-bottom: 0; }
+    .yobou-flow strong { display: block; font-size: 19px; color: var(--blue); }
+    .yobou-notice { padding: 24px 28px; border-left: 4px solid var(--blue); background: #e4ecec; }
+    .yobou-download { background: #e4ecec; border-radius: 30px 10px; }
+    .yobou-section .yobou-note { font-size: 14px; color: #455c63; }
+    @media (max-width: 760px) {
+      .yobou-hero { padding: 28px 22px 38px; border-radius: 0 0 18px 40px !important; }
+      .yobou-section { padding: 32px 20px; }
+      .yobou-grid, .yobou-domains { grid-template-columns: minmax(0, 1fr); }
+      .yobou-card { padding: 22px; }
+      .yobou-actions { flex-direction: column; }
+      .yobou-action { width: 100%; }
+      .yobou-flow li { padding-left: 38px; }
+      .yobou-notice { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header"><a class="brand" href="index.html"><span class="brand-mark">結</span><span class="brand-name">らくらく</span></a><a class="header-back" href="rakuraku.html">← らくらくの部屋へ</a></header>
+  <main>
+    <section class="room-hero care yobou-hero">
+      <a class="yobou-back" href="rakuraku.html">← らくらくの部屋へ</a>
+      <div class="eyebrow">できている力から、考える。</div>
+      <h1>らくらく予防プラン</h1>
+      <p class="principle">要支援は、できない人ではなく、<br>できるけれど少し不自由な人</p>
+      <p class="intro">できないことを探すのではなく、今できている力を残しながら、少しの困りごとを整理する</p>
+      <ul class="yobou-badges" aria-label="ツールの特徴"><li>AI不使用</li><li>完全オフライン</li><li>インストール不要</li></ul>
+      <div class="yobou-actions"><a class="yobou-action" href="#download">ツールをダウンロード</a><a class="yobou-action secondary" href="downloads/らくらく予防プラン_使い方マニュアル_v1.0.pdf">使い方マニュアルを見る（PDF）</a></div>
+    </section>
+
+    <section class="yobou-section" aria-labelledby="about">
+      <h2 id="about">らくらく予防プランとは</h2>
+      <p>介護予防サービス・支援計画書を考えるときの「どこから整理しよう」を助ける、ケアマネジャーのための道具です。</p>
+      <p>すでにできていること、続けたい暮らし。その中にある少しの不自由や負担を、順番に確かめていきます。課題を無理に増やすのではなく、必要なところに、必要な補助を添えるために。</p>
+      <p>選択と入力をもとに文章の叩き台を整え、いつもの記録・計画書へコピーできます。</p>
+      <aside class="yobou-notice">このツールはケアプランを自動作成・自動決定するものではありません。本人の言葉とケアマネジャーの判断をもとに、考える順番と文章整理を補助するツールです。</aside>
+    </section>
+
+    <section class="yobou-section" aria-labelledby="recommend">
+      <h2 id="recommend">こんなケアマネさんにおすすめ</h2>
+      <ul><li>要支援のプランで、課題をどこまで書くか迷う。</li><li>「できていること」も、本人の言葉も、きちんと残したい。</li><li>総合的課題から目標・支援内容まで、考える順番を整理したい。</li><li>文章を一から組み立てる負担を、少し軽くしたい。</li></ul>
+    </section>
+
+    <section class="yobou-section" aria-labelledby="features">
+      <h2 id="features">できること</h2>
+      <div class="yobou-grid">
+        <article class="yobou-card"><h3>4領域の情報を整理</h3><p>現在の状況、本人・家族の意欲や意向、本人の力を確認。領域ごとの課題文を整えます。</p></article>
+        <article class="yobou-card"><h3>課題から支援内容までつなぐ</h3><p>総合的課題、具体策の提案、意向、目標、支援内容を順番に整理。提案と決定を分けて考えられます。</p></article>
+        <article class="yobou-card"><h3>文章を見直して、転記</h3><p>叩き台はその場で加筆・修正。支援のポイント、セルフケア、家族・地域の支援、サービスの情報を整理し、転記用の平文をコピーできます。</p></article>
+        <article class="yobou-card"><h3>途中から再開・データを引き継ぐ</h3><p>「途中保存」で作業を中断できます。データの書き出し・貼り戻しにも対応し、新しい版へ入力内容を移せます。</p></article>
+      </div>
+    </section>
+
+    <section class="yobou-section" aria-labelledby="domains">
+      <h2 id="domains">4領域を、生活機能の3段階で</h2>
+      <p>認定区分だけで決めず、それぞれの領域で、今どのように暮らせているかを見ていきます。</p>
+      <div class="yobou-domains">
+        <div class="yobou-domain"><strong>運動・移動</strong><span>歩行、階段、外出、交通手段など</span></div>
+        <div class="yobou-domain"><strong>日常生活（家庭生活）</strong><span>買い物、調理、掃除、洗濯など</span></div>
+        <div class="yobou-domain"><strong>社会参加・対人関係</strong><span>交流、役割、趣味、地域活動など</span></div>
+        <div class="yobou-domain"><strong>健康管理</strong><span>服薬、受診、食事、清潔、休養など</span></div>
+      </div>
+      <ol class="yobou-stages">
+        <li><strong>① 自分でできており、不自由はほぼない</strong>課題を無理に作りません。本人の「続けたいこと」を確かめて、課題なしとして進めます。</li>
+        <li><strong>② 自分でできているが、不自由・負担が少しある</strong>できている生活の中の、ちょっとした引っかかりを拾います。何を続けたいのか、どの負担が軽くなるとよいのかを整理します。</li>
+        <li><strong>③ 自分でできているが、一部に補助が必要な場面がある</strong>本人の望みと背景、今ある力を確かめます。全部を代わりに行うのではなく、どの場面に補助が必要かを考えます。</li>
+      </ol>
+    </section>
+
+    <section class="yobou-section" aria-labelledby="flow">
+      <h2 id="flow">提案して、意向を聞いてから、目標へ</h2>
+      <p>最初に、本人が望む「1日・1年の生活」を入力。4領域を整理したら、その先も順番に考えられます。</p>
+      <ol class="yobou-flow">
+        <li><strong>総合的課題</strong>領域ごとの課題を見渡して整理。着地点が違うものを、無理にひとつにまとめません。</li>
+        <li><strong>目標と具体策の提案</strong>「この方向でどうでしょう」と、専門職からの案を整理します。ここではまだ決定しません。</li>
+        <li><strong>本人・家族の意向</strong>提案に対する返事を、その言葉のまま。同意だけでなく、迷いや断りも残します。</li>
+        <li><strong>目標</strong>提案と意向を踏まえ、進める・本人の希望を優先する・範囲をしぼる・今回は見送る、という扱いを人が選びます。</li>
+        <li><strong>支援内容</strong>目標に向けた支援のポイント、本人のセルフケア、家族・地域の関わり、サービス内容を整理します。</li>
+      </ol>
+    </section>
+
+    <section class="yobou-section" aria-labelledby="judgment">
+      <div class="yobou-card"><h2 id="judgment">主役は、本人の言葉と人の判断</h2><p>「どう暮らしたいか」は、本人の言葉で入力します。課題の着地点も、目標を採用・修正・見送る判断も、ツール任せにしません。</p><p>候補の文章が合わなければ、直接入力して構いません。ツールが勝手に目標を決めることはなく、できた文章より、本人の言葉とケアマネジャーの判断を優先します。</p></div>
+    </section>
+
+    <section class="yobou-section" aria-labelledby="privacy">
+      <h2 id="privacy">入力内容は、お使いの端末の中だけに</h2>
+      <p>ツール本体はAI不使用。入力内容を外部に送信する機能はありません。ダウンロードしたHTMLファイルをブラウザで開けば、完全オフラインで使えます。インストールも不要です。</p>
+      <p>途中保存は自動ではありません。区切りのよいところで「途中保存」を押してください。書き出したデータをコピーして保管しておくと、新しい版へ貼り戻して再開できます。</p>
+      <p class="yobou-note">保存はブラウザ・端末の環境に依存します。ブラウザのデータ削除などに備え、大切な入力は書き出して保管してください。共用端末では、使い終わったら「新しく始める」で入力と途中保存を消してください。</p>
+    </section>
+
+    <section class="yobou-section" aria-labelledby="download">
+      <div class="yobou-card yobou-download">
+        <h2 id="download">手元に置いて、使ってみる</h2>
+        <p>本体を保存し、HTMLファイルをブラウザで開いてください。画面を見ながら操作したいときは、図入りマニュアルもどうぞ。</p>
+        <div class="yobou-actions"><a class="yobou-action" href="downloads/らくらく予防プラン.html" download="らくらく予防プラン.html">ツール本体をダウンロード（HTML）</a><a class="yobou-action secondary" href="downloads/らくらく予防プラン_使い方マニュアル_v1.0.pdf">使い方マニュアル v1.0（PDF）</a></div>
+        <p class="yobou-note">HTML 約274KB ／ PDF 約995KB</p>
+        <p class="yobou-note">スマホでは端末やブラウザにより、ダウンロード後の開き方が異なります。プレビューで操作できない場合は、パソコンのブラウザで開いてください。</p>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer"><a href="rakuraku.html">← らくらくの部屋へ</a><span>結 ｜ you-no-oto.jp</span><a href="legal.html">特定商取引法・プライバシー・利用規約</a></footer>
+  <script src="site-menu.js?v=1"></script>
+</body>
+</html>
