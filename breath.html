@@ -30,7 +30,7 @@
   #gate h2{font-weight:600;font-size:19px;letter-spacing:.2em;color:#fff;margin:0 0 10px}
   #gate p{font-size:12.5px;color:#9aa0bd;letter-spacing:.06em;line-height:1.9;margin:0 0 28px;max-width:340px}
   #gate input{width:100%;max-width:280px;background:rgba(255,255,255,.04);border:1px solid rgba(232,200,119,.28);
-    border-radius:12px;padding:13px 16px;color:#fff;font-family:inherit;font-size:15px;text-align:center;
+    border-radius:12px;padding:13px 16px;color:#fff;font-family:inherit;font-size:16px;text-align:center;
     letter-spacing:.08em;outline:none}
   #gate input:focus{border-color:rgba(232,200,119,.6)}
   #gate button{margin-top:16px;background:none;border:1px solid rgba(232,200,119,.4);color:#e8c877;
@@ -50,9 +50,9 @@
   <div class="lock">🔒</div>
   <h2>整う部屋 ・ 息とからだ</h2>
   <p>ここは、彩花先生のメソッドを受けたことのある方への部屋です。<br>合言葉をどうぞ。</p>
-  <input id="gpass" type="password" inputmode="text" autocomplete="off" placeholder="合言葉" />
+  <input id="gpass" type="text" lang="ja" inputmode="text" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" aria-label="合言葉（入力した文字が表示されます）" placeholder="合言葉（日本語で入力できます）" />
   <button id="gbtn">ひらく</button>
-  <div class="miss" id="gmiss">…ちがうみたい</div>
+  <div class="miss" id="gmiss" role="status" aria-live="polite">…ちがうみたい</div>
 </div>
 <a id="backlink" href="totonou.html" style="display:none">← 整う部屋</a>
 <div id="root"></div>
@@ -814,19 +814,35 @@ __root.render(React.createElement(BreathingApp));
   }
   async function tryOpen(){
     var v=inp.value.trim(); if(!v) return;
-    var h=await sha(v);
+    var h;
+    try {
+      h=await sha(v);
+    } catch(e) {
+      miss.textContent='合言葉を確認できませんでした。SafariやChromeでHTTPSのページを開き直してください。';
+      miss.classList.add('show');
+      return;
+    }
     if(h===HASH){
       gate.style.display='none';
       document.getElementById('backlink').style.display='';
       window.__startApp();
     } else {
+      miss.textContent='合言葉が一致しません。入力した文字をご確認ください。';
       miss.classList.add('show'); box.classList.add('shake');
       setTimeout(()=>box.classList.remove('shake'),400);
-      inp.value=''; inp.focus();
+      inp.focus();
     }
   }
   btn.addEventListener('click', tryOpen);
-  inp.addEventListener('keydown', e=>{ if(e.key==='Enter') tryOpen(); });
+  var composing=false;
+  inp.addEventListener('compositionstart', ()=>{ composing=true; });
+  inp.addEventListener('compositionend', ()=>{ composing=false; });
+  inp.addEventListener('keydown', e=>{
+    if(e.key==='Enter' && !e.isComposing && !composing && e.keyCode!==229) {
+      e.preventDefault();
+      tryOpen();
+    }
+  });
   inp.focus();
 })();
 </script>
