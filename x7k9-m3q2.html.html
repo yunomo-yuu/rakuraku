@@ -42,6 +42,12 @@
   .judge.ok1{background:#e2efdc;color:#33691e;}
   .judge.ok2{background:#fff3d6;color:#8a6d00;}
   .judge.ng{background:#fde4e4;color:#a33;}
+  .att-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:6px 0;border-bottom:1px dashed #eadcf1;}
+  .att-row input,.att-row select{font:inherit;font-size:13px;}
+  .att-row .a-kind{width:9em;}
+  .att-row .a-name{flex:1;min-width:8em;}
+  .btn-mini{padding:4px 12px;font-size:12px;border-radius:999px;background:#fff;color:#72549b;border:1.5px solid #c79bdb;letter-spacing:0;}
+  .btn-mini:hover{background:#f8effc;}
   .hint{font-size:11px;color:var(--muted);margin-top:4px;}
   .btnbar{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0;}
   button{font:inherit;font-weight:700;letter-spacing:.08em;border-radius:8px;padding:11px 22px;cursor:pointer;font-size:14px;}
@@ -145,6 +151,7 @@
       <label><input type="radio" name="rtype" value="soudan"><span>初回相談</span></label>
       <label><input type="radio" name="rtype" value="keiyaku"><span>居宅契約</span></label>
       <label><input type="radio" name="rtype" value="kaigi"><span>担当者会議</span></label>
+      <label><input type="radio" name="rtype" value="shukketsu"><span>会議出欠表</span></label>
       <label><input type="radio" name="rtype" value="keibi"><span>軽微な変更</span></label>
       <label><input type="radio" name="rtype" value="kubun"><span>区分変更申請</span></label>
       <label><input type="radio" name="rtype" value="nyuin"><span>入院時情報連携</span></label>
@@ -160,13 +167,13 @@
       <div class="field"><label>時刻</label><input type="time" id="c-time"></div>
       <div class="field"><label>場所</label>
         <select id="c-place">
-          <option>自宅</option><option>居室</option><option>当事業所</option>
-          <option>事業所</option><option>病院</option><option>施設</option><option value="">（記載しない）</option>
+          <option value="">（選ばない）</option><option>自宅</option><option>居室</option><option>当事業所</option>
+          <option>事業所</option><option>病院</option><option>施設</option>
         </select>
       </div>
     </div>
     <div class="checks" style="margin-top:6px;">
-      <span style="font-size:11px;color:var(--muted);width:100%;">同席した人（本人以外）</span>
+      <span style="font-size:11px;color:var(--muted);width:100%;">関わった人（本人以外）</span>
       <label><input type="checkbox" class="who" value="家族">家族</label>
       <label><input type="checkbox" class="who" value="施設職員">施設職員</label>
       <label><input type="checkbox" class="who" value="サービス事業所">サービス事業所</label>
@@ -178,26 +185,32 @@
 
   <div class="card panel active" id="p-normal">
     <h2>通常の記録</h2>
+    <p class="hint" style="margin-top:0;">入れたところだけ記録になります。空欄の項目は出力されません。</p>
     <div class="row">
-      <div class="field"><label>どうやって</label>
-        <select id="n-how"><option>訪問</option><option>電話（受）</option><option>電話（発）</option><option>来所</option><option>FAX・メール</option><option>同行</option></select>
+      <div class="field"><label>やり取り</label>
+        <select id="n-how"><option value="">（選んでください）</option><option>訪問</option><option>電話（受）</option><option>電話（発）</option><option>来所</option><option>FAX・メール</option><option>同行</option><option>その他</option></select>
       </div>
-      <div class="field"><label>何のために</label>
+      <div class="field" style="flex:1;min-width:200px;"><label>相手</label><input type="text" id="n-who" class="w-l" placeholder="例：〇〇デイ 佐藤氏／長女／本人"></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>要件（任意）</label>
         <select id="n-why">
-          <option>状態確認・様子伺い</option><option>モニタリング</option><option>サービス調整</option>
-          <option>情報共有・報告</option><option>相談対応</option><option>制度手続き</option>
-          <option>入退院対応</option><option>苦情・事故対応</option>
+          <option value="">（選ばない）</option>
+          <option>状態確認</option><option>相談</option><option>連絡</option><option>報告</option>
+          <option>調整</option><option>手続き</option><option>入退院</option><option>苦情・事故</option>
         </select>
       </div>
+      <div class="field" style="flex:1;min-width:200px;"><label>要件の補足（任意）</label><input type="text" id="n-whyfree" class="w-l" placeholder="例：ショートステイの空き状況について"></div>
     </div>
-    <div class="row">
-      <div class="field"><label>きっかけ：誰から</label><input type="text" id="n-src" class="w-m" placeholder="例：次女"></div>
-      <div class="field" style="flex:1;min-width:220px;"><label>どんな連絡だった？</label><input type="text" id="n-heard" class="w-l" placeholder="例：電話が繋がらない"></div>
+    <div class="field" style="margin-top:8px;"><label>何を聞いた・見た・話した？</label><textarea id="n-saw" style="min-height:110px;"></textarea></div>
+    <p class="hint">複数の人の話がある場合は、誰の話か分かるよう文頭に書いてください（例：長女より〜）。</p>
+    <div class="field" style="margin-top:8px;"><label>対応（任意）</label><textarea id="n-act" style="min-height:50px;"></textarea></div>
+    <div class="chips" style="margin-top:6px;">
+      <label><input type="checkbox" class="n-quick" value="了承した。"><span>了承</span></label>
+      <label><input type="checkbox" class="n-quick" value="経過観察とする。"><span>経過観察</span></label>
+      <label><input type="checkbox" class="n-quick" value="関係機関へ情報共有した。"><span>情報共有した</span></label>
     </div>
-    <p class="hint">連絡が発端でなければ、この2つは空のままでOK。</p>
-    <div class="field" style="margin-top:8px;"><label>そこで何があった？</label><textarea id="n-saw"></textarea></div>
-    <div class="field" style="margin-top:8px;"><label>自分はどうした？</label><textarea id="n-act"></textarea></div>
-    <div class="field" style="margin-top:8px;"><label>結果及び方針（一行）</label><input type="text" id="n-res" class="w-l"></div>
+    <div class="field" style="margin-top:8px;"><label>結論・今後（任意）</label><input type="text" id="n-res" class="w-l" placeholder="例：現行プランで継続とする／〇日に事業所へ確認する（入れると記録の先頭に出ます）"></div>
   </div>
 
   <div class="card panel" id="p-soudan">
@@ -239,6 +252,19 @@
       </div>
       <div class="field"><label>利用票別表（〇月分）</label><input type="text" id="g-month" class="w-s" placeholder="例：9"></div>
     </div>
+  </div>
+
+  <div class="card panel" id="p-shukketsu">
+    <h2>担当者会議 出欠表</h2>
+    <p class="hint" style="margin-top:0;">会議の日時・場所は上の欄で入れてください。担当者会議の記録とは別に残せます。</p>
+    <datalist id="att-kinds">
+      <option value="訪問介護"><option value="訪問看護"><option value="訪問入浴"><option value="訪問リハ">
+      <option value="通所介護"><option value="通所リハ"><option value="短期入所"><option value="福祉用具">
+      <option value="住宅改修"><option value="主治医"><option value="小規模多機能"><option value="その他">
+    </datalist>
+    <div id="att-list"></div>
+    <div style="margin-top:6px;"><button type="button" class="btn-mini" id="att-add">＋ 行を追加</button></div>
+    <p class="hint">空の行は出力されません。欠席で照会した事業所は、照会文が届いたかも選べます。</p>
   </div>
 
   <div class="card panel" id="p-keibi">
@@ -373,7 +399,8 @@
   function jp(s){if(!s)return '';var q=s.split('-');var o=new Date(+q[0],+q[1]-1,+q[2]);return (+q[1])+'/'+(+q[2])+'（'+W[o.getDay()]+'）';}
   function whoList(){return [].slice.call(document.querySelectorAll('.who:checked')).map(function(c){return c.value;});}
   function dt(){var s=jp(v('c-date'));if(v('c-time'))s=(s?s+' ':'')+v('c-time');return s;}
-  function meta(){var w=whoList();return [dt(),v('c-place'),(w.length?w.join('・')+'同席':'')].filter(Boolean).join('／');}
+  function rel(){var w=whoList();return w.length?'関係：'+w.join('・'):'';}
+  function meta(){return [dt(),v('c-place'),rel()].filter(Boolean).join('／');}
   function person(x){x=(x||'').replace(/(より|から)$/,'');if(!x)return '';return /様|さん|殿|氏|CM/.test(x)?x:x+'様';}
 
   function judgeNyuin(){
@@ -406,15 +433,18 @@
   ['r-n1','r-n2','r-out','r-last'].forEach(function(id){var e=document.getElementById(id);e.addEventListener('input',judgeTaiin);e.addEventListener('change',judgeTaiin);});
 
   function normal(){
-    var t='【目的】'+v('n-why')+'（'+v('n-how')+'）';
-    if(v('n-res'))t+='\n【結果及び方針】'+v('n-res');
-    t+='\n【経過】';
-    var remote=/電話|FAX|メール/.test(v('n-how'));
-    var m=remote?dt():meta();
-    if(m)t+='\n'+m;
-    if(v('n-heard'))t+='\n・'+(person(v('n-src'))||'関係者')+'より、'+v('n-heard')+'との連絡あり。';
-    if(v('n-saw'))t+='\n・'+v('n-saw');
-    if(v('n-act'))t+='\n・'+v('n-act');
+    var how=v('n-how'),who=v('n-who');
+    var remote=/電話|FAX|メール/.test(how);
+    var head=[[dt(),how,who].filter(Boolean).join('　'),(remote?'':v('c-place')),rel()].filter(Boolean).join('／');
+    var why=[v('n-why'),v('n-whyfree')].filter(Boolean).join('：');
+    var quick=[].slice.call(document.querySelectorAll('.n-quick:checked')).map(function(c){return c.value;}).join('');
+    var act=[v('n-act'),quick].filter(Boolean).join('\n');
+    var res=v('n-res');
+    var t=head;
+    if(res)t+='\n【結論・今後】\n'+res;
+    if(why)t+='\n【要件】'+why;
+    if(v('n-saw'))t+='\n【内容】\n'+v('n-saw');
+    if(act)t+='\n【対応】\n'+act;
     return t;
   }
   function soudan(){
@@ -437,6 +467,40 @@
     t+='\n\n【入院時の連絡について】\n入院された場合には、担当介護支援専門員の氏名および連絡先を医療機関に伝えていただくよう、利用者及び家族に依頼した。あわせて、当事業所へも速やかにご連絡いただくようお願いした。';
     if(document.getElementById('k-wariai').checked)t+='\n\n【サービス提供割合の説明】\n前6か月間に当事業所が作成した居宅サービス計画における訪問介護、通所介護、地域密着型通所介護および福祉用具貸与の各サービスの割合、ならびに各サービスごとの同一事業者による提供割合（上位3位まで）について説明した。（重要事項説明書に同内容を記載している。）';
     if(v('k-biko'))t+='\n\n'+v('k-biko');
+    return t;
+  }
+  function attRow(){
+    var d=document.createElement('div');d.className='att-row';
+    d.innerHTML='<input type="text" class="a-kind" list="att-kinds" placeholder="種別">'+
+      '<input type="text" class="a-name" placeholder="事業所名（任意）">'+
+      '<select class="a-st"><option value="in">参加 ○</option><option value="sho">欠席 ×（照会）</option><option value="out">欠席 ×</option></select>'+
+      '<select class="a-ans" style="display:none;"><option value="">照会文：未着</option><option value="1">照会文：届いた</option></select>'+
+      '<button type="button" class="btn-mini a-del">削除</button>';
+    var st=d.querySelector('.a-st'),ans=d.querySelector('.a-ans');
+    st.addEventListener('change',function(){ans.style.display=st.value==='sho'?'':'none';});
+    d.querySelector('.a-del').addEventListener('click',function(){d.parentNode.removeChild(d);});
+    document.getElementById('att-list').appendChild(d);
+  }
+  function attReset(){document.getElementById('att-list').innerHTML='';for(var i=0;i<3;i++)attRow();}
+  document.getElementById('att-add').addEventListener('click',attRow);
+  attReset();
+  function attText(){
+    return [].slice.call(document.querySelectorAll('.att-row')).map(function(r){
+      var k=r.querySelector('.a-kind').value.trim(),n=r.querySelector('.a-name').value.trim();
+      if(!k&&!n)return '';
+      var st=r.querySelector('.a-st').value,x;
+      if(st==='in')x='参加　○';
+      else if(st==='out')x='欠席　×';
+      else x='欠席　×　照会（'+(r.querySelector('.a-ans').value?'照会文あり':'照会文未着')+'）';
+      return [k,n,x].filter(Boolean).join('　');
+    }).filter(Boolean).join('\n');
+  }
+  function shukketsu(){
+    var t='【サービス担当者会議 出欠表】';
+    var m=[dt(),v('c-place')].filter(Boolean).join('／');
+    if(m)t+='\n'+m;
+    var at=attText();
+    t+='\n'+(at||'（事業所が入力されていません）');
     return t;
   }
   function kaigi(){
@@ -502,7 +566,7 @@
 
   function switchPanel(){
     var t=type();
-    ['normal','soudan','keiyaku','kaigi','keibi','kubun','nyuin','tsuin','taiin'].forEach(function(k){
+    ['normal','soudan','keiyaku','kaigi','shukketsu','keibi','kubun','nyuin','tsuin','taiin'].forEach(function(k){
       document.getElementById('p-'+k).classList.toggle('active',k===t);
     });
   }
@@ -514,6 +578,7 @@
     else if(t==='soudan')o=soudan();
     else if(t==='keiyaku')o=keiyaku();
     else if(t==='kaigi')o=kaigi();
+    else if(t==='shukketsu')o=shukketsu();
     else if(t==='keibi')o=keibi();
     else if(t==='kubun')o=kubun();
     else if(t==='nyuin')o=nyuin();
@@ -533,15 +598,17 @@
 
   document.getElementById('clear').addEventListener('click',function(){
     if(!confirm('入力内容を消して、次の利用者の記録に移りますか？'))return;
-    ['n-src','n-heard','n-saw','n-act','n-res','s-who','s-body','k-biko','g-join','g-month',
+    ['n-who','n-whyfree','n-saw','n-act','n-res','s-who','s-body','k-biko','g-join','g-month',
      'b-what','b-how','b-biko','b-reason','q-why','q-city','q-date','y-in','y-out','y-time','y-hosp',
      't-hosp','t-dr','t-give','t-get','r-out','r-last','r-hosp','r-who','r-body','output','ai-input']
       .forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
-    [].slice.call(document.querySelectorAll('.who')).forEach(function(c){c.checked=false;});
+    [].slice.call(document.querySelectorAll('.who,.n-quick')).forEach(function(c){c.checked=false;});
+    document.getElementById('n-why').value='';document.getElementById('n-how').value='';document.getElementById('c-place').value='';
     document.getElementById('y-gai').checked=false;
     document.getElementById('r-n1').value='1';document.getElementById('r-n2').value='0';
     document.getElementById('c-date').value=today();
     document.getElementById('c-time').value=now();
+    attReset();
     judgeNyuin();judgeTaiin();
     window.scrollTo({top:0,behavior:'smooth'});
   });
@@ -561,7 +628,7 @@
 '\n【気づき欄｜本文とは別に付ける】\n'+
 '本文（校正済みの記録）の後に、次の見出しを付けて別枠で示すこと：\n'+
 '― ひょっとしたら、こうかも？（※参考。事実ではありません）―\n'+
-'そこに、下書きの内容から気づけるリスクや変化の可能性、確認した方がよい情報の抜けを箇条書きで示す。すべて参考であり、事実として確定していないことを明記する。採用・削除はケアマネが判断する。本文には憶測を混ぜないこと。\n';
+'そこに、下書きの内容から気づけるリスクや変化の可能性、確認した方がよい情報の抜け（いつ・どこで・誰が等、5W1Hを目安に）を箇条書きで示す。すべて参考であり、事実として確定していないことを明記する。採用・削除はケアマネが判断する。本文には憶測を混ぜないこと。\n';
 
   var AI_HINT_OFF =
 '\n【気づき欄】\n'+
@@ -574,7 +641,9 @@
       hasHint:true,
       lead:'あなたは介護支援専門員の記録校正を補助するアシスタントです。以下の下書きを、居宅介護支援の経過記録として整えてください。\n\n'+
         '【整え方】\n'+
-        '・5W1H（いつ・どこで・誰が・何を・なぜ・どうした）に沿って情報を整理する。話し言葉は書き言葉に、語順も整える。\n'+
+        '・下書きにある情報だけを、話し言葉から書き言葉に整え、語順を整える。すべての項目がそろっている必要はない。報告を受けただけ・確認しただけの短い記録はそのまま短く整える。\n'+
+        '・下書きに複数の人の発言・報告がある場合は、誰の話か分かるように発言者を文頭に明記する（読み取れない場合は「［発言者要確認］」とし、推測で補わない）。相手が一人の場合は無理に発言者を書き足さない。\n'+
+        '・5W1Hは型として当てはめない。空欄の項目を埋めるための文章を作らないこと。\n'+
         '・場面や話題の変わり目で改行・段落分けし、必要に応じて箇条書きで整理する（読みやすさのための整形のみ。情報の追加・削除はしない）。\n\n'
     },
     kaigi: {
@@ -610,7 +679,7 @@
   };
   var LIGHT_LABEL = { nyuin:'入院時情報連携', tsuin:'通院時情報連携', taiin:'退院・退所' };
   // AI整形の対象外（そのまま使う種別）
-  var AI_NONE = { soudan:'初回相談', keiyaku:'居宅契約', keibi:'軽微な変更' };
+  var AI_NONE = { shukketsu:'会議出欠表', soudan:'初回相談', keiyaku:'居宅契約', keibi:'軽微な変更' };
 
   function currentAIConfig(){
     var t=type();
@@ -658,7 +727,7 @@
   });
 
   window.addEventListener('beforeunload',function(e){
-    var dirty=['n-saw','n-act','n-res','s-body','g-join','b-what','q-why','y-hosp','t-give','r-body','output','ai-input']
+    var dirty=['n-who','n-saw','n-act','n-res','s-body','g-join','b-what','q-why','y-hosp','t-give','r-body','output','ai-input']
       .some(function(id){return v(id)!=='';});
     if(dirty){e.preventDefault();e.returnValue='';}
   });
