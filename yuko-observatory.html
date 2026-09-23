@@ -35,7 +35,7 @@ button,input{font:inherit}button{touch-action:manipulation;cursor:pointer;min-he
 <details class="card"><summary>使い方と、あとからAIに渡すとき</summary><p class="hint">SafariでこのURLを開き、共有メニューから「ホーム画面に追加」すると開きやすくなります。保存場所はブラウザや開き方によって異なる場合があるので、いつも同じ入口で使ってね。端末間の自動同期はありません。</p><p class="hint">何につながったか分かったときだけ「Threadsを見てLINEに問い合わせ」のように一言へ。分からない経路は推測で埋めなくて大丈夫。</p><p class="hint">CSVをAIに渡せば、反応の大きかった活動や売上との時間的な重なりを調べられます。記録だけでは因果関係を断定できないので、経路が分かる一言が手がかりになります。</p><p class="hint">このページはログインのない個人用試作です。ページ自体は公開されていますが、入力した記録をサーバーへ送る機能はありません。検索掲載を避ける設定を入れています。</p></details>
 </main><script>
 'use strict';
-const KEY='yuko_observatory_v1', CHANNELS=['Threads','Instagram','TikTok','Ameblo','X','ポケカラ','グラビティ','HP','公式LINE','note'];
+const KEY='yuko_observatory_v1', CHANNELS=['Threads','Instagram','TikTok','YouTube','Ameblo','X','ポケカラ','グラビティ','HP','公式LINE','note'];
 const $=id=>document.getElementById(id);
 let selectedChannel='',limit=30;
 function status(message,error=false,target='status'){$(target).textContent=message;$(target).classList.toggle('error',error)}
