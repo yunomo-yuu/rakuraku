@@ -155,6 +155,12 @@
   </div>
 
   <div class="card">
+    <h2>要介護度</h2>
+    <p class="qs">区分によって、出していい候補が変わります（軽度者の福祉用具、要支援の総合事業など）。わからない・未確定なら選ばなくてOK。</p>
+    <div class="opts" data-g="kaigo-lv"><span class="opt" data-single="1">要支援1</span><span class="opt">要支援2</span><span class="opt">要介護1</span><span class="opt">要介護2</span><span class="opt">要介護3</span><span class="opt">要介護4</span><span class="opt">要介護5</span><span class="opt">申請中</span><span class="opt">区分変更中</span></div>
+  </div>
+
+  <div class="card">
     <h2>STEP1　困りごとを選ぶ（複数可）</h2>
     <div class="assessment-lead">
       <strong>困っていること・できないことからアセスメントします。</strong><br>
@@ -169,7 +175,7 @@
       <span class="chip" data-p="nyuyoku">入浴</span>
       <span class="chip" data-p="seiyou">整容・更衣</span>
     </div>
-    <div class="lt">IADL（暮らしを回す動作）── ここだけなら軽度・生活援助が軸</div>
+    <div class="lt">IADL（暮らしを回す動作）</div>
     <div class="chips">
       <span class="chip" data-p="kaji">家事（調理・掃除・洗濯・買い物）</span>
       <span class="chip" data-p="shakai">社会参加（金銭・外出・閉じこもり）</span>
@@ -311,10 +317,24 @@
   <div class="card panel" id="p-ninchi"><h2>認知・見守り</h2>
     <div class="q"><p class="qt">見守りの体制</p><div class="opts" data-g="n-watch">
       <span class="opt" data-single="1">常時見守りがいる</span><span class="opt">時々一人になる</span><span class="opt">基本一人（独居）</span></div></div>
+    <div class="q"><p class="qt">認知症高齢者の日常生活自立度</p><div class="opts" data-g="n-lv">
+      <span class="opt">自立</span><span class="opt">Ⅰ</span><span class="opt">Ⅱa</span><span class="opt">Ⅱb</span><span class="opt">Ⅲa</span><span class="opt">Ⅲb</span><span class="opt">Ⅳ</span><span class="opt">M</span></div></div>
     <div class="q"><p class="qt">中核症状（記憶・見当識・実行機能）── どこでつまずくか</p><div class="opts" data-g="n-core">
       <span class="opt">言われたことをすぐ忘れる（記憶）</span><span class="opt">日時・場所が分からなくなる（見当識）</span><span class="opt">何から始めればいいか分からない（開始）</span><span class="opt">途中で手順が分からなくなる（手順）</span><span class="opt">道具の使い方が分からない（道具操作）</span><span class="opt">終わったか分からず同じことを繰り返す（完了判断）</span></div></div>
     <div class="q"><p class="qt">つまずく場面（複数可）</p><div class="opts" data-g="n-scene">
       <span class="opt">調理</span><span class="opt">服薬</span><span class="opt">着替え・整容</span><span class="opt">入浴</span><span class="opt">金銭・買い物</span><span class="opt">外出・移動</span><span class="opt">受診・予定</span></div></div>
+    <p class="qs" style="margin-top:10px;">▼ 重度の人はここから。上の「中核症状」「つまずく場面」は空でOK。</p>
+    <div class="q"><p class="qt">意思疎通の困難</p><div class="opts" data-g="n-com">
+      <span class="opt">意思疎通が困難</span><span class="opt">指示の理解が困難</span><span class="opt">家族や身近な人の認識が困難なことがある</span><span class="opt">言葉での意思表示が困難（表情・声で快不快を示す）</span></div></div>
+    <div class="q"><p class="qt">食事の困難</p><div class="opts" data-g="n-eat">
+      <span class="opt">食べ物の認識が困難（口を開けない・溜め込む）</span><span class="opt">嚥下が困難になってきた（むせ・飲み込みが遅い）</span><span class="opt">食事に長時間かかる</span></div></div>
+    <div class="q"><p class="qt">からだの困難</p><div class="opts" data-g="n-body">
+      <span class="opt">自発的な動きが困難（臥床時間が長い）</span><span class="opt">関節が固くなってきた（拘縮）</span><span class="opt">尿意・便意の訴えが困難</span></div></div>
+    <div class="q"><p class="qt">こころの状態</p><div class="opts" data-g="n-mind">
+      <span class="opt">夕方になると落ち着かない（帰宅願望など）</span><span class="opt">不安で人を探す・呼び続ける</span></div></div>
+    <div class="q"><p class="qt">意思決定・今後のこと</p><div class="opts" data-g="n-acp">
+      <span class="opt">本人の意向の確認が困難</span><span class="opt">今後の過ごし方（最期の場所等）を家族と話せていない</span></div></div>
+    <div class="q"><p class="qt">本人が落ち着く関わり（任意）</p><input type="text" id="n-calm" placeholder="例：昔の歌、呼ばれ慣れた名前、手を握る など"></div>
     <div class="q"><p class="qt">精神症状（1つ🟡・2つ以上🔴）</p><div class="opts" data-g="n-bpsd">
       <span class="opt">介護拒否</span><span class="opt">興奮・暴言</span><span class="opt">幻覚・妄想</span><span class="opt">不潔行為・弄便</span><span class="opt">昼夜逆転で家族が眠れない</span></div></div>
     <div class="q"><p class="qt">目が離せない（1つでも🔴）</p><div class="opts" data-g="n-eye">
@@ -384,7 +404,7 @@
 
   <div class="card" id="p-aicard">
     <h2>AIでケアプランの叩き台を作る（プロンプト生成）</h2>
-    <div class="lead">上で「思考の叩き台」か「転記」を出したうえで、ここに<b>照準（本人が本当に望む姿）</b>を入れて〈AI用プロンプトを作る〉を押すと、第1表・第2表を組ませるためのプロンプトができます。それをコピーして、お使いのAI（ChatGPTなど）に貼ってください。<br><span style="color:#9B3B3B;font-weight:700;">※このツールからAIへは送信しません。プロンプトの文章を作るだけです。</span></div>
+    <div class="lead">上で「思考の叩き台」か「転記」を出したうえで、ここに<b>照準（本人が本当に望む姿）</b>を入れて〈AI用プロンプトを作る〉を押すと、第1表・第2表を組ませるためのプロンプトができます。それをコピーして、お使いのAI（ChatGPTなど）に貼ってください。<br><span style="color:#9B3B3B;font-weight:700;">※このツールからAIへは送信しません。プロンプトの文章を作るだけです。<br>※ただし、できたプロンプトを外部のAI（ChatGPTなど）に貼り付けると、その内容はそのAIサービスに送られます。氏名・住所・生年月日など、個人が特定できる情報は入れないでください。</span></div>
 
     <div class="q">
       <p class="qt">照準：本人が本当に望む姿</p>
@@ -410,6 +430,8 @@
         <button type="button" data-svc="福祉用具貸与：">＋福祉用具</button>
         <button type="button" data-svc="訪問看護：">＋訪問看護</button>
         <button type="button" data-svc="通所リハビリ：">＋通所リハ</button>
+        <button type="button" data-svc="短期入所生活介護：">＋ショート</button>
+        <button type="button" data-svc="短期入所療養介護：">＋ショート（療養）</button>
         <button type="button" data-svc="居宅介護支援：月1回以上・必要時">＋居宅</button>
       </div>
       <textarea id="ai-services" placeholder="例（サービス種別：頻度（内容））：
@@ -423,12 +445,25 @@
       <span>候補は候補。本当に使うサービスをここで確定してからAIに渡すと、第2表がぐっと現実に近づくよ💜</span>
     </div>
 
+    <div class="q">
+      <p class="qt">計画期間（任意）</p>
+      <p class="qs">空欄なら、AIは日付を作らず期間欄を「要確認」にします（介護ソフトで入れる場合は空欄でOK）。</p>
+      <input type="text" id="ai-lg-period" placeholder="長期の期間　例：R08/10/01〜R09/09/30">
+      <input type="text" id="ai-sh-period" placeholder="短期の期間　例：R08/10/01〜R08/12/31" style="margin-top:6px;">
+    </div>
+    <div class="q">
+      <p class="qt">ニーズの数</p>
+      <p class="qs">選ばなければ「1本にまとめる」で作ります。</p>
+      <div class="opts" data-g="ai-need"><span class="opt" data-single="1">1本にまとめる</span><span class="opt">課題ごとに分ける</span></div>
+    </div>
+
     <p class="qs" id="ai-mode-show" style="margin-top:8px;"></p>
 
     <div class="btnbar">
       <button class="btn-main" id="ai-make">AI用プロンプトを作る</button>
     </div>
 
+    <p id="ai-stale-note" style="display:none;color:#9B3B3B;font-weight:700;margin:6px 0;">⚠ 入力や出力欄が変わりました。下のプロンプトは古い内容です。〈AI用プロンプトを作る〉をもう一度押してください。</p>
     <textarea id="ai-output" placeholder="ここに、AIに貼るプロンプトが出ます。" style="min-height:220px;"></textarea>
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;">
       <button class="btn-sub" id="ai-copy">プロンプトをコピー</button>
@@ -442,23 +477,56 @@
   var NG=['安心','安全','快適','穏やか','自分らしく','生き生き','元気に'];
   [].slice.call(document.querySelectorAll('.chip[data-p]')).forEach(function(c){
     c.addEventListener('click',function(){c.classList.toggle('on');
-      document.getElementById('p-'+c.dataset.p).classList.toggle('active',c.classList.contains('on'));});
+      document.getElementById('p-'+c.dataset.p).classList.toggle('active',c.classList.contains('on'));if(typeof syncSub==='function')syncSub();markStale();if(typeof updateModeSuggestion==='function')updateModeSuggestion();});
   });
-  var singleGroups=['ha-ctrl','f-ctrl','n-watch','k-fm','sh-form','ny-lv','ha-mode','i-lv','iz-lv','sh-lv','se-lv','ha-lv'];
+  var singleGroups=['kaigo-lv','ai-need','ha-ctrl','f-ctrl','n-watch','n-lv','k-fm','sh-form','ny-lv','ha-mode','i-lv','iz-lv','sh-lv','se-lv','ha-lv'];
   [].slice.call(document.querySelectorAll('.opts')).forEach(function(box){
     box.addEventListener('click',function(e){
       if(!e.target.classList.contains('opt'))return;
       var g=box.dataset.g;
-      if(singleGroups.indexOf(g)>=0){[].slice.call(box.children).forEach(function(x){x.classList.remove('on');});e.target.classList.add('on');}
+      if(singleGroups.indexOf(g)>=0){var was=e.target.classList.contains('on');[].slice.call(box.children).forEach(function(x){x.classList.remove('on');});if(!was)e.target.classList.add('on');}
       else e.target.classList.toggle('on');
+      if(g.indexOf('ai-')===0){setAiStale();return;}
       syncSub();
       updateModeSuggestion();
+      markStale();
     });
   });
-  function sel(g){return [].slice.call(document.querySelectorAll('[data-g="'+g+'"] .opt.on')).map(function(e){return e.textContent;});}
+  document.addEventListener('input',function(e){var t=e.target;if(!t||!t.id)return;if(t.id==='ai-output')return;if(t.id==='output'){setAiStale();t.dataset.edited='1';[].slice.call(document.querySelectorAll('#tblbox .cpbtn')).forEach(function(b){b.disabled=true;b.title='出力欄を手で直したため、項目ごとのコピーは使えません。下の出力欄からコピーしてください。';});return;}if(t.id.indexOf('ai-')===0){setAiStale();return;}markStale();});
+  function rawSel(g){return [].slice.call(document.querySelectorAll('[data-g="'+g+'"] .opt.on')).map(function(e){return e.textContent;});}
+  function sel(g){var el=document.querySelector('[data-g="'+g+'"]');if(!el)return [];var pn=el.closest('.panel');if(pn&&!pn.classList.contains('active'))return [];var sb=el.closest('.subblk');if(sb&&!sb.classList.contains('on'))return [];return rawSel(g);}
   function v(id){var e=document.getElementById(id);return e?(e.value||'').trim():'';}
   function active(p){return document.getElementById('p-'+p).classList.contains('active');}
   function uniq(a){return a.filter(function(x,i){return a.indexOf(x)===i;});}
+  function esc(x){return String(x==null?'':x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+  function visSel(g){return sel(g);}
+  var STALE_MSG='⚠ 入力が変わりました。出力欄は古い内容のままです。もう一度〈思考の叩き台を出す〉か〈ケアカルテ特記欄に転記〉を押してください。';
+  function setAiStale(){var ao=document.getElementById('ai-output');if(ao&&ao.value){ao.dataset.stale='1';var n=document.getElementById('ai-stale-note');if(n)n.style.display='block';}}
+  window.__rakuSetAiStale=setAiStale;
+  var LIGHT_ITEMS=['特殊寝台','車いす','車椅子','床ずれ防止','体圧分散','体位変換器','移動用リフト','移乗用リフト','徘徊感知'];
+  var SHIEN_MAP={'通所・訪問リハビリ':'介護予防通所・訪問リハビリ','通所リハビリ':'介護予防通所リハビリ','訪問リハビリ':'介護予防訪問リハビリ','訪問介護':'訪問型サービス（総合事業）','通所介護':'通所型サービス（総合事業）','訪問看護':'介護予防訪問看護','福祉用具貸与':'介護予防福祉用具貸与','短期入所':'介護予防短期入所','居宅療養管理指導':'介護予防居宅療養管理指導','特定福祉用具販売':'特定介護予防福祉用具販売','訪問入浴介護':'介護予防訪問入浴介護'};
+  var SHIEN_RE=/通所・訪問リハビリ|通所リハビリ|訪問リハビリ|訪問介護|通所介護|訪問看護|福祉用具貸与|短期入所|居宅療養管理指導|特定福祉用具販売|訪問入浴介護/g;
+  function applyKaigo(r){
+    var kl=sel('kaigo-lv')[0]||'';r.flags=r.flags||[];
+    var light=['要支援1','要支援2','要介護1'].indexOf(kl)>=0;
+    if(light){
+      var found=[];
+      r.svc=r.svc.map(function(x){var hit=LIGHT_ITEMS.filter(function(k){return x.indexOf(k)>=0;});if(!hit.length)return x;found=found.concat(hit);return x+'（軽度者：例外給付の確認要）';});
+      if(found.length)r.flags.push({t:'yellow',m:kl+'（軽度者）は、'+uniq(found).join('・')+'の貸与が原則対象外。使う場合は例外給付の手続き（医師の医学的所見・サービス担当者会議・保険者への確認）を。'});
+    }
+    if(kl.indexOf('要支援')===0){r.svc=r.svc.map(function(x){return x.replace(SHIEN_RE,function(m){return SHIEN_MAP[m];});});}
+    return r;
+  }
+  function kaigoFlags(){
+    var kl=sel('kaigo-lv')[0]||'';
+    if(!kl)return [{t:'yellow',m:'要介護度が未選択のため、区分による候補の出し分け（軽度者の福祉用具・要支援の総合事業）をしていません。'}];
+    if(kl.indexOf('要支援')===0)return [{t:'yellow',m:kl+'のため、訪問型・通所型サービスは総合事業、その他は介護予防サービスとして表記しています。計画は介護予防支援の扱い、事業所の指定状況も要確認。'}];
+    if(kl==='申請中'||kl==='区分変更中')return [{t:'yellow',m:kl+'のため暫定の叩き台です。認定結果によって、軽度者の福祉用具や総合事業の扱いなど、区分・サービスの見直しを。'}];
+    return [];
+  }
+  window.__rakuKaigo=function(){return sel('kaigo-lv')[0]||'';};
+  function markStale(){var o=document.getElementById('output');if(o&&o.value.trim()&&o.dataset.stale!=='1'){o.dataset.stale='1';[].slice.call(document.querySelectorAll('#tblbox .adoptbtn')).forEach(function(b){b.disabled=true;b.title='入力が変わったため、第2表を作り直すまで使えません';});var ml=document.getElementById('modelabel');if(ml){ml.textContent=STALE_MSG;ml.style.color='#9B3B3B';}}setAiStale();}
+  function clearStale(){var o=document.getElementById('output');if(o)o.dataset.stale='';var ml=document.getElementById('modelabel');if(ml)ml.style.color='';}
   function clean(s){return s.replace(/。$/,'');}
 
   var MODES={
@@ -468,12 +536,13 @@
   };
   var currentMode='jiritsu',modeManual=false;
   var LV_FIELDS=['i-lv','iz-lv','sh-lv','ny-lv','se-lv','ha-lv'];
-  function fullAssistCount(){return LV_FIELDS.filter(function(g){return sel(g)[0]==='全介助';}).length;}
-  function suggestMode(){var f=fullAssistCount();if(f>=2&&sel('sh-lv')[0]==='全介助')return 'jumatsu';if(f>=1)return 'iji';return 'jiritsu';}
+  function fullAssistCount(){return LV_FIELDS.filter(function(g){return visSel(g)[0]==='全介助';}).length;}
+  function suggestMode(){var f=fullAssistCount();if(f>=2&&visSel('sh-lv')[0]==='全介助')return 'jumatsu';if(f>=1)return 'iji';var nl=visSel('n-lv')[0]||'';if(['Ⅲb','Ⅳ','M'].indexOf(nl)>=0||visSel('n-com').length||visSel('n-eat').length||visSel('n-body').length)return 'iji';return 'jiritsu';}
 
   function renderModeUI(){
     [].slice.call(document.querySelectorAll('.mode-chip')).forEach(function(c){c.classList.toggle('on',c.dataset.mode===currentMode);});
     document.getElementById('mode-desc').textContent=MODES[currentMode].label+'：'+MODES[currentMode].desc;
+    try{document.dispatchEvent(new CustomEvent('rakumodechange'));}catch(e){}
     var sug=suggestMode(),note=document.getElementById('mode-suggest');
     if(modeManual){
       note.textContent=(sug===currentMode?'✔ ':'✋ ')+'現在は「'+MODES[currentMode].label+'」を手動で選択中です（自動提案は「'+MODES[sug].label+'」）。これはあくまで提案です。担当者の判断で選び直せます。';
@@ -483,13 +552,13 @@
   }
   function updateModeSuggestion(){if(!modeManual)currentMode=suggestMode();renderModeUI();}
   [].slice.call(document.querySelectorAll('.mode-chip')).forEach(function(c){
-    c.addEventListener('click',function(){currentMode=c.dataset.mode;modeManual=true;renderModeUI();});
+    c.addEventListener('click',function(){currentMode=c.dataset.mode;modeManual=true;renderModeUI();markStale();});
   });
   renderModeUI();
 
   function modeGoalText(text,mode){
     if(!text||!mode||mode==='jiritsu'||mode==='jumatsu')return text;
-    if(/保つ|保てる|維持|防ぐ|続けられる/.test(text))return text; /* もう維持の意味を含む文には語尾を重ねない */
+    if(/保つ|保てる|維持|防ぐ|防い|続け/.test(text))return text; /* もう維持の意味を含む文には語尾を重ねない */
     if(/ことができる$/.test(text))return text.replace(/ことができる$/,'')+(mode==='iji'?'ことができる状態を保つ':'ことができ、苦痛なく過ごせるよう支える');
     if(/できる$/.test(text))return text.replace(/できる$/,'')+(mode==='iji'?'できる状態を保つ':'でき、苦痛なく過ごせるよう支える');
     return text;
@@ -501,15 +570,15 @@
   }
 
   function syncSub(){
-    var shm=sel('sh-mode');
+    var shm=rawSel('sh-mode');
     toggleSub('sh-eat',shm.indexOf('噛む・飲み込む')>=0);
     toggleSub('sh-app',shm.indexOf('食欲・意欲')>=0);
     toggleSub('sh-mouth',shm.indexOf('口腔・姿勢')>=0);
     toggleSub('sh-water',shm.indexOf('水分')>=0);
-    var ham=sel('ha-mode')[0]||'';
+    var ham=rawSel('ha-mode')[0]||'';
     toggleSub('ha-u',ham==='尿'||ham==='両方');
     toggleSub('ha-b',ham==='便'||ham==='両方');
-    var sm=sel('s-mode');
+    var sm=rawSel('s-mode');
     toggleSub('s-kin',sm.indexOf('金銭の管理')>=0);
     toggleSub('s-gai',sm.indexOf('外出・移動手段')>=0);
     toggleSub('s-toji',sm.indexOf('閉じこもり')>=0);
@@ -531,7 +600,7 @@
     if(c.indexOf('筋力低下')>=0||c.indexOf('麻痺')>=0)sv.push('通所・訪問リハビリ（下肢筋力・立ち上がり訓練）');
     if(p.indexOf('立ち上がり')>=0)sv.push('福祉用具貸与（手すり・歩行器）');
     if(p.indexOf('段差・またぎ')>=0||c.indexOf('環境（段差・手すり）')>=0)sv.push('住宅改修（手すり設置・段差解消）');
-    if(p.indexOf('夜間・トイレ移動')>=0)sv.push('福祉用具貸与（ポータブルトイレ・夜間の手すり）');
+    if(p.indexOf('夜間・トイレ移動')>=0){sv.push('特定福祉用具販売（腰掛便座：ポータブルトイレ）の検討');sv.push('手すりの検討（設置方法等に応じて貸与・住宅改修の適用確認）');}
     if(lv==='全介助'||lv==='一部介助（動作の手引き）')sv.push('訪問介護（移動の介助）');
     else if(lv==='一部介助（声かけ・準備）')sv.push('訪問介護（声かけ・見守りでの移動支援）');
     else if(lv==='見守り')sv.push('見守りでの移動支援');
@@ -539,14 +608,15 @@
     if(c.indexOf('筋力低下')>=0)sh.push('リハビリを続け、下肢の筋力を保つことができる');
     if(p.indexOf('夜間・トイレ移動')>=0)sh.push('夜間、転ばずにトイレへ移動することができる');
     if(!sh.length)sh.push('福祉用具を使い、安定して移動することができる');
-    return {item:'移動・転倒',need:(p.length?p.join('・'):'移動')+'で転倒の危険があり'+(lv?'（'+lv+'）':'')+'、支援を要する',
+    var needI=(lv==='自立')?('移動は自立。'+(p.length?'ただし'+p.join('・')+'で転倒の危険がある':(c.length?c.join('・')+'がある':'困りごとの有無は要確認'))):((p.length?p.join('・'):'移動')+'で転倒の危険があり'+(lv?'（'+lv+'）':'')+'、支援を要する');
+    return {item:'移動・転倒',need:needI,
       lg:goal(so,'転倒なく移動できる生活を続けることができる'),sh:uniq(sh),svc:uniq(sv),icf:'原因→心身機能／移動→活動'};}
 
   function rowIzon(){var lv=sel('iz-lv')[0]||'',p=sel('iz-pt'),k=sel('iz-kikyo'),so=v('iz-sos'),sv=[],sh=[],need=[];
     var heavy=(lv==='全介助'),mid=(lv==='一部介助（動作の手引き）');
     if(k.length){
       sv.push('福祉用具貸与（特殊寝台・特殊寝台付属品：背上げ・高さ調整'+(k.indexOf('寝返り')>=0?'・サイドレール':'')+'）');
-      if(k.indexOf('起き上がり')>=0||k.indexOf('寝返り')>=0)sh.push('自分で寝返り・起き上がりを行うことができる');
+      if(k.indexOf('起き上がり')>=0||k.indexOf('寝返り')>=0)sh.push((heavy||mid)?'介助を受けながら、無理のない方法で寝返り・起き上がりを行うことができる':'寝返り・起き上がりを、できる範囲で自分で行うことができる');
       if(k.indexOf('端座位が保てない')>=0){sh.push('端座位を保ち、次の動作に移ることができる');sv.push('通所・訪問リハビリ（座位バランス訓練）');}
       if(k.indexOf('ベッドの高さが合わない')>=0)sh.push('足が床につく高さで、ベッドから立ち上がることができる');
       var kAct=k.filter(function(x){return x!=='ベッドの高さが合わない';});
@@ -562,8 +632,14 @@
     if(!sv.length)sv.push('移乗の状況確認');
     if(p.indexOf('座り込み')>=0)sh.push('座り込みなく移乗することができる');
     if(p.indexOf('立ち上がり')>=0||p.indexOf('立位保持')>=0)sh.push('立ち上がり・立位を保ち、移乗を行うことができる');
-    if(!sh.length)sh.push('介助を受けながら、転倒なく移乗することができる');
-    if(p.length||!k.length)need.unshift((p.length?p.join('・'):'移乗動作')+'に'+(lv||'介助')+'を要し、ベッドと車椅子等の移乗が難しい');
+    if(lv==='自立'){
+      if(!sh.length)sh.push('今の方法で、転倒なく移乗を続けることができる');
+      if(p.length)need.unshift('移乗動作は自立。ただし'+p.join('・')+'に困難がある');
+      else if(!k.length)need.unshift('移乗動作は自立。困りごとの有無は要確認');
+    }else{
+      if(!sh.length)sh.push('介助を受けながら、転倒なく移乗することができる');
+      if(p.length||!k.length)need.unshift((p.length?p.join('・'):'移乗動作')+'に'+(lv||'支援（介助度は要確認）')+'を要し、ベッドと車椅子等の移乗が難しい');
+    }
     return {item:'移乗',need:need.join('。'),
       lg:goal(so,'転倒なく移乗し、離床した生活を続けることができる'),sh:uniq(sh),svc:uniq(sv),icf:(k.length?'起居動作・':'')+'移乗動作→活動'};}
 
@@ -575,14 +651,16 @@
       else if(lv==='一部介助（声かけ・準備）')sv.push('訪問介護（食事の声かけ・準備の支援）');
       else if(lv==='見守り')sv.push('食事場面の見守り');}
     if(m.indexOf('噛む・飲み込む')>=0){
-      if(eat.indexOf('むせる・咳き込む')>=0||eat.indexOf('誤嚥性肺炎の既往')>=0){flags.push({t:'red',m:'誤嚥のリスクが高い。嚥下評価（訪問歯科・耳鼻科・ST）を早めに。'});need.push('むせ込みがあり、誤嚥のリスクを抱えながら食事をしている');sv.push('嚥下評価（訪問歯科・耳鼻科・言語聴覚士）');sv.push('訪問看護（食事中の観察・口腔ケア）');}
+      if(eat.indexOf('むせる・咳き込む')>=0||eat.indexOf('誤嚥性肺炎の既往')>=0){flags.push({t:'red',m:'誤嚥のリスクを優先して確認。嚥下評価（訪問歯科・耳鼻科・ST）の検討を。'});sv.push('嚥下評価（訪問歯科・耳鼻科・言語聴覚士）の検討');sv.push('食事中の観察・口腔ケアの体制確認（訪問看護等）');}
+      if(eat.indexOf('むせる・咳き込む')>=0)need.push('食事中にむせ込みがあり、誤嚥のリスクがある');
+      if(eat.indexOf('誤嚥性肺炎の既往')>=0)need.push('誤嚥性肺炎の既往があり、再発予防のため食事時の状態確認を要する');
       if(eat.indexOf('水分でむせる')>=0){flags.push({t:'yellow',m:'水分でむせるのは嚥下低下のサイン。とろみの検討を（専門職の評価のうえで）。'});need.push('水分でむせがあり、とろみ等の調整を要する');sv.push('食形態・とろみの調整（専門職の助言）');}
       if(eat.indexOf('噛めない（歯・義歯）')>=0)sv.push('訪問歯科（義歯の調整・口腔ケア）');
       if(eat.indexOf('口に溜め込む・飲み込まない')>=0){need.push('食物を口に溜め込み、飲み込みが進まないことがある');sv.push('食事介助の方法・一口量・ペースの見直し（専門職の助言）');}
       if(form&&form!=='常食')need.push('食形態の調整（'+form+'）を要する状態で口から食べている');
       sh.push('むせずに、口から食事をとり続けることができる');}
     if(m.indexOf('食欲・意欲')>=0){
-      if(app.indexOf('体重が減ってきた')>=0){flags.push({t:'red',m:'体重減少あり。低栄養の評価（主治医・栄養士）を。'});need.push('食事量の低下で体重が減少し、低栄養のリスクがある');sv.push('主治医への相談／管理栄養士の助言');}
+      if(app.indexOf('体重が減ってきた')>=0){flags.push({t:'red',m:'体重減少あり。低栄養の評価（主治医・栄養士）を。'});need.push('体重減少があり、時期・程度・食事摂取の状況等の確認を要する');sv.push('主治医への相談／管理栄養士の助言');}
       if(app.indexOf('一人だと食べない')>=0){need.push('一人での食事では食が進まず、食事の機会と環境の調整を要する');sv.push('通所介護（みんなで食べる機会の確保）');}
       if(app.indexOf('食事を忘れる')>=0)sv.push('訪問介護（食事の声かけ・確認）／配食サービス');
       if(app.indexOf('特定のものしか食べない（偏食）')>=0){need.push('偏食により栄養が偏り、低栄養のリスクがある');sv.push('好みを活かした献立の工夫／管理栄養士の助言');}
@@ -620,7 +698,7 @@
       sv.push('訪問看護（カテーテル管理・定期交換）');}
     if(doU){
       if(u.indexOf('間に合わない（失禁）')>=0){need.push('尿意に排泄が間に合わず失禁があり、本人の自尊心にも影響している');sh.push('声かけや誘導により、尿の失敗を減らすことができる');}
-      if(u.indexOf('夜間頻尿')>=0){need.push('夜間のトイレ移動に転倒の危険がある');sv.push('福祉用具貸与（ポータブルトイレ・夜間の手すり）');sh.push('夜間、転ばずにトイレを使うことができる');}
+      if(u.indexOf('夜間頻尿')>=0){need.push('夜間のトイレ移動に転倒の危険がある');sv.push('特定福祉用具販売（腰掛便座：ポータブルトイレ）の検討');sv.push('手すりの検討（設置方法等に応じて貸与・住宅改修の適用確認）');sh.push('夜間、転ばずにトイレを使うことができる');}
       if(u.indexOf('トイレまでの移動')>=0)sv.push('福祉用具貸与（手すり・歩行器）／住宅改修');
       if(u.indexOf('残尿・出にくい')>=0)sv.push('訪問看護（残尿・排尿の管理）／泌尿器科の受診');
       if(u.indexOf('後始末・パッド交換')>=0)sv.push('訪問介護（陰部の清潔保持・パッド交換）');}
@@ -638,16 +716,23 @@
   function rowNyuyoku(){var lv=sel('ny-lv')[0]||'',p=sel('ny-pt'),env=sel('ny-env'),so=v('ny-sos'),sv=[],sh=[];
     if(lv==='全介助'||lv==='一部介助（動作の手引き）')sv.push('通所介護（入浴サービス）／訪問介護（入浴介助）');
     else if(lv==='一部介助（声かけ・準備）')sv.push('通所介護（入浴サービス）／訪問介護（声かけ・準備の支援）');
-    else sv.push('通所介護（入浴サービス）');
+    else if(lv==='見守り')sv.push('入浴場面の見守り（家族・通所介護等）');
     if(lv==='全介助'&&env.indexOf('家族の介助なし')>=0)sv.push('訪問入浴介護（居宅での入浴が難しい場合）');
-    if(p.indexOf('浴槽のまたぎ')>=0){sv.push('福祉用具（バスボード・浴槽内いす・シャワーチェア）');sh.push('福祉用具を使い、浴槽の出入りを行うことができる');}
-    if(p.indexOf('立ち座り')>=0)sv.push('福祉用具（シャワーチェア）');
+    if(p.indexOf('浴槽のまたぎ')>=0){sv.push('特定福祉用具販売（入浴補助用具：バスボード・浴槽内いす・入浴用いす）の検討');sh.push('福祉用具を使い、浴槽の出入りを行うことができる');}
+    if(p.indexOf('立ち座り')>=0)sv.push('特定福祉用具販売（入浴補助用具：入浴用いす）の検討');
     if(env.indexOf('手すりがない')>=0)sv.push('住宅改修（浴室・脱衣所への手すり設置）');
     if(p.indexOf('洗身・洗髪')>=0)sh.push('届かない部分の介助を受けながら、できる部分は自分で洗うことができる');
-    if(!sh.length)sh.push('介助を受けながら、定期的に入浴することができる');
-    var freq=(env.indexOf('家族の介助なし')>=0?'週2回':'週1〜2回');
-    return {item:'入浴',need:(p.length?p.join('・'):'入浴動作')+'に'+(lv||'支援（介助度は要確認）')+'を要し、一人での入浴が難しい',
-      lg:goal(so,freq+'入浴し、身体の清潔を保つことができる'),sh:uniq(sh),svc:uniq(sv),icf:'入浴動作→活動'};}
+    if(!sv.length)sv.push('入浴状況の確認');
+    var need;
+    if(lv==='自立'){
+      need='入浴動作は自立'+(p.length?'。ただし'+p.join('・')+'につまずきがある':'')+(env.length?'（'+env.join('・')+'）':'')+(p.length||env.length?'':'。困りごとの有無は要確認');
+      if(!sh.length)sh.push('今の入浴方法を続け、身体の清潔を保つことができる');
+    }else{
+      need=(p.length?p.join('・'):'入浴動作')+'に'+(lv||'支援（介助度は要確認）')+'を要し、一人での入浴が難しい';
+      if(!sh.length)sh.push('介助を受けながら、定期的に入浴することができる');
+    }
+    return {item:'入浴',need:need,
+      lg:goal(so,'定期的に入浴し、身体の清潔を保つことができる'),sh:uniq(sh),svc:uniq(sv),icf:'入浴動作→活動'};}
 
   function rowSeiyou(){var it=sel('se-item'),ca=sel('se-cause'),lv=sel('se-lv')[0]||'',so=v('se-sos'),sv=[],sh=[],flags=[],need=[];
     var itAct=it.filter(function(x){return x!=='同じ服・季節に合わない';});
@@ -696,7 +781,7 @@
       if(toji.indexOf('出たくない・意欲がわかない')>=0){need.push('外出・交流への意欲が低下している');sv.push('本人に合う場を探す（無理に通所を勧めない）／気分低下が続けば主治医へ');}
       if(toji.indexOf('出たいがきっかけがない')>=0){need.push('意欲はあるが場がなく閉じこもりがち');sv.push('通所介護・地域サロン・老人クラブ（本人に合う場）');}
       if(toji.indexOf('趣味・役割をやめた')>=0){need.push('趣味や役割を失い、生活の張り合いが薄れている');sh.push('以前の趣味・役割を、できる形で再開することができる');}
-      if(toji.indexOf('ほとんど外に出ない')>=0)sh.push('週に一度は外に出る機会を持つことができる');}
+      if(toji.indexOf('ほとんど外に出ない')>=0)sh.push('外に出る機会を定期的に持つことができる');}
     if(!need.length)need.push('社会とのつながりの確保に支援を要する');if(!sh.length)sh.push('人や地域とのつながりを保つことができる');if(!sv.length)sv.push('地域資源の情報提供');
     return {item:'社会参加',flags:flags,need:need.join('。'),lg:goal(so,'社会とのつながりを保ちながら生活を続けることができる'),sh:uniq(sh),svc:uniq(sv),icf:'金銭・移動→活動／交流→参加'};}
 
@@ -720,7 +805,7 @@
 
   function coreStage(c){return c.replace(/^.*（(.+)）$/,'$1');}
   function rowNinchi(){var w=sel('n-watch')[0]||'',b=sel('n-bpsd'),e=sel('n-eye'),ph=sel('n-phys'),so=v('n-sos'),core=sel('n-core'),scene=sel('n-scene');
-    var solo=(w==='基本一人（独居）'),alone=(w==='時々一人になる'||solo),reds=[],yels=[],sv=[],sh=[];
+    var solo=(w==='基本一人（独居）'||active('dokkyo')),alone=(w==='時々一人になる'||solo),reds=[],yels=[],sv=[],sh=[];
     var st=core.map(coreStage),scAll=scene.length?scene.join('・'):'日常の動作',sc=(scene.length>=3?'日常の生活動作':scAll),coreSh=[],coreSv=[];
     if(st.indexOf('記憶')>=0){coreSh.push('メモやカレンダーを使い、予定や約束を確認することができる');coreSv.push('メモ・カレンダー・貼り紙による見える化');}
     if(st.indexOf('見当識')>=0){coreSh.push('日めくりや時計で日時を確かめながら生活することができる');coreSv.push('日めくりカレンダー・大きな時計の設置');}
@@ -729,24 +814,51 @@
     if(st.indexOf('道具操作')>=0)coreSh.push('使い慣れた道具を使い、'+sc+'のできる部分は自分で行うことができる');
     if(st.indexOf('完了判断')>=0)coreSh.push('確認の声かけを受けて、'+sc+'をやり終えることができる');
     if(core.length){
-      coreSv.push('訪問介護（一緒に行う形の生活援助：本人ができる部分を残す）');
+      coreSv.push('本人と一緒に行う支援（身体介護・生活援助の区分は、具体的援助内容に基づき確認）');
       if(scene.indexOf('服薬')>=0)coreSv.push('服薬カレンダー・一包化／訪問看護（服薬確認）');
       if(scene.indexOf('金銭・買い物')>=0)coreSv.push('日常生活自立支援事業（金銭管理の支援）');
       if(scene.indexOf('受診・予定')>=0)coreSv.push('受診同行・予定の共有（家族・ケアマネ）');
       coreSv.push('認知症の医療（もの忘れ外来）で診断と服薬の確認');
     }
     if(e.length)reds.push('常時の危険行為（'+e.join('・')+'）で目が離せない');
-    if(b.length>=2)reds.push('精神症状が複数（'+b.join('・')+'）重なり介護者の心を削っている');
+    if(b.length>=2)reds.push('精神症状が複数（'+b.join('・')+'）みられる。頻度・程度と介護者の負担の確認を優先');
     else if(b.length===1)yels.push('精神症状（'+b[0]+'）がみられる');
     if(ph.length){if(alone)reds.push('身体的リスク（'+ph.join('・')+'）×'+(solo?'独居':'一人になる時間'));else yels.push('身体的リスク（'+ph.join('・')+'）は見守りと対策で維持可');}
-    if(reds.length){sv.push('短期入所（介護者のレスパイト）');sv.push('通所の回数・時間の拡大');if(b.length>=2)sv.push('認知症対応の医療（もの忘れ外来）／精神科訪問看護');sv.push('生活の場の情報提供・相談（施設・GH等）');sh.push('介護者が休息を取れる時間を確保し、介護を続けられる状態を保つことができる');}
+    if(reds.length&&solo){sv.push('見守り体制の強化（訪問の回数・時間帯の調整、見守り機器）');sv.push('通所の回数・時間の拡大（一人の時間を減らす）');if(b.length>=2)sv.push('認知症対応の医療（もの忘れ外来）／精神科訪問看護');sv.push('生活の場の情報提供・相談（施設・GH等）');sh.push('見守りを受けて一人の時間の危険を減らし、自宅での生活を続けることができる');}
+    else if(reds.length){sv.push('短期入所（介護者のレスパイト）');sv.push('通所の回数・時間の拡大');if(b.length>=2)sv.push('認知症対応の医療（もの忘れ外来）／精神科訪問看護');sv.push('生活の場の情報提供・相談（施設・GH等）');sh.push('介護者が休息を取れる時間を確保し、介護を続けられる状態を保つことができる');}
     else{if(ph.indexOf('徘徊')>=0)sv.push('見守り機器・GPS');if(ph.indexOf('火の不始末')>=0)sv.push('電磁調理器への変更');sv.push('通所介護（生活リズムの維持）');if(!core.length)sh.push('声かけや見守りを受けながら、できる生活動作を続けることができる');}
-    sh=coreSh.concat(sh);sv=coreSv.concat(sv);
-    var coreNeed=core.length?(st.join('・')+'のつまずきがあり、'+scAll+'を一人でやり切ることが難しい'):'';
-    var need=reds.length?'複数の負担が重なり介護者の心身が限界に近づいている。生活の場も含めた検討段階の可能性'+(coreNeed?'。'+coreNeed:''):(coreNeed||'認知機能の低下により見守りと支援体制の調整を要する');
-    var lgBase=core.length?('できる部分を自分で行いながら、'+sc+'を続けることができる'):'家族の負担にも配慮しながら、できる力を保って生活を続けることができる';
-    return {item:'認知・見守り',reds:reds,yels:yels,need:need,
-      lg:goal(so,lgBase),sh:uniq(sh),svc:uniq(sv),icf:(core.length?'認知機能（'+st.join('・')+'）→心身機能／'+scAll+'→活動':'認知→心身機能')+'／見守り体制→環境因子'};}
+    var lv=sel('n-lv')[0]||'',com=sel('n-com'),eat=sel('n-eat'),bd=sel('n-body'),mind=sel('n-mind'),acp=sel('n-acp'),calm=v('n-calm');
+    var sevItems=com.concat(eat,bd,mind),sev=sevItems.length>0||acp.length>0,sevSh=[],sevSv=[],flags=[];
+    if(com.length){sevSh.push('表情やしぐさから快・不快をくみ取ってもらい、落ち着いて過ごすことができる');sevSv.push('表情・しぐさ・声の変化の観察と共有（家族・各事業所）');}
+    if(calm)sevSv.push('落ち着く関わり方の統一（'+clean(calm)+'）');
+    if(eat.indexOf('食べ物の認識が困難（口を開けない・溜め込む）')>=0||eat.indexOf('食事に長時間かかる')>=0){sevSh.push('食べやすい形態と介助の工夫で、口から食べることを続けることができる');sevSv.push('食事形態・介助方法の工夫（一口量・声かけ・環境）');}
+    if(eat.indexOf('食事に長時間かかる')>=0)sevSv.push('食事時間の確保と介助（家族・訪問介護・通所）');
+    if(eat.indexOf('嚥下が困難になってきた（むせ・飲み込みが遅い）')>=0){flags.push({t:'yellow',m:'嚥下の低下は誤嚥性肺炎のリスク。嚥下評価と食形態の見直しを。'});sevSh.push('むせを減らす食形態と姿勢で、誤嚥を防いで食べることができる');sevSv.push('訪問歯科・言語聴覚士による嚥下評価');sevSv.push('訪問看護（嚥下・栄養状態の観察）');}
+    if(bd.indexOf('自発的な動きが困難（臥床時間が長い）')>=0){sevSh.push('体位変換や離床の機会を持ち、床ずれを防いで過ごすことができる');sevSv.push('福祉用具（特殊寝台・体圧分散マットレス）');sevSv.push('訪問看護（皮膚状態の観察）');}
+    if(bd.indexOf('関節が固くなってきた（拘縮）')>=0){sevSh.push('関節を動かす機会を持ち、拘縮の進行を防ぐことができる');sevSv.push('訪問リハビリ・訪問看護（関節可動域訓練）');}
+    if(bd.indexOf('尿意・便意の訴えが困難')>=0){sevSh.push('排泄パターンに合わせた介助で、清潔に過ごすことができる');sevSv.push('排泄パターンの把握と定時の排泄介助');}
+    if(mind.length){sevSh.push('不安が高まる時に声かけや寄り添いを受け、落ち着いて過ごすことができる');sevSv.push('不安が高まる時間帯の関わり方の統一（家族・各事業所）');}
+    if(acp.indexOf('本人の意向の確認が困難')>=0)sevSv.push('本人の意思を推定するための情報共有（これまでの生き方・好み）');
+    if(acp.indexOf('今後の過ごし方（最期の場所等）を家族と話せていない')>=0)sevSv.push('主治医・家族と今後の方針（ACP）の話し合い');
+    if(sevSh.length)sh=sh.filter(function(x){return x!=='声かけや見守りを受けながら、できる生活動作を続けることができる';});
+    if(reds.length){sh=sh.concat(sevSh,coreSh);sv=sevSv.slice(0,3).concat(sv,sevSv.slice(3),coreSv);}
+    else{sh=sevSh.concat(coreSh,sh);sv=sevSv.concat(coreSv,sv);}
+    var SEVL={'意思疎通が困難':'意思疎通の困難','指示の理解が困難':'指示理解の困難','家族や身近な人の認識が困難なことがある':'身近な人の認識の困難','言葉での意思表示が困難（表情・声で快不快を示す）':'言葉での意思表示の困難','食べ物の認識が困難（口を開けない・溜め込む）':'食べ物の認識の困難','嚥下が困難になってきた（むせ・飲み込みが遅い）':'嚥下の困難','食事に長時間かかる':'食事時間の長期化','自発的な動きが困難（臥床時間が長い）':'自発的な動きの困難','関節が固くなってきた（拘縮）':'関節の拘縮','尿意・便意の訴えが困難':'尿意・便意の訴えの困難','夕方になると落ち着かない（帰宅願望など）':'夕方の不穏','不安で人を探す・呼び続ける':'強い不安'};
+    var acpNeed=[];
+    if(acp.indexOf('本人の意向の確認が困難')>=0)acpNeed.push('本人の意向を言葉で確認することが難しく、意思の推定に向けた情報共有を要する');
+    if(acp.indexOf('今後の過ごし方（最期の場所等）を家族と話せていない')>=0)acpNeed.push('今後の過ごし方について、家族との話し合いがまだできていない');
+    function capList(a,n,sep){return a.slice(0,n).join(sep)+(a.length>n?'など':'');}
+    function buildNeed(C){
+    var sevNeed=sevItems.length?(capList(sevItems.map(function(x){return SEVL[x]||x;}),C,'、')+'がみられ、関わり方と支援方法の確認・調整を要する'):'';
+    if(acpNeed.length)sevNeed=sevNeed?sevNeed+'。'+acpNeed.join('。'):acpNeed.join('。');
+    var coreNeed=core.length?(capList(st,C,'・')+'のつまずきがあり、'+(scene.length>C?capList(scene,Math.min(C,2),'・')+'の生活動作':scAll)+'を一人でやり切ることが難しい'):'';
+    if(sevNeed)coreNeed=coreNeed?sevNeed+'。'+coreNeed:sevNeed;
+    return coreNeed||(reds.length?'見守りや対応を要する場面が重なり、支援体制の見直しを要する':'認知機能の低下により見守りと支援体制の調整を要する');
+    }
+    var need=buildNeed(3),needFull=buildNeed(99);
+    var lgBase=sevItems.length?'苦痛の少ない状態で、なじみの関わりの中で過ごすことができる':(core.length?('できる部分を自分で行いながら、'+sc+'を続けることができる'):(solo?'見守りの支えを整えながら、できる力を保って生活を続けることができる':'家族の負担にも配慮しながら、できる力を保って生活を続けることができる'));
+    return {item:'認知・見守り',flags:flags,reds:reds,yels:yels,need:need,needFull:needFull,
+      lg:goal(so,lgBase),sh:uniq(sh),svc:uniq(sv),icf:(core.length?'認知機能（'+st.join('・')+'）→心身機能／'+scAll+'→活動':'認知→心身機能')+(sevItems.length?'／意思疎通・嚥下・可動性→心身機能':'')+'／見守り体制→環境因子'};}
 
   function rowKazoku(){var who=sel('kz-who'),sign=sel('kz-sign'),urg=sel('kz-urg'),so=v('kz-sos');
     var reds=[],yels=[],sv=[],sh=[],flags=[];
@@ -856,7 +968,15 @@
   function tenkiNinchiBoth(){
     if(!active('ninchi'))return {chu:'',bp:''};
     var w=sel('n-watch')[0]||'',e=sel('n-eye'),ph=sel('n-phys'),b=sel('n-bpsd'),so=v('n-sos'),core=sel('n-core'),scene=sel('n-scene'),chuParts=[];
+    var lv=sel('n-lv')[0]||'',com=sel('n-com'),eat=sel('n-eat'),bd=sel('n-body'),mind=sel('n-mind'),acp=sel('n-acp'),calm=v('n-calm');
+    if(lv)chuParts.push('認知症高齢者の日常生活自立度：'+lv+'。');
     if(core.length)chuParts.push('認知機能：'+core.map(coreStage).join('・')+'に低下がみられる'+(scene.length?'（'+scene.join('・')+'の場面でつまずく）':'')+'。');
+    if(com.length)chuParts.push('意思疎通：'+com.join('・')+'。');
+    if(eat.length)chuParts.push('食事：'+eat.join('・')+'。');
+    if(bd.length)chuParts.push('身体：'+bd.join('・')+'。');
+    if(mind.length)chuParts.push('心理面：'+mind.join('・')+'。');
+    if(acp.length)chuParts.push('意思決定：'+acp.join('・')+'。');
+    if(calm)chuParts.push('本人が落ち着く関わり：'+clean(calm)+'。');
     if(w)chuParts.push('見守りの体制：'+w+'。');
     if(e.length)chuParts.push('目が離せない行動：'+e.join('・')+'。');
     if(ph.length)chuParts.push('身体的リスク：'+ph.join('・')+'。');
@@ -942,20 +1062,78 @@
     if(field==='svc')return r.svc.join('\n');
     return '';
   }
-  function copyText(text){
-    if(navigator.clipboard){navigator.clipboard.writeText(text);return;}
-    var tmp=document.createElement('textarea');
+  function copyFallback(text){
+    var tmp=document.createElement('textarea');var ok=false;
     tmp.value=text;tmp.style.position='fixed';tmp.style.opacity='0';
     document.body.appendChild(tmp);tmp.focus();tmp.select();
-    document.execCommand('copy');
-    document.body.removeChild(tmp);
+    try{ok=document.execCommand('copy');}catch(e){ok=false;}
+    document.body.removeChild(tmp);return ok;
   }
+  function copyText(text){
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      return navigator.clipboard.writeText(text).then(function(){return true;},function(){return copyFallback(text);});
+    }
+    return Promise.resolve(copyFallback(text));
+  }
+  window.__rakuCopyText=copyText;
+  var COPY_FAIL='コピーできませんでした。出力欄の文章を長押し（または選択）して、手動でコピーしてください。';
+  var lastFreeNote='';
+  function adoptBtn(i,kind,idx,label){return ' <button type="button" class="cpbtn adoptbtn" data-row="'+i+'" data-kind="'+kind+'" data-idx="'+idx+'">'+label+'</button>';}
+  function renderRows(){
+    var rows=lastRows,freeNote=lastFreeNote;
+    var t=rows.length?'<table><tr><th>ニーズ（課題）</th><th>長期目標</th><th>短期目標</th><th>サービス内容（候補）</th></tr>':'';
+    var txt='【要介護度】'+(sel('kaigo-lv')[0]||'未選択')+'\n【支援の方向性モード】'+MODES[currentMode].label+'（'+MODES[currentMode].desc+'）\n\n';
+    rows.forEach(function(r,i){
+      t+='<tr class="cathead"><td colspan="4">■'+esc(r.item)+'</td></tr>';
+      t+='<tr><td>'+esc(r.need)+'<br><span class="icf">［'+esc(r.icf)+'］</span>'+cpBtn(i,'need')+'</td><td>'+esc(r.lg)+cpBtn(i,'lg')+'</td><td>'+r.sh.map(function(x,k){return esc(x)+adoptBtn(i,'sh-out',k,'外す');}).join('<br>')+cpBtn(i,'sh')+'</td><td>'+r.svc.map(function(x,k){return esc(x)+adoptBtn(i,'svc-out',k,'外す');}).join('<br>')+cpBtn(i,'svc')+'</td></tr>';
+      var moreN=r.shMore.length+r.svcMore.length;
+      if(moreN){
+        t+='<tr><td colspan="4" class="icf" style="color:#8a7f86;"><details><summary>その他の候補 '+moreN+'件（「採用」で上に移ります）</summary>'+
+          r.shMore.map(function(x,k){return '（短期目標）'+esc(x)+adoptBtn(i,'sh-in',k,'採用');}).concat(r.svcMore.map(function(x,k){return '（サービス）'+esc(x)+adoptBtn(i,'svc-in',k,'採用');})).join('<br>')+'</details></td></tr>';
+      }
+      txt+='■'+r.item+'\n【ニーズ】'+r.need+'\n【長期目標】'+r.lg+'\n【短期目標】\n'+r.sh.map(function(s){return '・'+s;}).join('\n')+'\n【サービス候補】\n'+r.svc.map(function(s){return '・'+s;}).join('\n')+(moreN?'\n（ほかに短期目標'+r.shMore.length+'件・サービス'+r.svcMore.length+'件の候補あり。画面の表の「その他の候補」で確認）':'')+'\n\n';
+    });
+    if(rows.length)t+='</table>';
+    if(freeNote){
+      t+='<div class="lead" style="margin-top:10px;background:#fff5fa;"><strong>✎ その他の困りごと・気になること</strong><br>'+esc(freeNote).replace(/\n/g,'<br>')+'<br><span class="icf">※自由記入は分類せず、追加のアセスメント情報としてAIへ渡します。</span></div>';
+      txt+='■その他の困りごと・気になること（自由記入）\n【追加のアセスメント情報】'+freeNote+'\n\n';
+    }
+    document.getElementById('tblbox').innerHTML=t;
+    document.getElementById('output').value=txt.trim();
+    lastOutputType='第2表';clearStale();document.getElementById('output').dataset.edited='';setAiStale();
+  }
+  function moveCand(i,kind,idx){
+    var r=lastRows[i];if(!r)return;
+    var o=document.getElementById('output');
+    if(o.dataset.stale==='1'){alert('入力内容が変更されています。第2表を作り直してから候補を選んでください。');return;}
+    if(o.dataset.edited==='1'&&!confirm('出力欄を手で直した内容は、作り直すと消えます。続けますか？'))return;
+    var from,to;
+    if(kind==='sh-in'){from=r.shMore;to=r.sh;}else if(kind==='sh-out'){from=r.sh;to=r.shMore;}
+    else if(kind==='svc-in'){from=r.svcMore;to=r.svc;}else if(kind==='svc-out'){from=r.svc;to=r.svcMore;}else return;
+    var x=from.splice(idx,1)[0];if(x===undefined)return;
+    if(kind.slice(-3)==='-in')to.push(x);else to.unshift(x);
+    var openRows=[].slice.call(document.querySelectorAll('#tblbox details')).map(function(d){return d.open;});
+    renderRows();
+    [].slice.call(document.querySelectorAll('#tblbox details')).forEach(function(d,k){if(openRows[k])d.open=true;});
+  }
+  window.__rakuAIFacts=function(){
+    if(lastOutputType!=='第2表'||!lastRows.length)return '';
+    return lastRows.map(function(r){
+      var b='■'+r.item+'\n【ニーズ（省略なしの全文）】'+(r.needFull||r.need);
+      b+='\n【短期目標：表示中】'+(r.sh.length?'\n'+r.sh.map(function(x){return '・'+x;}).join('\n'):'なし');
+      if(r.shMore.length)b+='\n【短期目標：その他の候補（担当者は未採用）】\n'+r.shMore.map(function(x){return '・'+x;}).join('\n');
+      b+='\n【サービス：表示中】'+(r.svc.length?'\n'+r.svc.map(function(x){return '・'+x;}).join('\n'):'なし');
+      if(r.svcMore.length)b+='\n【サービス：その他の候補（担当者は未採用）】\n'+r.svcMore.map(function(x){return '・'+x;}).join('\n');
+      return b;
+    }).join('\n\n');
+  };
   function cpBtn(i,field){return '<button type="button" class="cpbtn" data-row="'+i+'" data-field="'+field+'">'+FIELD_LABEL[field]+'をコピー</button>';}
   var lastCats=[];
   function catCpBtn(i){return '<button type="button" class="cpbtn" data-cat="'+i+'">この区分をコピー</button>';}
   document.getElementById('tblbox').addEventListener('click',function(e){
     var btn=e.target.closest&&e.target.closest('.cpbtn');
     if(!btn)return;
+    if(btn.classList.contains('adoptbtn')){moveCand(+btn.dataset.row,btn.dataset.kind,+btn.dataset.idx);return;}
     var text;
     if(btn.dataset.row!==undefined){
       var r=lastRows[+btn.dataset.row];if(!r)return;
@@ -964,9 +1142,10 @@
       var c=lastCats[+btn.dataset.cat];if(!c)return;
       text=c[1];
     }else return;
-    copyText(text);
-    var orig=btn.textContent;btn.textContent='コピーしました';
-    setTimeout(function(){btn.textContent=orig;},1200);
+    var o0=document.getElementById('output');
+    if(o0.dataset.stale==='1'&&!confirm('入力が変わったあと作り直していない、古い内容です。このままコピーしますか？'))return;
+    var orig=btn.textContent;
+    copyText(text).then(function(ok){if(!ok){alert(COPY_FAIL);return;}btn.textContent='コピーしました';setTimeout(function(){btn.textContent=orig;},1200);});
   });
 
   document.getElementById('make').addEventListener('click',function(){
@@ -976,31 +1155,21 @@
     var freeNote=(document.getElementById('free-assessment').value||'').trim();
     var fb=document.getElementById('flags');fb.innerHTML='';
     if(!rows.length&&!freeNote){fb.innerHTML='<div class="flag yellow">困りごとを選ぶか、「その他の困りごと・気になること」に入力してください。</div>';document.getElementById('tblbox').innerHTML='';document.getElementById('output').value='';lastRows=[];return;}
+    kaigoFlags().forEach(function(f){fb.innerHTML+='<div class="flag '+esc(f.t)+'">⚠ '+esc(f.m)+'</div>';});
     rows.forEach(function(r){
+      applyKaigo(r);
       r.need=modeNeedText(r.need,currentMode);
       r.lg=modeGoalText(r.lg,currentMode);
       r.sh=r.sh.map(function(s){return modeGoalText(s,currentMode);});
-      (r.flags||[]).forEach(function(f){fb.innerHTML+='<div class="flag '+f.t+'">⚠ '+f.m+'</div>';});
-      if(r.reds&&r.reds.length)fb.innerHTML+='<div class="flag red">🔴 '+r.item+'：'+r.reds.join('／')+'<br><span style="font-weight:400;font-size:11px">※即施設ではありません。続いている期間・介護者の状態を見て、最終判断はご自身で。</span></div>';
-      if(r.yels&&r.yels.length)fb.innerHTML+='<div class="flag yellow">🟡 '+r.item+'：'+r.yels.join('／')+'</div>';
+      if(!r.needFull)r.needFull=r.need;else r.needFull=modeNeedText(r.needFull,currentMode);
+      r.shMore=r.sh.slice(3);r.sh=r.sh.slice(0,3);r.svcMore=r.svc.slice(6);r.svc=r.svc.slice(0,6);
+      (r.flags||[]).forEach(function(f){fb.innerHTML+='<div class="flag '+esc(f.t)+'">⚠ '+esc(f.m)+'</div>';});
+      if(r.reds&&r.reds.length)fb.innerHTML+='<div class="flag red">🔴 '+esc(r.item)+'：'+esc(r.reds.join('／'))+'<br><span style="font-weight:400;font-size:11px">※即施設ではありません。続いている期間・介護者の状態を見て、最終判断はご自身で。</span></div>';
+      if(r.yels&&r.yels.length)fb.innerHTML+='<div class="flag yellow">🟡 '+esc(r.item)+'：'+esc(r.yels.join('／'))+'</div>';
     });
     document.getElementById('modelabel').textContent='モード：'+MODES[currentMode].label+'（'+MODES[currentMode].desc+'）としての叩き台です。項目ごとに「〜をコピー」ボタンでも貼り付けられます。';
-    lastRows=rows;
-    var t=rows.length?'<table><tr><th>ニーズ（課題）</th><th>長期目標</th><th>短期目標</th><th>サービス内容（候補）</th></tr>':'';
-    var txt='【支援の方向性モード】'+MODES[currentMode].label+'（'+MODES[currentMode].desc+'）\n\n';
-    rows.forEach(function(r,i){
-      t+='<tr class="cathead"><td colspan="4">■'+r.item+'</td></tr>';
-      t+='<tr><td>'+r.need+'<br><span class="icf">［'+r.icf+'］</span>'+cpBtn(i,'need')+'</td><td>'+r.lg+cpBtn(i,'lg')+'</td><td>'+r.sh.join('<br>')+cpBtn(i,'sh')+'</td><td>'+r.svc.join('<br>')+cpBtn(i,'svc')+'</td></tr>';
-      txt+='■'+r.item+'\n【ニーズ】'+r.need+'\n【長期目標】'+r.lg+'\n【短期目標】\n'+r.sh.map(function(s){return '・'+s;}).join('\n')+'\n【サービス候補】\n'+r.svc.map(function(s){return '・'+s;}).join('\n')+'\n\n';
-    });
-    if(rows.length)t+='</table>';
-    if(freeNote){
-      t+='<div class="lead" style="margin-top:10px;background:#fff5fa;"><strong>✎ その他の困りごと・気になること</strong><br>'+freeNote.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'<br><span class="icf">※自由記入は分類せず、追加のアセスメント情報としてAIへ渡します。</span></div>';
-      txt+='■その他の困りごと・気になること（自由記入）\n【追加のアセスメント情報】'+freeNote+'\n\n';
-    }
-    document.getElementById('tblbox').innerHTML=t;
-    document.getElementById('output').value=txt.trim();
-    lastOutputType='第2表';
+    lastRows=rows;lastFreeNote=freeNote;
+    renderRows();
     document.getElementById('tblbox').scrollIntoView({behavior:'smooth',block:'start'});
   });
 
@@ -1012,9 +1181,9 @@
     var mlb=document.getElementById('modelabel');
     if(!rows.length&&!freeNote){fb.innerHTML='<div class="flag yellow">困りごとを選ぶか、「その他の困りごと・気になること」に入力してください。</div>';document.getElementById('tblbox').innerHTML='';document.getElementById('output').value='';mlb.textContent='';lastCats=[];return;}
     rows.forEach(function(r){
-      (r.flags||[]).forEach(function(f){fb.innerHTML+='<div class="flag '+f.t+'">⚠ '+f.m+'</div>';});
-      if(r.reds&&r.reds.length)fb.innerHTML+='<div class="flag red">🔴 '+r.item+'：'+r.reds.join('／')+'</div>';
-      if(r.yels&&r.yels.length)fb.innerHTML+='<div class="flag yellow">🟡 '+r.item+'：'+r.yels.join('／')+'</div>';
+      (r.flags||[]).forEach(function(f){fb.innerHTML+='<div class="flag '+esc(f.t)+'">⚠ '+esc(f.m)+'</div>';});
+      if(r.reds&&r.reds.length)fb.innerHTML+='<div class="flag red">🔴 '+esc(r.item)+'：'+esc(r.reds.join('／'))+'</div>';
+      if(r.yels&&r.yels.length)fb.innerHTML+='<div class="flag yellow">🟡 '+esc(r.item)+'：'+esc(r.yels.join('／'))+'</div>';
     });
     var ninchi=tenkiNinchiBoth(),fuku=tenkiFukuyakuBoth();
     var cats=[
@@ -1035,19 +1204,32 @@
     lastCats=used;
     var html='',txt='';
     used.forEach(function(c,i){
-      html+='<div class="lead"><strong>【'+c[0]+'】</strong><br>'+c[1].replace(/\n/g,'<br>')+catCpBtn(i)+'</div>';
+      html+='<div class="lead"><strong>【'+esc(c[0])+'】</strong><br>'+esc(c[1]).replace(/\n/g,'<br>')+catCpBtn(i)+'</div>';
       txt+='【'+c[0]+'】\n'+c[1]+'\n\n';
     });
     mlb.textContent='ケアカルテ　アセスメント特記欄への転記文（区分ごとに「この区分をコピー」でも貼り付けられます）';
     document.getElementById('tblbox').innerHTML=html;
     document.getElementById('output').value=txt.trim();
-    lastOutputType='転記文';
+    lastOutputType='転記文';clearStale();document.getElementById('output').dataset.edited='';setAiStale();
     document.getElementById('tblbox').scrollIntoView({behavior:'smooth',block:'start'});
   });
 
   document.getElementById('copy').addEventListener('click',function(){
     var o=document.getElementById('output');o.select();o.setSelectionRange(0,99999);
-    if(navigator.clipboard)navigator.clipboard.writeText(o.value);else document.execCommand('copy');});
+    if(o.dataset.stale==='1'&&!confirm('入力が変わったあと作り直していない、古い内容です。このままコピーしますか？'))return;
+    var cb=document.getElementById('copy'),co=cb.textContent;
+    copyText(o.value).then(function(ok){if(!ok){alert(COPY_FAIL);return;}cb.textContent='コピーしました';setTimeout(function(){cb.textContent=co;},1200);});});
+  function clearScreen(){
+    [].slice.call(document.querySelectorAll('.opt.on,.chip.on')).forEach(function(x){x.classList.remove('on');});
+    [].slice.call(document.querySelectorAll('.panel')).forEach(function(x){x.classList.remove('active');});
+    [].slice.call(document.querySelectorAll('.subblk')).forEach(function(x){x.classList.remove('on');});
+    [].slice.call(document.querySelectorAll('input[type="text"], textarea')).forEach(function(x){x.value='';});
+    [].slice.call(document.querySelectorAll('.ng')).forEach(function(x){x.style.display='none';});
+    document.getElementById('tblbox').innerHTML='';document.getElementById('flags').innerHTML='';document.getElementById('modelabel').textContent='';
+    var o=document.getElementById('output');o.dataset.stale='';o.dataset.edited='';
+    var ao=document.getElementById('ai-output');ao.dataset.stale='';var sn=document.getElementById('ai-stale-note');if(sn)sn.style.display='none';
+    lastRows=[];lastCats=[];lastOutputType='';clearStale();
+  }
   function resetAll(){
     [].slice.call(document.querySelectorAll('.opt.on,.chip.on')).forEach(function(x){x.classList.remove('on');});
     [].slice.call(document.querySelectorAll('.panel')).forEach(function(x){x.classList.remove('active');});
@@ -1056,6 +1238,9 @@
     [].slice.call(document.querySelectorAll('.ng')).forEach(function(x){x.style.display='none';});
     document.getElementById('tblbox').innerHTML='';document.getElementById('flags').innerHTML='';document.getElementById('output').value='';document.getElementById('modelabel').textContent='';
     lastRows=[];lastCats=[];lastOutputType='';modeManual=false;updateModeSuggestion();
+    clearScreen();
+    var srcs=[].slice.call(document.querySelectorAll('#ai-src-chips .ai-src'));srcs.forEach(function(x){x.classList.toggle('on',x.dataset.src==='本人');});
+    modeManual=false;updateModeSuggestion();
     clearDraft();
   }
   document.getElementById('clear').addEventListener('click',function(){
@@ -1087,14 +1272,21 @@
       if(inp.id==='output'||inp.id==='ai-output')return;
       if(inp.value)texts[inp.id]=inp.value;
     });
-    return {chips:chips,opts:opts,texts:texts,mode:currentMode,modeManual:modeManual};
+    var srcOn=document.querySelector('#ai-src-chips .ai-src.on');
+    return {schemaVersion:2,chips:chips,opts:opts,texts:texts,aiSource:srcOn?srcOn.dataset.src:'',mode:currentMode,modeManual:modeManual};
+  }
+  function validState(st){
+    if(!st||typeof st!=='object')return false;
+    if(st.chips&&!Array.isArray(st.chips))return false;
+    if(st.opts&&typeof st.opts!=='object')return false;
+    if(st.texts&&typeof st.texts!=='object')return false;
+    var okOpts=Object.keys(st.opts||{}).every(function(k){return Array.isArray(st.opts[k])&&st.opts[k].every(function(i){return typeof i==='number';});});
+    var okTexts=Object.keys(st.texts||{}).every(function(k){return typeof st.texts[k]==='string';});
+    return okOpts&&okTexts;
   }
   function applyState(st){
-    if(!st)return;
-    [].slice.call(document.querySelectorAll('.chip.on')).forEach(function(x){x.classList.remove('on');});
-    [].slice.call(document.querySelectorAll('.panel')).forEach(function(x){x.classList.remove('active');});
-    [].slice.call(document.querySelectorAll('.opt.on')).forEach(function(x){x.classList.remove('on');});
-    [].slice.call(document.querySelectorAll('input[type="text"]')).forEach(function(x){x.value='';});
+    if(!validState(st)){alert('保存データの形式が正しくないため、再開できませんでした。');return false;}
+    clearScreen();
     (st.chips||[]).forEach(function(p){
       var c=document.querySelector('.chip[data-p="'+p+'"]');
       var panel=document.getElementById('p-'+p);
@@ -1111,12 +1303,17 @@
     });
     Object.keys(st.texts||{}).forEach(function(id){
       var inp=document.getElementById(id);
-      if(inp){inp.value=st.texts[id];inp.dispatchEvent(new Event('input'));}
+      if(inp&&inp.id!=='output'&&inp.id!=='ai-output'){inp.value=st.texts[id];inp.dispatchEvent(new Event('input'));}
     });
+    var srcVal=(typeof st.aiSource==='string')?st.aiSource:'';
+    [].slice.call(document.querySelectorAll('#ai-src-chips .ai-src')).forEach(function(x){x.classList.toggle('on',!!srcVal&&x.dataset.src===srcVal);});
     syncSub();
-    currentMode=st.mode||'jiritsu';
+    currentMode=(MODES[st.mode]?st.mode:'jiritsu');
     modeManual=!!st.modeManual;
+    if(!modeManual)currentMode=suggestMode();
     renderModeUI();
+    var ml=document.getElementById('modelabel');ml.textContent='保存した続きを再開しました。出力はもう一度〈思考の叩き台を出す〉か〈ケアカルテ特記欄に転記〉で作り直してください。';
+    return true;
   }
   function loadDraft(){
     try{var s=localStorage.getItem(DRAFT_KEY);return s?JSON.parse(s):null;}catch(e){return null;}
@@ -1156,33 +1353,34 @@
     try{var s=localStorage.getItem(SAVE_KEY);return s?JSON.parse(s):[];}catch(e){return [];}
   }
   function writeSavedRecords(arr){
-    try{localStorage.setItem(SAVE_KEY, JSON.stringify(arr));}catch(e){}
+    try{localStorage.setItem(SAVE_KEY, JSON.stringify(arr));return true;}catch(e){return false;}
   }
   function saveRecord(){
     var out=document.getElementById('output');
     if(!out||!out.value.trim()){alert('先に「思考の叩き台を出す」または「ケアカルテ特記欄に転記」で文章を作ってください。');return;}
     var arr=loadSavedRecords();
+    if(out.dataset.stale==='1'&&!confirm('入力が変わったあと、出力欄を作り直していません。古い内容のまま保存しますか？'))return;
     arr.push({id:Date.now(), label:nowLabel()+'　'+(lastOutputType||'記録'), text:out.value});
-    writeSavedRecords(arr);
+    if(!writeSavedRecords(arr)){alert('保存に失敗しました（ブラウザの保存容量がいっぱいの可能性があります）。この記録は保存されていません。いらない記録を削除してから、もう一度保存してください。');return;}
     renderSavedRecords();
     var b=document.getElementById('save-record');
     b.classList.add('saved');b.textContent='保存しました';
     setTimeout(function(){b.classList.remove('saved');b.textContent='この記録を保存';},1400);
   }
   function deleteSavedRecord(id){
-    writeSavedRecords(loadSavedRecords().filter(function(r){return r.id!==id;}));
+    if(!writeSavedRecords(loadSavedRecords().filter(function(r){return r.id!==id;})))alert('削除に失敗しました。');
     renderSavedRecords();
   }
   function clearAllSavedRecords(){
     if(!loadSavedRecords().length)return;
-    if(confirm('保存した記録をすべて削除します。よろしいですか？')){writeSavedRecords([]);renderSavedRecords();}
+    if(confirm('保存した記録をすべて削除します。よろしいですか？')){if(!writeSavedRecords([]))alert('削除に失敗しました。');renderSavedRecords();}
   }
   function copySavedRecord(id,btn){
     var r=loadSavedRecords().filter(function(x){return x.id===id;})[0];
     if(!r)return;
-    copyText(r.text);
-    btn.classList.add('copied');btn.textContent='コピー済';
-    setTimeout(function(){btn.classList.remove('copied');btn.textContent='コピー';},1400);
+    copyText(r.text).then(function(ok){if(!ok){alert(COPY_FAIL);return;}
+      btn.classList.add('copied');btn.textContent='コピー済';
+      setTimeout(function(){btn.classList.remove('copied');btn.textContent='コピー';},1400);});
   }
   function renderSavedRecords(){
     var arr=loadSavedRecords();
@@ -1217,65 +1415,66 @@
 <script>
 /* ②AI用プロンプト生成（API連携なし・プロンプトを組み立ててコピーさせるだけ） */
 (function(){
-  var SYSTEM_PROMPT = `あなたはケアプラン作成を補助するアシスタントです。下記の【絶対ルール】を厳守し、【出力様式】の通りにのみ日本語で出力してください。前置き・後書き・言い訳は書かないこと。
+  var SYSTEM_PROMPT = `あなたはケアプラン作成を補助するアシスタントです。下記の【絶対ルール】を厳守し、【出力様式】の通りにのみ日本語で出力してください。前置き・後書き・言い訳は書かないこと。出力はケアマネジャーが確認・修正するための叩き台である。
 
 ■ 絶対ルール（最優先）
-1. あなたは「目標を読み解く係」ではない。本人が本当に望む姿（照準）は【照準】欄に記入済み。欄に書かれていない願いを推測で足したり、別の目標にすり替えたりしない。与えられた照準を様式に沿って整えるだけ。
-2. 目標は「大まか」に書く。手段（歩行／送迎／同行 等）を目標文の中で固定しない。理由：目標は最初はわざと大きく置き、モニタリングで絞っていくもの。今はその始まりの幅を書く段階。目標にサービス名・用具名を書かない（「通所サービスを利用し〜」「特殊寝台を使用し〜」「福祉用具を活用し〜」は手段の固定であり不可）。目標には本人の状態だけを書き、サービスは【サービス内容】【サービス種別】の欄に書く。
-3. 因果を一本に通す：意向（どう生きたいか）→現状（今できること／困りごと）→その差＝ギャップ→埋める手段＝サービス。ニーズ＝意向と現状のギャップを「〜したい、しかし〜」で1文に。この筋が通らない目標・サービスは書かない。
-4. 欠点は隠すのでなく「照準に向かう途中の段」として扱う。できない現実を突きつける書き方をしない。
-5. 回避語（安心・安全・快適 等のふわっとした言葉）の扱いは、介護度でもモード名でもなく【本人の状態＝自力で動く余地があるか／完全に他力か】で切り分ける。
-   ・自力で動く余地がある人 → これらのふわっとした言葉に逃げない。本人の力に照準を合わせ「〜できる」で具体に書く。
-   ・完全に他力で動く重度の人 → 安全・安心・穏やかに過ごせること自体が支援の本来の目的。これらを目標に使ってよい。
-6. 支援の方向【モード】にトーンを合わせる。自立支援＝取り戻す・できるようになる方向／維持＝今の力を保つ方向／終末期・重度＝苦痛なく穏やかに過ごす方向。ただし合わない項目に機械的に語尾を付けない。
-7. 援助内容（サービス）は必ず3層で組む。フォーマルだけにしない。
-   ・セルフケア＝本人が取り組むこと（残っている力・自分でできること）。サービス種別は「本人」。最低1行入れる。
-   ・インフォーマル＝家族・友人・地域・民生委員など制度外の支え（面会・声かけ・買い物・見守り等）。サービス種別は「家族」「地域」等。可能な範囲で最低1行入れる。
-   ・フォーマル＝介護保険等の公的サービス（訪問介護・通所介護・訪問看護・福祉用具・居宅介護支援等）。
-   ・【医療】は状態に関わらず必ず1行入れる（この計画書は医師にも渡るため。医療との関わりがゼロのケースはない）。形は状態で変わる：元気な人＝通院・服薬管理、重度＝往診・訪問看護・居宅療養管理指導（医師・薬剤師）。訪問看護等のサービスの要否はアセスメント次第だが、医療の記載自体は省かない。ツール出力に服薬の困りごと（服薬の場面のつまずき・服薬管理等）がある場合は、医療行のサービス内容に服薬管理（一包化・服薬カレンダー等）を必ず含める。
-   ※本人・家族が担う行は保険給付の対象外。
-8. ICFの視点で組む。目標を心身機能・ADL（できる／できない）だけに寄せない。
-   ・活動・参加の層（役割・楽しみ・人との交流・その人らしい生活）を必ず目標に1つ以上入れる。
-   ・環境因子（家族・地域資源・住まい）と個人因子（本人の強み・好み・照準）を支援に活かす。照準は個人因子として必ず目標に反映する。長期目標の「活動・生活」軸には【照準】の言葉（「家族と」「〇〇をしながら」等）を必ず含め、ADLの維持だけの文にしない。
-9. 【実際に利用するサービス】欄に記載がある場合、ツールが出した「サービス候補」よりこちらを優先して第2表へ反映する。候補にあるだけの介護保険サービスを、新たに利用するサービスとして勝手に採用しない。本人・家族等のインフォーマル支援と医療は、ルール7に従って必要な行を組む。
-10. 「その他の困りごと・気になること（自由記入）」がある場合は、追加のアセスメント情報として扱う。そこに書かれていない原因・希望・サービスを推測で補わず、【照準】と他の現状情報とのつながりが確認できる範囲だけで反映する。
-11. ツール出力に「介護者の限界」「介護者の負担」に関するニーズ・短期目標が含まれる場合、介護者を支える短期目標を必ず1本立てる。新しいサービスは足さず、【実際に利用するサービス】の中で組む。置き場は、本人が家を離れる、または介護者の手が空くサービスの行（通所介護・短期入所・訪問介護等）にする（例：通所介護の利用日を介護者が休める時間として位置づける）。居宅介護支援の行だけで済ませない。
-12. 短期目標はツール出力の【短期目標】の具体性を保つ。「支援を受けながら生活を続けることができる」のように一般化して丸めない。ツール出力の短期目標の文をそのまま使ってよいが、語尾は様式に合わせて「〜できる」に整える（ツール出力の「〜できる状態を保つ」は「〜できる」に直す）。短期目標はモニタリングで確認できる具体的な状態で書く。
+1. 事実・意向・推定を区別する。入力に記載された「事実」「本人の意向」「家族の意向」「担当者の推定」を混ぜない。未記載の診断・原因・現在の症状・能力・支援者・サービス・頻度を補わない。家族の意向や担当者の推定を、本人の直接の発言として書かない（【意向の出どころ】が家族・推定・未確認の場合、第1表ではその旨がわかる書き方にする）。
+2. 照準を勝手に作らない。本人が望む姿は【照準】欄に記入済み。欄にない願いを推測で足したり、別の目標にすり替えたりしない。与えられた照準を様式に沿って整えるだけ。
+3. 「必ず検討する」と「計画に書く」を分ける。本人（セルフケア）・家族等（インフォーマル）・介護保険等（フォーマル）・医療の4つの関わりは、毎回必ず検討する。ただし第2表に書くのは、入力で存在と実施の見込みが確認できた内容だけ。確認できないものは第2表に書かず、【要確認事項】に「何を確認するか」の形で挙げる。
+   ・医療：計画書は医師にも渡るため、医療との関わりは必ず検討する。現在の医療の関わり（通院・往診・訪問看護・服薬管理等）が入力にあれば第2表に1行入れる。入力にない場合は第2表に作らず、【要確認事項】に「主治医の関わり（通院・往診の有無、服薬管理の方法）」等として挙げる。往診・訪問看護・居宅療養管理指導等の利用を、状態の重さだけで決めない。ツール出力に服薬の困りごとがあり、医療の行を書く場合は、服薬管理の内容を含める。
+   ・家族等：入力に家族・地域の支えがあれば第2表に入れる。ない場合は架空の支援者を作らず、【要確認事項】に挙げる。
+   ・本人：残っている力やできることが入力にあれば、種別「本人」の行として入れる。
+   ・本人・家族等が担う行は保険給付の対象外。
+4. サービスの扱い。【実際に利用するサービス】欄が「未入力」の場合、ツールの「サービス候補」を採用済みとみなさない。その場合、介護保険サービスは第2表に書かず、【要確認事項】に候補として挙げる。欄に種別だけ書かれ頻度がない場合、第2表の頻度は「要確認」と書く。欄にないサービスを新たに足さない。
+5. 目標は対象を分けて書く。長期目標＝生活全体の方向（大まかに。手段を固定しない）。短期目標＝モニタリングで確認できる具体的な状態。目標にサービス名・用具名を書かない（「通所サービスを利用し〜」「福祉用具を活用し〜」は不可）。サービスは【サービス内容】【サービス種別】の欄に書く。
+6. 因果を一本に通す：意向（どう生きたいか）→現状（今できること／困りごと）→その差＝ギャップ→埋める手段＝サービス。この筋が通らない目標・サービスは書かない。欠点は「照準に向かう途中の段」として扱い、できない現実を突きつける書き方をしない。
+7. 回避語（安心・安全・快適 等のふわっとした言葉）は、【本人の状態＝自力で動く余地があるか／完全に他力か】で使い分ける。自力で動く余地がある人には使わず「〜できる」で具体に書く。完全に他力の重度の人には、安全・安心・穏やかに過ごせること自体が目的になりうるため使ってよい。
+8. 支援の方向【モード】にトーンを合わせる。自立支援＝取り戻す・できるようになる方向／維持＝今の力を保つ方向／終末期・重度＝苦痛なく穏やかに過ごす方向。維持の意味を持つ目標は「〜できる状態を保つ」「〜を続けることができる」の語尾を使ってよい。合わない項目に機械的に語尾を付けない。
+9. ICFの視点で組む。目標を心身機能・ADLだけに寄せず、活動・参加の層（役割・楽しみ・人との交流）を検討する。ただし、活動・参加の目標は入力（照準・自由記入・ツール出力）に手がかりがある場合だけ書く。手がかりがなければ趣味や役割を作らず、【要確認事項】に「本人の楽しみ・交流の手がかり」を挙げる。照準は個人因子として目標に反映し、長期目標の「活動・生活」軸には【照準】の言葉を含める。
+10. 短期目標はツール出力の【短期目標】の具体性を保つ。「支援を受けながら生活を続けることができる」のように一般化して丸めない。【選択された事実と候補の内訳】がある場合、ニーズ（省略なしの全文）に書かれた事実はすべて判断材料にし、「など」で省略された事実も落とさない。候補の「表示中」は、ツールが画面に出している候補という意味で、担当者が採用を決めたものではない。第2表に書けるかどうかはルール4（【実際に利用するサービス】にあるか）が優先する。「その他の候補（担当者は未採用）」は採用済みとみなさない。未採用の候補で重要と思われるものがあれば、第2表には入れず【要確認事項】に「〜の要否を検討」として挙げてよい。
+11. 「その他の困りごと・気になること（自由記入）」は追加のアセスメント情報として扱い、書かれていない原因・希望・サービスを補わない。
+12. 【要介護度】に合わせる。要支援1・2の場合、訪問介護・通所介護は総合事業（訪問型・通所型サービス）として、その他は介護予防サービスとして書く。要支援1・2・要介護1（軽度者）に、特殊寝台・車いす・床ずれ防止用具・体位変換器・移動用リフト等の貸与を書く場合は、【要確認事項】に「例外給付の手続きの確認」を挙げる。要介護度が未入力・申請中・区分変更中の場合、区分によって扱いが変わる内容は【要確認事項】に挙げる。
+13. ツール出力に介護者の負担に関するニーズ・短期目標がある場合、介護者を支える短期目標を1本立てる。新しいサービスは足さず、【実際に利用するサービス】の中で、本人が家を離れる、または介護者の手が空くサービスの行に置く。居宅介護支援の行だけで済ませない。
 
 ■ 出力様式（この形に固定。マークダウンで）
 ## 第1表：総合的な援助の方針
-・【照準】と【モード】に沿って方針の"叩き台"を3〜4文で書く。構成＝①本人が目指す姿→②そこへ向けて何を支えるか→③緊急時・多職種連携の一言。断定しすぎず案として書く。
+・【照準】と【モード】に沿って方針の叩き台を3〜4文で書く。構成＝本人が目指す姿→そこへ向けて何を支えるか→緊急時・多職種連携の一言。断定しすぎず案として書く。
 ・その直後に必ず次の1行を置く： **【ケアマネ確定欄】**（←最終文言は人が入れるため空欄のまま）
 
 ## 第2表
 必ずマークダウンの表で、列は次の順・この見出しで固定：
 | 生活全般の解決すべき課題(ニーズ) | 長期目標 | (期間) | 短期目標 | (期間) | サービス内容 | サービス種別 | 頻度 |
-・ニーズ：1本。「〜したい、しかし〜」でギャップを1文に。ツール出力に複数の【ニーズ】がある場合は、本人の身体・認知・介護者の状況をすべて落とさず1文に集約する。身体面だけに寄せない。
-・長期目標：2本に分ける。1つは「健康の維持管理」軸、もう1つは「活動・生活（照準に向かう）」軸。
-・短期目標：サービスごとに1本ずつ（目安3〜6本）。
-・自立している部分（セルフケア）はニーズに立てない。
-・援助内容は必ず3層を含める：本人が取り組むこと（種別「本人」）／家族・地域など制度外の支え（種別「家族」等）／介護保険等の公的サービス。フォーマルだけで終わらせない。
-・語尾：ニーズは「〜したい」、長期・短期目標は「〜できる／〜する」で締める。
-・期間：和暦略記スラッシュ（例 R08/03/17〜R09/02/28）。長期は約1年、短期は約3か月で切る。
-・表は全行とも8列固定。ニーズは1行目だけに書き、2行目以降のニーズ欄は空欄にする。長期目標の(期間)・短期目標の(期間)はどの行でも省略しない。最終行も同じ形で書く。
+・ニーズ：【ニーズの数】の指定に従う。【意向の出どころ】が家族・推定・未確認の場合、「〜したい」は【照準】の範囲に留め、本人が言っていない願いを足さない。「1本にまとめる」（初期設定）なら、本人の身体・認知・介護者の状況を落とさず1文に集約する。「課題ごとに分ける」なら、課題ごとに行を分けてよい。書き方は「○○が難しいため、△△を受けながら□□したい」の形で、語尾は「〜したい」。本人が言っていない意向は補わない。
+・長期目標：2本に分ける。1つは「健康の維持管理」軸、もう1つは「活動・生活（照準に向かう）」軸。各行の長期目標欄には、どちらか一方を同じ文言で書く（ニーズを分けた場合は、ニーズごとに同じ考え方で）。
+・短期目標：サービスの行ごとに1本ずつ。
+・自立している部分はニーズに立てない。
+・期間：和暦略記スラッシュ（例 R08/10/01〜R09/09/30）。【計画期間】の指定があればそれを使う（西暦で書かれていれば和暦略記に直す）。短期の終わりが長期の終わりより後になっているなど矛盾がある場合は、そのまま使わず【要確認事項】に挙げる。指定がない場合は日付を作らず、(期間)欄に「要確認」と書く。
+・表は全行とも8列固定。ニーズは各ニーズの1行目だけに書き、続く行のニーズ欄は空欄にする。(期間)はどの行でも省略しない。
+
+## 要確認事項
+・第2表に書かなかった「検討したが入力で確認できなかったこと」を箇条書きで挙げる（例：主治医の関わり、家族の関わり、サービスの頻度、本人の楽しみ・交流の手がかり）。
+・各項目は「何を・誰に確認するか」がわかる短い文にする。確認事項がなければ「なし」と書く。
 
 ■ 正しい出力の見本（完全に他力＝重度のケース。安心・穏やかが正しい目標になっている例）
-入力例：モード=維持／照準=昔は近所の人とお茶をし編み物や塗り絵が好きだった、また誰かと穏やかに過ごしたい／出どころ=家族＋推定／現状=移動移乗入浴排泄すべて全介助（完全に他力）、意欲低下、認知機能低下。
+入力例：作成日=R08/03/10／計画期間=長期R08/03/17〜R09/03/16・短期R08/03/17〜R08/06/16／モード=維持／ニーズの数=1本にまとめる／照準=昔は近所の人とお茶をし、編み物や塗り絵が好きだった。また誰かと穏やかに過ごしたい／出どころ=家族／実際に利用するサービス=通所介護：週3回（入浴・体調確認）、住宅型有料老人ホーム：毎日（余暇活動・見守り）、家族：月2回（面会・物品の準備）／現状=住宅型有料老人ホームへの入居後に意欲の低下がみられる。移動・移乗・入浴・排泄すべて全介助。認知機能低下。塗り絵は声かけがあれば手を動かせる。
 出力例：
 ## 第1表：総合的な援助の方針
-環境の変化により意欲の低下がみられるため、心身の安定と生活リズムの再構築を図る。日々の中で役割や楽しみを持てるよう支え、馴染みの関わりや交流を通じて情緒の安定を目指す。健康管理と安全面に配慮し、家族・関係機関と連携して穏やかに過ごせるよう支援する。
+住宅型有料老人ホームへの入居後、意欲の低下がみられています。ご家族からは、昔のように誰かと穏やかに過ごしてほしいという思いが聞かれています。好きだった塗り絵や手作業、人との交流の機会を持てるよう支え、心身の状態の安定を目指します。体調の変化に早めに気づけるよう、ご家族・施設・関係機関と連携して支援します。
 **【ケアマネ確定欄】**
 
 ## 第2表
 | 生活全般の解決すべき課題(ニーズ) | 長期目標 | (期間) | 短期目標 | (期間) | サービス内容 | サービス種別 | 頻度 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 生活のリズムを整え、意欲を持って穏やかに過ごしたい | 健康に気を使い元気に過ごすことができる | R08/03/17〜R09/02/28 | 定期的な見守りのもと清潔に過ごすことができる | R08/03/17〜R08/08/31 | 体調確認・入浴介助・全身状態の確認 | 通所介護 | 週3回 |
-|  | 他者と交流しながら心身の活性化を図る | R08/03/17〜R09/02/28 | 好きな塗り絵や手作業に取り組むことができる | R08/03/17〜R08/08/31 | 余暇活動・声かけ・見守り | 住宅型有料老人ホーム | 毎日 |
-|  | 安心してその人らしい生活を続けることができる | R08/03/17〜R09/02/28 | 自分でできることを続けることができる | R08/03/17〜R08/08/31 | 残った力で塗り絵や手作業など好きなことに取り組む | 本人 | 随時 |
-|  | 安心してその人らしい生活を続けることができる | R08/03/17〜R09/02/28 | 家族との関わりの中で穏やかに過ごすことができる | R08/03/17〜R08/08/31 | 定期的な面会・話し相手・必要な物品の準備 | 家族 | 希望時 |
-|  | 健康に気を使い元気に過ごすことができる | R08/03/17〜R09/02/28 | 必要な医療を継続して受けることができる | R08/03/17〜R08/08/31 | 定期往診・薬剤処方・関係機関との情報共有 | 居宅療養管理指導（医師） | 月2回 |
+| 入居後に意欲が低下し、生活動作のすべてに介助を要するため、なじみの関わりや介助を受けながら、また誰かと穏やかに過ごしたい | 体調を崩さず、清潔を保って過ごすことができる | R08/03/17〜R09/03/16 | 定期的な体調確認と入浴で、清潔を保つことができる | R08/03/17〜R08/06/16 | 体調確認・入浴介助・全身状態の確認 | 通所介護 | 週3回 |
+|  | 誰かと関わりながら、好きな手作業を楽しんで穏やかに過ごすことができる | R08/03/17〜R09/03/16 | 声かけを受けて、好きな塗り絵に取り組むことができる | R08/03/17〜R08/06/16 | 余暇活動・声かけ・見守り | 住宅型有料老人ホーム | 毎日 |
+|  | 誰かと関わりながら、好きな手作業を楽しんで穏やかに過ごすことができる | R08/03/17〜R09/03/16 | 声かけがあれば、塗り絵の手を動かすことができる | R08/03/17〜R08/06/16 | 声かけを受けながら塗り絵に取り組む | 本人 | 随時 |
+|  | 誰かと関わりながら、好きな手作業を楽しんで穏やかに過ごすことができる | R08/03/17〜R09/03/16 | 家族との関わりの中で穏やかに過ごすことができる | R08/03/17〜R08/06/16 | 面会・話し相手・必要な物品の準備 | 家族 | 月2回 |
 
-この見本の様式・語尾・期間の形を必ず踏襲すること。ただし見本の日付（R08/03/17 等）はそのまま使わない。期間は必ず【作成日】を起点に計算する（長期＝作成日から約1年、短期＝作成日から約3か月）。`;
+## 要確認事項
+・主治医の関わり（通院か往診か、服薬管理の方法）を施設・家族に確認する。
+・入居前の近所づきあいの相手など、交流につながる人がいるか家族に確認する。
+
+この見本の様式・語尾・期間の形を踏襲すること。ただし見本の日付・内容はそのまま使わない。`;
 
   var MODE_LABEL = {jiritsu:'自立支援', iji:'維持', jumatsu:'終末期・重度'};
   function warekiToday(){var d=new Date(),y=d.getFullYear(),m=d.getMonth()+1,dd=d.getDate();var era='R',ey=y-2018;if(y<2019||(y===2019&&m<5)){era='H';ey=y-1988;}var z=function(x){return (x<10?'0':'')+x;};return era+z(ey)+'/'+z(m)+'/'+z(dd)+'（'+y+'/'+z(m)+'/'+z(dd)+'）';}
@@ -1285,11 +1484,12 @@
     c.addEventListener('click', function(){
       srcChips.forEach(function(x){x.classList.remove('on');});
       c.classList.add('on');
+      if(window.__rakuSetAiStale)window.__rakuSetAiStale();
     });
   });
   function getSrc(){
     var on = document.querySelector('#ai-src-chips .ai-src.on');
-    return on ? on.dataset.src : '本人';
+    return on ? on.dataset.src : '未確認';
   }
   function getMode(){
     var on = document.querySelector('.mode-chip.on');
@@ -1301,14 +1501,13 @@
     if(el) el.textContent = '現在のモード：' + getMode() + '（「支援の方向性モード」で変えられます）';
   }
   showMode();
-  [].slice.call(document.querySelectorAll('.mode-chip')).forEach(function(c){
-    c.addEventListener('click', showMode);
-  });
+  document.addEventListener('rakumodechange', showMode);
 
   [].slice.call(document.querySelectorAll('.service-quick button[data-svc]')).forEach(function(btn){
     btn.addEventListener('click', function(){
       var ta=document.getElementById('ai-services');
       var add=btn.dataset.svc || '';
+      if(window.__rakuSetAiStale)window.__rakuSetAiStale();
       if(!ta.value.trim()) ta.value=add;
       else ta.value=ta.value.replace(/\s+$/,'')+'\n'+add;
       ta.focus();
@@ -1327,31 +1526,50 @@
       alert('先に上の「思考の叩き台を出す」か「ケアカルテ特記欄に転記」を押して、出力欄に中身を出してから押してください。');
       return;
     }
+    if(document.getElementById('output').dataset.stale==='1'){
+      alert('入力が変わったあと、上の出力欄が作り直されていません。先に〈思考の叩き台を出す〉か〈ケアカルテ特記欄に転記〉をもう一度押してください。');
+      return;
+    }
     if(!aim){
       alert('照準（本人が本当に望む姿）を入れてください。ここが空だと、AIが目標を勝手に作ってしまいます。');
       return;
     }
 
+    var gv=function(id){var e=document.getElementById(id);return e?(e.value||'').trim():'';};
+    function pd(x){x=(x||'').replace(/[０-９／]/g,function(c){return c==='／'?'/':String.fromCharCode(c.charCodeAt(0)-0xFEE0);}).trim();var m=x.match(/^R\s*(\d{1,2})[\/.\-年](\d{1,2})[\/.\-月](\d{1,2})/i)||x.match(/^令和\s*(\d{1,2})年(\d{1,2})月(\d{1,2})/);if(m)return new Date(2018+ +m[1],m[2]-1,+m[3]);m=x.match(/^(\d{4})[\/.\-年](\d{1,2})[\/.\-月](\d{1,2})/);if(m)return new Date(+m[1],m[2]-1,+m[3]);return null;}
+    function pp(x){var a=(x||'').split(/[〜～~]/);return a.length===2?{s:pd(a[0]),e:pd(a[1])}:null;}
+    var lgP=pp(gv('ai-lg-period')),shP=pp(gv('ai-sh-period')),pwarn=[];
+    if(gv('ai-lg-period')&&!(lgP&&lgP.s&&lgP.e))pwarn.push('長期の期間が読み取れません（例：R08/10/01〜R09/09/30）');
+    if(gv('ai-sh-period')&&!(shP&&shP.s&&shP.e))pwarn.push('短期の期間が読み取れません（例：R08/10/01〜R08/12/31）');
+    [['長期',lgP],['短期',shP]].forEach(function(z){if(z[1]&&z[1].s&&z[1].e&&z[1].e<z[1].s)pwarn.push(z[0]+'の終わりが始まりより前になっています');});
+    if(lgP&&shP&&lgP.e&&shP.e&&shP.e>lgP.e)pwarn.push('短期の終わりが長期の終わりより後になっています（長期と短期が逆かもしれません）');
+    if(pwarn.length&&!confirm('計画期間を確認してください。\n・'+pwarn.join('\n・')+'\n\nこのままプロンプトを作りますか？'))return;
+    var needOn=document.querySelector('[data-g="ai-need"] .opt.on');
+    var periodLine='【計画期間】：長期 '+(gv('ai-lg-period')||'未入力')+'／短期 '+(gv('ai-sh-period')||'未入力')+'\n';
     var userMsg =
-      '【作成日】：' + warekiToday() + '\n' +
+      '【作成日】：' + warekiToday() + '\n' + periodLine +
+      '【要介護度】：' + ((window.__rakuKaigo&&window.__rakuKaigo())||'未入力') + '\n' +
       '【モード】：' + mode + '\n' +
+      '【ニーズの数】：' + (needOn?needOn.textContent:'1本にまとめる') + '\n' +
       '【照準（本人が本当に望む姿）】：' + aim + '\n' +
       '【意向の出どころ】：' + src + '\n' +
       '【実際に利用するサービス】（サービス種別：頻度（内容））：\n' + (actualServices || '未入力') + '\n' +
       '【現状・第2表候補（ツールの出力）】：\n' + toolOut + '\n\n' +
-      '上記をもとに、絶対ルールと出力様式に従って第1表の総合的な援助の方針と第2表を出力してください。';
+      ((window.__rakuAIFacts&&window.__rakuAIFacts())?('【選択された事実と候補の内訳（省略なし）】：\n※画面では短く表示しているが、選択された事実はここに全て載せる。出力欄を担当者が手修正している場合は、出力欄の内容を優先する。\n'+window.__rakuAIFacts()+'\n\n'):'') +
+      '上記をもとに、絶対ルールと出力様式に従って、第1表の総合的な援助の方針・第2表・要確認事項を出力してください。';
 
-    document.getElementById('ai-output').value = SYSTEM_PROMPT + '\n\n----\n\n' + userMsg;
+    var aoEl=document.getElementById('ai-output');aoEl.value = SYSTEM_PROMPT + '\n\n----\n\n' + userMsg;aoEl.dataset.stale='';var sn=document.getElementById('ai-stale-note');if(sn)sn.style.display='none';
   });
 
   document.getElementById('ai-copy').addEventListener('click', function(){
     var t = document.getElementById('ai-output');
     if(!t.value){ alert('先に「AI用プロンプトを作る」を押してください。'); return; }
-    t.select();
-    try{ document.execCommand('copy'); }catch(e){}
-    if(navigator.clipboard){ try{ navigator.clipboard.writeText(t.value); }catch(e){} }
+    if(t.dataset.stale==='1'){ alert('入力が変わったあと、プロンプトが作り直されていません。〈AI用プロンプトを作る〉をもう一度押してください。'); return; }
     var b=document.getElementById('ai-copy'); var o=b.textContent;
-    b.textContent='コピーしました'; setTimeout(function(){b.textContent=o;},1400);
+    window.__rakuCopyText(t.value).then(function(ok){
+      if(!ok){alert('コピーできませんでした。プロンプト欄の文章を長押し（または選択）して、手動でコピーしてください。');return;}
+      b.textContent='コピーしました'; setTimeout(function(){b.textContent=o;},1400);
+    });
   });
 })();
 </script>
