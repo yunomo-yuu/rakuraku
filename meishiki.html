@@ -131,6 +131,8 @@ button.copy{
   transition:background .2s;
 }
 button.copy:active{background:rgba(232,197,106,.15);}
+#portraitPrompt{width:100%;min-height:260px;margin:12px 0 10px;padding:12px;border:1px solid var(--card-line);border-radius:8px;background:rgba(10,14,42,.4);color:var(--ink);font-family:inherit;font-size:.8rem;line-height:1.8;resize:vertical;}
+[hidden]{display:none!important;}
 .copied{background:rgba(157,216,168,.2)!important;color:var(--accent-green)!important;border-color:var(--accent-green)!important;}
 .foot{text-align:center;font-size:.72rem;color:var(--ink-dim);margin-top:30px;letter-spacing:.1em;line-height:2;}
 .pill-label{font-size:.72rem;color:var(--ink-dim);}
@@ -275,6 +277,23 @@ button.copy:active{background:rgba(232,197,106,.15);}
         <summary style="cursor:pointer;color:var(--gold-soft);font-size:.85rem;letter-spacing:.05em;">発注文の内容をプレビュー</summary>
         <pre id="orderPreviewText" style="white-space:pre-wrap;word-break:break-word;font-size:.78rem;color:var(--ink-dim);background:rgba(10,14,42,.4);border:1px solid var(--card-line);border-radius:8px;padding:12px;margin-top:8px;max-height:300px;overflow-y:auto;"></pre>
       </details>
+    </div>
+
+    <div class="card">
+      <h2>命の肖像（一枚絵）</h2>
+      <p style="font-size:.86rem;color:var(--ink-dim);margin-bottom:12px;">命式から、一枚絵を作るためのプロンプトを用意します。コピーして、画像生成に対応したAIに貼り付けてください。</p>
+      <label for="portraitExpression">ポートレート表現</label>
+      <select id="portraitExpression" onchange="clearPortraitPrompt()">
+        <option value="unspecified">指定なし</option>
+        <option value="feminine">女性的</option>
+        <option value="masculine">男性的</option>
+        <option value="androgynous">中性的</option>
+      </select>
+      <button class="copy" type="button" style="margin-top:14px;" onclick="generatePortraitPrompt()">命の肖像のプロンプトをつくる</button>
+      <div id="portraitOutput" hidden>
+        <textarea id="portraitPrompt" readonly aria-label="命の肖像のプロンプト"></textarea>
+        <button class="copy" type="button" id="portraitCopyBtn" onclick="copyPortraitPrompt()">プロンプトをコピー</button>
+      </div>
     </div>
 
     <div class="foot">結ゆう ｜ 人と本音を、結ぶ。<br>このツールは端末内のみで計算し、入力データを送信しません。</div>
@@ -547,6 +566,7 @@ function run(){
   const yozi=document.querySelector('input[name="yozi"]:checked').value;
   const C=calc(y,m,d,h,mi,sex,yozi,noTime);
   CUR=C;
+  clearPortraitPrompt();
   render(C);
   document.getElementById("result").style.display="block";
   document.getElementById("result").scrollIntoView({behavior:"smooth"});
@@ -977,6 +997,112 @@ function copyOrder(){
 
 function refreshOrderPreview(){
   document.getElementById("orderPreviewText").textContent=buildOrderText();
+}
+
+/* ============ 命の肖像（画像生成プロンプト） ============ */
+function clearPortraitPrompt(){
+  document.getElementById("portraitPrompt").value="";
+  document.getElementById("portraitOutput").hidden=true;
+}
+
+function generatePortraitPrompt(){
+  if(!CUR)return;
+  const C=CUR,P=C.pillars,ds=P.day.s;
+  const pd=pillarData(C);
+  const {rel}=relations(C);
+  const expressions={feminine:"女性的（feminine）",masculine:"男性的（masculine）",androgynous:"中性的（androgynous）",unspecified:"指定なし"};
+  const expression=expressions[document.getElementById("portraitExpression").value]||expressions.unspecified;
+  const gz=k=>STEMS[P[k].s]+BRANCHES[P[k].b];
+  const cnt=[0,0,0,0,0];
+  pd.forEach(p=>{cnt[STEM_ELEM[p.sIdx]]++;cnt[BRANCH_ELEM[p.branch]]++;});
+  const max=Math.max(...cnt);
+  const strong=ELEM_NAME.filter((_,i)=>cnt[i]===max);
+  const absent=ELEM_NAME.filter((_,i)=>cnt[i]===0);
+  const stars=C._stars&&C._stars.length?[...new Set(C._stars.map(s=>s.name))]:[];
+  const birth=`${C.y}年${C.m}月${C.d}日`+(C.noTime?"（出生時刻不明）":` ${String(C.h).padStart(2,"0")}:${String(C.mi).padStart(2,"0")}`);
+  const pillarLine=`年柱：${gz("year")}　月柱：${gz("month")}　日柱：${gz("day")}`+(P.hour?`　時柱：${gz("hour")}`:"");
+  const bandRule=C.noTime
+    ?"絵の下に細い「三柱」の帯を置き、次の三柱を読みやすく並べ、それぞれにごく短い日本語の意味を添える。年柱は根と家系、月柱は社会と気質、日柱は本人、として読む。出生時刻が不明なため時柱は掲載せず、時柱を前提にした解釈も人物・情景の設計に使わない。"
+    :"絵の下に細い「四柱」の帯を置き、次の四柱を読みやすく並べ、それぞれにごく短い日本語の意味を添える。年柱は根と家系、月柱は社会と気質、日柱は本人、時柱は晩年と内に秘めたもの、として読む。";
+  const lines=[
+    "【これは画像生成の依頼です】文章だけで答えず、必ず画像を1枚出力してください。読み解いた内容は、チャットの返信としてではなく、すべて画像の中の文字として描き込んでください。",
+    "",
+    `以下の計算済みの四柱推命の命式を読み解き、縦長4:5の「命の肖像 — 生まれ持った${C.noTime?"三本":"四本"}の柱を描く一枚絵」を一枚の画像として制作してください。`,
+    "",
+    "【最優先：人物表現】",
+    "選択されたポートレート表現："+expression,
+    "情景の主役として、命式を人格化した、固有の顔立ちと魅力を持つ美しい成人人物を描く。人物表現は必ずこの選択を優先する。生年月日・干支・五行から性別や性自認を推測しない。指定なしは表現を限定しないという意味であり、性別を占う指示ではない。出生年に関係なく成人人物として描く。",
+    "",
+    "【読み解き方】",
+    "末尾の参照データにある四柱・日主・通変星・十二運・蔵干・五行の偏り・特殊星を全体として参照し、「性格の核」「才能と魅力」「人生のテーマ」「課題と成長」の4項目にまとめる。日主（日干）だけで人物像を決めない。記載のない星や関係を作らず、新たな命式計算もしない。",
+    "4項目の解説は、それぞれ自然で読みやすい短い日本語1〜2文にする。専門用語の羅列や運命の断定を避け、課題は成長の可能性を含めて描く。",
+    "",
+    "【人物の個性】",
+    "主役の人物を、毎回同じ美形テンプレートにしない。輪郭、眉、目の形と間隔、鼻、口元、髪型、表情、骨格、雰囲気に明確な個体差をつける。",
+    "美しさの方向性そのものを、命式に応じて変える（知的、柔らかい、端正、野性的、素朴、艶やか、静謐、快活など）。",
+    "日主は存在の芯、月支元命は気質と表情、強い五行は輪郭と色気、欠けている五行は人物がまだ手にしていないもの、として創作的に反映する。一つの干支に一つの顔を割り当てず、複数の要素の組み合わせで独自の人物像を作る。",
+    "描く前に、輪郭・頬骨・目の形とまぶた・眉の太さと角度・鼻筋・唇のうち少なくとも5項目を個別に設計し、絵に反映する（設計メモは画像に載せない）。細い顎・小さな鼻・大きな目・完全な左右対称という一つの型に固定しない。",
+    "髪型・衣装だけを変えて同じ顔を使い回さない。過去の生成画像が会話にあっても、その人物の顔を引き継ぐ指示がない限り参照にせず、新しい人物として設計する。",
+    "これは命術の象徴を使った架空の人物デザインであり、実在する本人の容姿・人種・民族・実年齢を命式から推定するものではない。",
+    "",
+    "【情景の設計】",
+    "4項目の鑑定をまとめ、この人がどんな世界に立ち、何に心を向け、どこへ進もうとしているかが伝わる一つの場面を創作する。性格の核を場面の主題、才能と魅力を人物と周囲の関わり、人生のテーマを空間の奥行き、課題と成長を光や距離の変化として表現する。実際の出来事や予言として描かない。",
+    "五行の偏りを情景の素材に翻訳する（多い五行は画面を満たす要素、欠けている五行は遠くにかすかに見えるもの）。象徴は2〜3個に絞り、陳列や図鑑のような並べ方にしない。",
+    "正面・中央・左右対称の記念写真構図に固定せず、人物の顔の個性が分かる大きさと明るさは確保する。",
+    "",
+    "【誌面構成と文字】",
+    "画面上部の約3分の2を、人物と空間が一体になった大きな絵にする。",
+    "絵の余白に「命の肖像」と、鑑定から作った短い日本語の作品名を控えめに配置する。英語のキャッチコピーは入れない。",
+    bandRule,
+    pillarLine,
+    "最下部の約3分の1は、落ち着いた紙面に2列×2段で「性格の核」「才能と魅力」「人生のテーマ」「課題と成長」の見出しと、それぞれ自然な日本語1文を配置する。細い罫線と余白で区切る。",
+    "ページ末尾に、生年月日"+(C.noTime?"（出生時刻は「不明」と記載）":"と出生時刻")+"を小さな奥付として記載する。",
+    "文字は顔や手に重ねない。全データの一覧や設計メモは画像に載せない。",
+    "",
+    "【画風と仕上げ】",
+    "中国の絹本着色（工筆画）の様式で描く。絹地の細かな織り目と、時を経た絹のわずかな色の深みを画面全体に感じさせる。",
+    "細く均一な墨の輪郭線を生かし、その内側を薄い色を何度も重ねて深めていく彩色にする。岩絵具のような鉱物質の青・緑・朱を、くすませすぎずに使う。",
+    "衣の文様、髪の一本一本、草木の葉脈まで細密に描き込み、顔と手は特に繊細に仕上げる。",
+    "和紙・墨のにじみ・金泥の箔・縦組みの和の設えには寄せない。浮世絵や平面的なイラストにもしない。",
+    "配色は主色2色と差し色1色を命式の解釈から選び、毎回同じ赤と金の宮廷装飾に固定しない。衣装も場面に応じて変え、全員を皇帝・仙人・宮廷の人にしない。",
+    "誕生石・誕生花・守護動物など、命式に含まれない対応表の情報を足さない。",
+    "",
+    "【鑑定・制作のための参照データ（一覧は画像に掲載しない）】",
+    `■生年月日時：${birth}（日本標準時）`,
+    `■四柱：年柱 ${gz("year")}／月柱 ${gz("month")}／日柱 ${gz("day")}`+(P.hour?`／時柱 ${gz("hour")}`:"（時柱なし・三柱）")
+  ];
+  if(C.yoziApplied)lines.push(`■夜子時処理：${C.yoziApplied==="stay"?"日柱は当日のまま・時干は翌日の日干から起こす方式":"翌日の日柱とする方式"}`);
+  lines.push(`■日主：${STEMS[ds]}（${ELEM_NAME[STEM_ELEM[ds]]}の${ds%2===0?"陽":"陰"}）`);
+  pd.slice().reverse().forEach(p=>{
+    lines.push(`■${p.label}：${p.stem}${p.branch}｜通変星 ${p.tsu||"（日主）"}｜十二運 ${p.un}｜蔵干 ${p.zk}（${p.ztsu}${p.key==="month"?"＝月支元命":""}）`);
+  });
+  lines.push(`■五行の数：${cnt.map((c,i)=>ELEM_NAME[i]+c).join("・")}`);
+  lines.push(`■多い五行：${strong.join("・")}`+(absent.length?`　／　欠けている五行：${absent.join("・")}`:"　／　欠けている五行：なし"));
+  lines.push(`■空亡：${C.ku.join("")}`);
+  lines.push(`■納音（日柱）：${C.natchin}`);
+  if(rel.length)lines.push(`■命式内の関係：${rel.join("、")}`);
+  if(stars.length)lines.push(`■特殊星：${stars.join("、")}`);
+  document.getElementById("portraitPrompt").value=lines.join("\n");
+  document.getElementById("portraitOutput").hidden=false;
+}
+
+function copyPortraitPrompt(){
+  const field=document.getElementById("portraitPrompt");
+  const text=field.value;
+  if(!text)return;
+  const b=document.getElementById("portraitCopyBtn");
+  const done=()=>{
+    b.textContent="コピーしました ✓";b.classList.add("copied");
+    setTimeout(()=>{b.textContent="プロンプトをコピー";b.classList.remove("copied");},2200);
+  };
+  const fallback=()=>{
+    field.focus();field.select();
+    try{if(document.execCommand("copy")){done();return;}}catch(e){}
+    b.textContent="上の文章を選択してコピーしてください";
+  };
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(fallback);
+  }else fallback();
 }
 </script>
 <footer style="text-align:center;font-size:11px;color:var(--ink-dim);letter-spacing:.1em;margin:24px 0 12px;">結ゆう ｜ you-no-oto.jp<br><a href="legal.html" style="color:inherit;">特定商取引法・プライバシー・利用規約</a></footer>
