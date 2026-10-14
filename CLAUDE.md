@@ -25,7 +25,7 @@ The site is organized as two sibling sections reachable from the entry pages `in
 ## Conventions used across pages
 
 - **Language**: all user-facing text is Japanese (`lang="ja"`).
-- **Fonts/theme**: fortune-telling pages use `Shippori Mincho` serif with a navy/gold night-sky palette (CSS vars like `--yozora1/2/3`, `--kin`, `--gofun`); the らくらく tool pages use a sans-serif Hiragino/Yu Gothic UI with an indigo/paper business-form palette (`--indigo`, `--ink`, `--paper`). Match the palette already used by the section/page you're editing rather than introducing a new one.
+- **Fonts/theme**: 2026-09にサイト全体をデザイン刷新済み。入口・部屋ページ（index / uranai / rakuraku / totonou / profile / kantei / rakuraku-price / rakuraku-shop / rakuraku-yobou）は共通の `styles.css` を読み込み、生成りの紙色（`--paper` #f4efe4）×縹系の青灰（`--blue` #365f70 等）・明朝（`--serif`）の配色で、金は使わない。一部の個別ツールページ（horoscope / shibi / kimon / synastry / compat / home / legal / yuu など）にはまだ旧来の夜空配色（`--yozora*` / `--kin`）がインラインで残っている。編集するときは、そのページが今使っている配色に合わせ、新しい配色を持ち込まない。
 - **The らくらく tools share one interaction pattern** (see `monitoring.html`, `houkokusho.html`, `keika.html`): a form with required/optional field badges → client-side validation that toggles an `.invalid` class and an `.error-msg` element → a `generate()` function that assembles a plain-text (or printable HTML) document from form state → output shown in a readonly `<textarea>` with a copy-to-clipboard button (`navigator.clipboard`, falling back to `document.execCommand('copy')`). When adding a new tool or field to one of these, follow this same generate/validate/copy structure rather than inventing a new pattern.
 - **Privacy is a stated product property**: every らくらく tool explicitly tells the user that input is processed entirely client-side and never transmitted anywhere, and that closing/reloading the page clears it. Do not add any network calls (fetch, analytics beacons, form submissions, external APIs) to these tool pages — that would contradict what the page tells the user. Google Fonts `<link>` tags (already present) are the one existing exception to "no external requests."
 - **Navigation**: sub-pages link back to their section index via a small `← 玄関へもどる` / similar anchor near the top of `<body>`, not a shared nav component (there is no shared header/footer include mechanism — every page is fully self-contained, so shared text like the footer credit line is duplicated per file and must be edited in each file individually if changed).
@@ -33,7 +33,7 @@ The site is organized as two sibling sections reachable from the entry pages `in
 ## Working rules for Claude Code
 
 - 回答は日本語。結論を先に、理由は後。
-- サイト全体の夜空テーマ（濃紺×星空×金茶、Shippori Mincho）は指示がない限り変更しない。
+- サイトの配色・デザイン（styles.cssの生成り×縹、金なし）は指示がない限り変更しない。旧夜空配色が残る個別ページも、指示なく新配色へ移行したり、styles.css側のページに夜空・金を戻したりしない。
 - 指示されていないファイルは触らない。
 - 変更したら、変更ファイルと変更箇所を最後に一覧で報告する。
 - らくらくの部屋の3ツール（monitoring.html / houkokusho.html / keika.html）は、入力データを端末内で完結させる設計。外部にデータを送信するコードは絶対に追加しない。
