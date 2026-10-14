@@ -38,9 +38,9 @@ header{
   background:var(--ai);color:var(--haku);text-align:center;
   padding:36px 20px 30px;margin-bottom:8px;
 }
-header .mark{font-size:13px;letter-spacing:.5em;opacity:.75;margin-bottom:10px}
+header .mark{font-size:13px;letter-spacing:.5em;opacity:.9;margin-bottom:10px}
 header h1{font-size:23px;font-weight:600;letter-spacing:.15em}
-header .sub{font-size:12px;opacity:.7;margin-top:12px;letter-spacing:.1em;line-height:1.7}
+header .sub{font-size:12px;opacity:.9;margin-top:12px;letter-spacing:.1em;line-height:1.7}
 .card{
   background:var(--haku);border:1px solid var(--sen);
   padding:24px 22px;margin:18px 0;border-radius:2px;
@@ -57,7 +57,7 @@ input,select{
 }
 .row{display:flex;gap:10px}
 .row>div{flex:1}
-.chk{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13px;color:#666}
+.chk{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13px;color:#454545}
 .chk input{width:auto}
 .btn{
   width:100%;padding:14px;margin-top:22px;font-size:16px;letter-spacing:.2em;
@@ -72,16 +72,16 @@ input,select{
 .tbl{width:100%;border-collapse:collapse;font-size:13px;margin-top:4px}
 .tbl th,.tbl td{border-bottom:1px solid var(--sen);padding:8px 6px;text-align:left}
 .tbl th{color:var(--ai);font-weight:600;font-size:12px;letter-spacing:.05em}
-.tbl td.deg{color:#777;font-size:12px}
+.tbl td.deg{color:#555;font-size:12px}
 .asp{width:100%;border-collapse:collapse;font-size:13px}
 .asp td{border-bottom:1px solid var(--sen);padding:7px 6px}
 .asp .a-name{color:var(--ai);font-weight:600;text-align:center;width:70px}
-.asp .a-orb{color:#999;font-size:11px;text-align:right;width:60px}
+.asp .a-orb{color:#666;font-size:11px;text-align:right;width:60px}
 .tight{background:rgba(184,134,11,.09)}
-.note{font-size:11px;color:#999;margin-top:14px;line-height:1.7;letter-spacing:.03em}
-.foot{text-align:center;font-size:11px;color:#aaa;margin-top:30px;letter-spacing:.15em}
+.note{font-size:11px;color:#5c5c5c;margin-top:14px;line-height:1.7;letter-spacing:.03em}
+.foot{text-align:center;font-size:11px;color:#6b6b6b;margin-top:30px;letter-spacing:.15em}
 #msg{text-align:center;color:#b00;font-size:13px;margin-top:10px}
-.copied{color:var(--kin)!important;font-size:12px;text-align:center;margin-top:8px;display:none;letter-spacing:.1em}
+.copied{color:#2f5361!important;font-size:12px;text-align:center;margin-top:8px;display:none;letter-spacing:.1em}
 [hidden]{display:none!important}
 .result-options{border:0;min-width:0}
 .result-options legend{font-size:15px;color:var(--ai)}
@@ -91,6 +91,10 @@ input,select{
 #portraitStatus{font-size:12px;color:var(--ai);min-height:1.9em;margin-top:8px}
 </style>
 <link rel="stylesheet" href="redesign.css">
+<style>
+/* 濃い藍の見出し帯の上の文字を白に戻す（redesign.cssのh1色指定で読めなくなっていたため） */
+header h1, header .mark, header .sub{color:var(--haku)!important}
+</style>
 
 </head>
 <body>
@@ -117,7 +121,7 @@ input,select{
     </div>
     <div class="chk">
       <input type="checkbox" id="timeUnknown" onchange="toggleTime()">
-      <label for="timeUnknown" style="margin:0;color:#666">時刻がわからない（12:00で概算する）</label>
+      <label for="timeUnknown" style="margin:0;color:#454545">時刻がわからない（12:00で概算する）</label>
     </div>
     <label>生まれた場所</label>
     <select id="city"></select>
@@ -176,7 +180,7 @@ input,select{
       </div>
       <p id="portraitStatus" role="status" aria-live="polite"></p>
     </div>
-    <p class="foot"><a href="uranai.html" style="color:#b8860b;text-decoration:none;letter-spacing:.15em">← 占いの部屋へもどる</a></p>
+    <p class="foot"><a href="uranai.html" style="color:#2f5361;text-decoration:none;letter-spacing:.15em">← 占いの部屋へもどる</a></p>
     <p class="foot">結ゆう ｜ 入力した情報は、どこにも送信されません</p>
   </div>
 </div>
@@ -310,7 +314,7 @@ function calc(){
     aspects.forEach(a=>{
       const tight=a.orb<1.0?' class="tight"':'';
       asp+='<tr'+tight+'><td>'+BODY_MARK[a.point1Key]+BODY_JP[a.point1Key]+'</td>'
-        +'<td class="a-name">'+ASP_JP[a.aspectKey]+'<br><span style="font-size:10px;color:#aaa">'+ASP_DEG[a.aspectKey]+'</span></td>'
+        +'<td class="a-name">'+ASP_JP[a.aspectKey]+'<br><span style="font-size:10px;color:#6b6b6b">'+ASP_DEG[a.aspectKey]+'</span></td>'
         +'<td>'+BODY_MARK[a.point2Key]+BODY_JP[a.point2Key]+'</td>'
         +'<td class="a-orb">±'+a.orb.toFixed(1)+'°</td></tr>';
     });
@@ -538,6 +542,6 @@ window.addEventListener('DOMContentLoaded',function(){
   document.getElementById('minute').value=0;
 });
 </script>
-<footer style="text-align:center;font-size:11px;opacity:.6;letter-spacing:.1em;margin:24px 0 12px;">結ゆう ｜ you-no-oto.jp<br><a href="legal.html" style="color:inherit;">特定商取引法・プライバシー・利用規約</a></footer>
+<footer style="text-align:center;font-size:11px;opacity:.85;letter-spacing:.1em;margin:24px 0 12px;">結ゆう ｜ you-no-oto.jp<br><a href="legal.html" style="color:inherit;">特定商取引法・プライバシー・利用規約</a></footer>
 </body>
 </html>
