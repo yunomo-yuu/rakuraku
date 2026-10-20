@@ -229,15 +229,16 @@ function registeredSvcs(num){
 }
 
 /* ---------- ファイル名の読み取り（標準形だけを自動判定） ---------- */
-/* 標準形：種別_送り元事業所番号_サービス種類_送り先事業所番号_サービス種類_作成日時.CSV */
-var STD = /^([0-9A-Za-z]+)_([0-9A-Za-z]{10})_([0-9A-Za-z]{2})_([0-9A-Za-z]{10})_([0-9A-Za-z]{2})_(\d{8,17})$/;
+/* 標準形：種別_（対象年月）_送り元事業所番号_サービス種類_送り先事業所番号_サービス種類_作成日時.CSV
+   例：UPPLAN_202611_4170100103_43_4110111392_31_20261020110849.csv（対象年月なしの形も受け付ける） */
+var STD = /^([0-9A-Za-z]+)(?:_(\d{6}))?_([0-9A-Za-z]{10})_([0-9A-Za-z]{2})_([0-9A-Za-z]{10})_([0-9A-Za-z]{2})_(\d{8,17})$/;
 function parseName(fn){
   var base = fn.replace(/\.csv$/i, '');
   var m = base.match(STD);
-  if(m && /\d{4}/.test(m[2]) && /\d{4}/.test(m[4])){
-    return {ok: true, kind: m[1],
-            from: {num: m[2].toUpperCase(), svc: m[3].toUpperCase()},
-            to:   {num: m[4].toUpperCase(), svc: m[5].toUpperCase()}};
+  if(m && /\d{4}/.test(m[3]) && /\d{4}/.test(m[5])){
+    return {ok: true, kind: m[1], ym: m[2] || '',
+            from: {num: m[3].toUpperCase(), svc: m[4].toUpperCase()},
+            to:   {num: m[5].toUpperCase(), svc: m[6].toUpperCase()}};
   }
   return {ok: false};
 }
@@ -385,7 +386,7 @@ function render(){
   var msgs = [];
   if(nUnknown) msgs.push('黄色の事業所は、事業所データにない番号です（病院・薬局・新しい事業所など）。名前を入れると、次からは自動で表示されます。');
   if(nGuess) msgs.push('「推定」の事業所は、番号は見つかったけれど、そのサービス種類では登録が見つからなかったものです。表示している名前は同じ番号の別サービスの名前なので、合っているか確かめてから「この名前で確定」を押すか、名前を直してください。');
-  if(check) msgs.push('「要確認」は、ファイル名がケアプランデータ連携の標準の形（種別_事業所番号_サービス種類_事業所番号_サービス種類_作成日時）ではないため、宛先を自動で決めなかったファイルです。ZIPでは「' + CHECK_FOLDER + '」フォルダにまとめます。');
+  if(check) msgs.push('「要確認」は、ファイル名がケアプランデータ連携の標準の形（種別_対象年月_事業所番号_サービス種類_事業所番号_サービス種類_作成日時）ではないため、宛先を自動で決めなかったファイルです。ZIPでは「' + CHECK_FOLDER + '」フォルダにまとめます。');
   var um = $('unknownMsg');
   if(msgs.length){ um.innerHTML = msgs.map(esc).join('<br><br>'); um.classList.remove('hidden'); } else um.classList.add('hidden');
 
