@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>らくらく事業所なまえ｜事業所番号を、事業所名に｜結</title>
+  <meta name="description" content="ケアプランデータ連携のCSVを放り込むと、ファイル名の事業所番号から「どこの事業所宛てか」を一覧表示。事業所名のフォルダに仕分けたZIPもダウンロードできます。全国の事業所データ入り。AI不使用・ファイルの外部送信なし。ギフトエコノミー（贈与経済）の考え方を取り入れています。">
+  <meta property="og:title" content="らくらく事業所なまえ｜事業所番号を、事業所名に">
+  <meta property="og:description" content="「この番号、どこだっけ」をなくす道具。CSVを放り込むだけで、どこ宛てかが一覧で分かり、事業所名のフォルダに仕分けたZIPも作れます。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://you-no-oto.jp/rakuraku-namae.html">
+  <meta property="og:image" content="https://you-no-oto.jp/assets/rakurun.jpeg">
+  <meta name="twitter:card" content="summary">
+  <link rel="canonical" href="https://you-no-oto.jp/rakuraku-namae.html">
+  <link rel="icon" href="favicon.svg?v=4" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css?v=4">
+  <style>
+    .namae-hero { min-height: 0; padding: 52px 8vw 58px; }
+    .namae-hero h1 { margin: 12px 0 20px; font-size: clamp(30px, 4.5vw, 52px); }
+    .namae-hero .principle { margin: 0 0 18px; max-width: 800px; font: 500 clamp(23px, 3vw, 34px)/1.65 var(--serif); }
+    .namae-hero .intro { font-size: 16px; }
+    .namae-back { display: inline-block; margin-bottom: 20px; font-size: 14px; text-decoration: underline; text-underline-offset: 4px; }
+    .namae-section { max-width: 1060px; margin: auto; padding: 46px 24px; }
+    .namae-section h2 { margin: 0 0 22px; color: var(--blue); font: 500 clamp(25px, 3vw, 34px)/1.5 var(--serif); }
+    .namae-section h3 { font-size: 19px; line-height: 1.6; margin: 0 0 10px; color: var(--blue); }
+    .namae-section p, .namae-section li { font-size: 16px; }
+    .namae-section p { margin: 0 0 16px; }
+    .namae-section ul { padding-left: 1.4em; }
+    .namae-section li + li { margin-top: 10px; }
+    .namae-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+    .namae-card { padding: 28px; border: 1px solid var(--line); border-radius: 30px 10px; background: rgba(255,255,255,.45); }
+    .namae-card p:last-child { margin-bottom: 0; }
+    .namae-badges { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; list-style: none; margin: 22px 0; }
+    .namae-badges li { font-size: 14px; padding: 5px 12px; border: 1px solid #718d94; border-radius: 999px; }
+    .namae-actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 24px 0 12px; }
+    .namae-action { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; padding: 13px 24px; border: 1px solid var(--blue); border-radius: 999px; background: var(--blue); color: white; font-size: 16px; font-weight: 700; text-align: center; }
+    .namae-action.secondary { background: transparent; color: var(--blue); }
+    .namae-action:hover { background: #294b59; color: white; }
+    a:focus-visible { outline: 3px solid var(--blue); outline-offset: 4px; }
+    .namae-example { padding: 22px 24px; border-left: 3px solid var(--blue); background: #e4ecec; font-size: 15px; overflow-wrap: anywhere; }
+    .namae-example code { font-family: Consolas, "MS Gothic", monospace; font-size: 14px; }
+    .namae-example .arrow { display: block; margin: 8px 0; color: var(--blue); }
+    .namae-flow { list-style: none; padding: 0 !important; counter-reset: step; }
+    .namae-flow li { position: relative; padding: 0 0 26px 58px; margin: 0 0 0 20px !important; border-left: 1px solid #9cb0b6; }
+    .namae-flow li::before { counter-increment: step; content: counter(step); position: absolute; left: -21px; top: 0; display: grid; place-items: center; width: 42px; height: 42px; background: var(--blue); color: white; border-radius: 50%; }
+    .namae-flow li:last-child { border-left-color: transparent; padding-bottom: 0; }
+    .namae-flow strong { display: block; font-size: 19px; color: var(--blue); }
+    .namae-notice { padding: 24px 28px; border-left: 4px solid var(--blue); background: #e4ecec; }
+    .namae-download { background: #e4ecec; border-radius: 30px 10px; }
+    .namae-section .namae-note { font-size: 14px; color: #455c63; }
+    [hidden] { display: none !important; }
+    @media (max-width: 760px) {
+      .namae-hero { padding: 28px 22px 38px; border-radius: 0 0 18px 40px !important; }
+      .namae-section { padding: 32px 20px; }
+      .namae-grid { grid-template-columns: minmax(0, 1fr); }
+      .namae-card { padding: 22px; }
+      .namae-actions { flex-direction: column; }
+      .namae-action { width: 100%; }
+      .namae-flow li { padding-left: 38px; }
+      .namae-notice { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header"><a class="brand" href="index.html"><span class="brand-mark">結</span><span class="brand-name">らくらく</span></a><a class="header-back" href="rakuraku.html">← らくらくの部屋へ</a></header>
+  <main>
+    <section class="room-hero care namae-hero">
+      <a class="namae-back" href="rakuraku.html">← らくらくの部屋へ</a>
+      <div class="eyebrow">「この番号、どこだっけ」をなくす。</div>
+      <h1>らくらく事業所なまえ</h1>
+      <p class="principle">事業所番号を、<br>事業所名に。</p>
+      <p class="intro">ケアプランデータ連携のCSVを放り込むだけ。どこの事業所宛てかが一覧で分かり、事業所名のフォルダに仕分けたZIPも作れます。</p>
+      <ul class="namae-badges" aria-label="ツールの特徴"><li>全国の事業所データ入り</li><li>AI不使用</li><li>ファイルの外部送信なし</li><li>インストール不要</li></ul>
+      <p class="intro">ギフトエコノミー（贈与経済）の考え方を取り入れています。0円から使えて、お返しの形や金額は自由です。<a href="#gift" style="text-decoration:underline;text-underline-offset:4px">詳しくはこちら</a></p>
+      <div class="namae-actions"><a class="namae-action" href="downloads/rakuraku-namae-tool.html">そのまま開いて使う</a></div>
+    </section>
+
+    <section class="namae-section" aria-labelledby="about">
+      <h2 id="about">らくらく事業所なまえとは</h2>
+      <p>ケアプランデータ連携でやりとりするCSVは、ファイル名に事業所番号が入っています。番号のままでは、どこの事業所の分なのかがひと目では分かりません。</p>
+      <p>このツールは、ファイル名の事業所番号を読み取って、事業所名に置きかえて見せます。ファイル名そのものは変えません。</p>
+      <div class="namae-example">
+        <code>UP1KYO_41xxxxxxxx_43_41xxxxxxxx_15_20260822105309.CSV</code>
+        <span class="arrow">↓</span>
+        <strong>デイサービス〇〇</strong>（通所介護）宛て
+      </div>
+    </section>
+
+    <section class="namae-section" aria-labelledby="recommend">
+      <h2 id="recommend">こんなケアマネさんにおすすめ</h2>
+      <ul><li>番号フォルダや番号のファイルを見て、どこの事業所か毎回調べている。</li><li>送る前に「宛先、合ってるかな」と確かめたい。</li><li>届いたファイルを、事業所ごとに分けて保管したい。</li><li>職場のパソコンの設定で、ツールのインストールができない。</li></ul>
+    </section>
+
+    <section class="namae-section" aria-labelledby="features">
+      <h2 id="features">できること</h2>
+      <div class="namae-grid">
+        <article class="namae-card"><h3>どこ宛てかを一覧で表示</h3><p>入れたファイルを事業所ごとにまとめて表示します。サービス種類と件数も一緒に。送り先・送り元を切りかえられるので、送るファイルにも届いたファイルにも使えます。</p></article>
+        <article class="namae-card"><h3>事業所名のフォルダに仕分けてZIPに</h3><p>「事業所名_事業所番号_サービス種類」のフォルダに分けたZIPをダウンロード。中のファイル名と中身はそのまま、元のファイルにも触りません。ファイルは1つも捨てず、最後に「読み込んだ件数」と「ZIPに入れた件数」が合っているかを表示します。</p></article>
+        <article class="namae-card"><h3>全国の事業所データ入り</h3><p>介護サービス情報公表システムのオープンデータをもとに、全国の事業所の名前を最初から入れてあります。取り込みの手間はありません。</p></article>
+        <article class="namae-card"><h3>迷うものは、勝手に決めない</h3><p>データにない番号（病院・診療所・薬局や新しい事業所など）はその場で名前を入力。番号は合ってもサービス種類が合わないものは「推定」、ファイル名が標準の形でないものは「要確認」として、色を分けて知らせます。</p></article>
+      </div>
+    </section>
+
+    <section class="namae-section" aria-labelledby="flow">
+      <h2 id="flow">使い方</h2>
+      <ol class="namae-flow">
+        <li><strong>ツールを開く</strong>パソコンの Microsoft Edge か Google Chrome で開きます。</li>
+        <li><strong>CSVを放り込む</strong>ファイルやフォルダを画面にドラッグ。ボタンから選んでも入れられます。</li>
+        <li><strong>どこ宛てか確認する</strong>事業所ごとの一覧が出ます。黄色の番号には名前を入力します。</li>
+        <li><strong>必要ならZIPで受け取る</strong>「仕分けZIPをダウンロード」を押して、右クリック →「すべて展開」でフォルダに戻します。</li>
+      </ol>
+    </section>
+
+    <section class="namae-section" aria-labelledby="data">
+      <h2 id="data">事業所データについて</h2>
+      <p>事業所の名前は、介護サービス情報公表システム（厚生労働省）のオープンデータ（2026年6月末時点）を加工して入れています。表示される名前は公表データのままなので、正式な名称の確認は各自でお願いします。</p>
+      <p>病院・診療所・薬局の「みなし指定」の事業所や、データの時点より後にできた事業所は入っていません。その場で名前を入力してください。</p>
+      <aside class="namae-notice">このツールは宛先の確認と整理を手伝う道具です。送信や提出の前には、いつもどおり内容の確認をお願いします。</aside>
+    </section>
+
+    <section class="namae-section" aria-labelledby="privacy">
+      <h2 id="privacy">ファイルは、お使いのパソコンの中だけで</h2>
+      <p>ケアプランのファイルには個人情報が入っています。このツールは、ファイルを外部に送信する機能を持っていません。読み取りも仕分けも、すべてパソコンの中で行います。AIも使っていません。</p>
+      <p>「そのまま開いて使う」場合は、最初にページを読み込むための通信が必要です。読み込んだあとは、ファイルの処理に通信は使いません。インストールは不要です。</p>
+      <p class="namae-note">自分で登録した事業所名は、お使いのブラウザに保存されます。ブラウザのデータ削除などで消えることがあるので、ツール内の「バックアップを保存」で書き出しておくと、別のパソコンにも移せます。</p>
+    </section>
+
+    <section class="namae-section" aria-labelledby="gift">
+      <div class="namae-card">
+        <h2 id="gift">ギフトエコノミー（贈与経済）の考え方を取り入れています</h2>
+        <p>まずは、使ってみてください。役に立ったと感じたら、受け取った価値へのお返しを、ご自身で決めていただく仕組みです。</p>
+        <p>価値を受け取った方が、自分にできる形で循環させる。お金でも、紹介でも、知恵や応援でも構いません。</p>
+        <p>お返しは任意です。金額やお返しの有無で、使える機能は変わりません。どんなものが循環していくのか、一緒に見ていけたらうれしいです。</p>
+        <p class="namae-note">使ってみた感想や、改善のアイデアは、<a href="mailto:younooto.info@gmail.com?subject=%E3%82%89%E3%81%8F%E3%82%89%E3%81%8F%E4%BA%8B%E6%A5%AD%E6%89%80%E3%81%AA%E3%81%BE%E3%81%88%20%E6%84%9F%E6%83%B3%E3%83%BB%E3%82%A2%E3%82%A4%E3%83%87%E3%82%A2" style="text-decoration:underline;text-underline-offset:4px;overflow-wrap:anywhere">younooto.info@gmail.com</a> へお寄せください。メール作成画面が開かない場合は、普段お使いのメールからこの宛先へどうぞ。</p>
+        <p class="namae-note">お金でのお返しをお考えの方は、こちらからどうぞ。金額はご自身で決めていただけます。ご利用のための登録やご連絡は不要です。</p>
+        <div id="paypal-container-N6FWRFCFBWTR2"></div>
+        <p id="paypal-status" class="namae-note" role="status">決済ボタンを読み込んでいます。</p>
+        <noscript><p class="namae-note">決済ボタンの表示にはJavaScriptが必要です。お返しがなくても、ツールはそのままお使いいただけます。</p></noscript>
+      </div>
+    </section>
+
+    <section class="namae-section" aria-labelledby="download">
+      <div class="namae-card namae-download">
+        <h2 id="download">さっそく、使ってみる</h2>
+        <p>ボタンを押すと、ブラウザでツールが開きます。ファイルの保存やインストールは不要です。全国の事業所データが入っているため、開くまでに少し時間がかかることがあります。</p>
+        <div class="namae-actions"><a class="namae-action" href="downloads/rakuraku-namae-tool.html">そのまま開いて使う</a></div>
+        <p class="namae-note">オフラインで使いたい方へ：<a href="downloads/rakuraku-namae-tool.html" download="らくらく事業所なまえ.html" style="text-decoration:underline;text-underline-offset:4px;display:inline-block;padding:10px 0">HTMLファイルをダウンロード（約3.7MB）</a><br>保存したHTMLファイルをブラウザで開けば、インターネットにつながっていないパソコンでも使えます。</p>
+        <p class="namae-note">保存されずにそのまま開いてしまう場合は、上のリンクを右クリックして「名前を付けてリンク先を保存」をお選びください。</p>
+        <p class="namae-note">パソコンの Microsoft Edge・Google Chrome 向けです。スマホでは動作を確認していません。</p>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer"><a href="rakuraku.html">← らくらくの部屋へ</a><span>結 ｜ you-no-oto.jp</span><a href="legal.html">特定商取引法・プライバシー・利用規約</a></footer>
+  <script src="https://www.paypal.com/sdk/js?client-id=BAAAvWyYA_9u8FazRdndMTUQmimFOP9oV3clAooQKkBS4kg-TJnl6qxp7vlZ-rdamTdpwfnFJjoZRqhVVk&amp;components=hosted-buttons&amp;disable-funding=venmo&amp;currency=JPY"></script>
+  <script>
+    async function renderGiftPayment() {
+      const status = document.getElementById('paypal-status');
+      try {
+        await paypal.HostedButtons({
+          hostedButtonId: 'N6FWRFCFBWTR2'
+        }).render('#paypal-container-N6FWRFCFBWTR2');
+        status.hidden = true;
+      } catch (error) {
+        status.textContent = '決済ボタンを読み込めませんでした。時間をおいて再読み込みしてください。お返しがなくても、ツールはそのままお使いいただけます。';
+      }
+    }
+    renderGiftPayment();
+  </script>
+  <script src="site-menu.js?v=1"></script>
+</body>
+</html>
