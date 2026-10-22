@@ -27,6 +27,13 @@
     .rakurun-stamp .stamp-link:hover { background: #294b59; }
     .rakurun-stamp .stamp-link:focus-visible { outline: 3px solid var(--blue); outline-offset: 4px; }
     .rakurun-stamp .stamp-external { display: block; margin-top: 8px; font-size: 11px; color: #555; }
+    .rakurun-stamp .stamp-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+    .rakurun-stamp .stamp-actions .stamp-link { margin-top: 0; gap: 7px; }
+    .rakurun-stamp .stamp-link.emoji-link { background: #a64e68; }
+    .rakurun-stamp .stamp-link.emoji-link:hover { background: #853b52; }
+    .rakurun-stamp .stamp-new { display: inline-block; padding: 3px 6px; border-radius: 5px; background: #fff; color: #8a3a53; font: 800 10px/1 sans-serif; letter-spacing: .04em; }
+    .rakurun-stamp .stamp-support { margin: 16px 0 0; font-size: 12px; line-height: 1.8; color: #46595d; }
+    @media (max-width: 600px) { .rakurun-stamp .stamp-actions { justify-content: center; } }
     @media (max-width: 600px) {
       .rakurun-stamp { margin: 0 20px 56px; padding: 24px 20px; grid-template-columns: minmax(0, 1fr); gap: 22px; text-align: center; }
       .rakurun-stamp img { width: 144px; margin: auto; }
@@ -51,14 +58,18 @@
       <div class="section-head"><h2>記録とアセスメントを、もう少しらくらく。</h2><p>必要な道具を単品でも、セットでも。価格・購入方法は販売ページでご案内しています。</p></div>
       <a class="care-tool" href="rakuraku-shop.html" style="display:block"><span class="num">有料ツール · 固定価格</span><h2>経過記録・アセスメント</h2><p>経過記録666円、アセスメント777円、2つセット1,111円。</p><span class="arrow">内容を見る →</span></a>
     </section>
-    <aside class="rakurun-stamp" aria-labelledby="rakurun-stamp-title">
-      <img src="assets/rakurun-line-stamp.jpg" width="1254" height="1254" loading="lazy" alt="ハートを添えて両手を合わせる、らくるんのスタンププレビュー">
+<aside class="rakurun-stamp" aria-labelledby="rakurun-stamp-title">
+      <img src="assets/rakurun-line-stamp.jpg" width="1254" height="1254" loading="lazy" alt="ハートを添えて両手を合わせる、らくるんのLINEスタンプのプレビュー">
       <div>
-        <p class="stamp-label">らくらくシリーズから、ちょっとお知らせ</p>
-        <h2 id="rakurun-stamp-title">らくるんがLINEスタンプになりました</h2>
-        <p class="stamp-description">らくらくの案内役「らくるん」が、いつものトークにも。<br>仕事でも日常でも、気持ちをちょこっと届けます。</p>
-        <a class="stamp-link" href="https://line.me/S/sticker/36417645" target="_blank" rel="noopener noreferrer">LINEスタンプを見る</a>
-        <span class="stamp-external">LINEの販売ページが別タブで開きます</span>
+        <p class="stamp-label">らくるんのLINEスタンプ＆絵文字</p>
+        <h2 id="rakurun-stamp-title">らくるんと、いつものトークをもっと楽しく。</h2>
+        <p class="stamp-description">らくらくシリーズの案内役「らくるん」が、LINEスタンプと絵文字になりました。<br>仕事の合間のひと言にも、毎日の会話にも。</p>
+        <div class="stamp-actions">
+          <a class="stamp-link" href="https://line.me/S/sticker/36417645" target="_blank" rel="noopener noreferrer">LINEスタンプを見る ↗</a>
+          <a class="stamp-link emoji-link" href="https://line.me/S/emoji/?id=6ad9b49c0bcb8657b9a0a857" target="_blank" rel="noopener noreferrer"><span class="stamp-new">NEW</span> LINE絵文字を見る ↗</a>
+        </div>
+        <p class="stamp-support">らくらくシリーズが「便利だった！」という方は、らくるんを迎えて応援してもらえるとうれしいです。</p>
+        <span class="stamp-external">それぞれのLINE販売ページが別タブで開きます</span>
       </div>
     </aside>
   </main>
