@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ケアマネの経過記録をAIで整える｜指示文（プロンプト）の作り方｜結</title>
+  <meta name="description" content="ケアマネジャーの経過記録をAIで整えたいけれど、指示文を考えるところで止まってしまう方へ。AIに渡す前の事実の整理、指示文に入れておきたい約束、架空の例、らくらく経過記録の使い方を紹介します。">
+  <link rel="canonical" href="https://you-no-oto.jp/care-record-ai-guide.html">
+  <meta name="robots" content="index,follow">
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="ja_JP">
+  <meta property="og:site_name" content="結｜あなたの音">
+  <meta property="og:title" content="ケアマネの経過記録をAIで整える｜指示文（プロンプト）の作り方">
+  <meta property="og:description" content="AIへの指示文を毎回考える手間を減らす。事実の整理のしかたと、指示文に入れておきたい約束を、架空の例で紹介します。">
+  <meta property="og:url" content="https://you-no-oto.jp/care-record-ai-guide.html">
+  <meta property="og:image" content="https://you-no-oto.jp/ogp.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
+  <link rel="icon" href="favicon-32.png?v=3" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=3">
+  <link rel="stylesheet" href="styles.css?v=4">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "ケアマネの経過記録をAIで整える｜指示文（プロンプト）の作り方",
+    "description": "ケアマネジャーの経過記録をAIで整えるときの、事実の整理と指示文の作り方。",
+    "inLanguage": "ja",
+    "datePublished": "2026-10-23",
+    "dateModified": "2026-10-23",
+    "author": { "@type": "Person", "name": "結ゆう", "url": "https://you-no-oto.jp/profile.html" },
+    "publisher": { "@type": "Organization", "name": "結｜あなたの音", "url": "https://you-no-oto.jp/" },
+    "image": "https://you-no-oto.jp/ogp.jpg",
+    "mainEntityOfPage": "https://you-no-oto.jp/care-record-ai-guide.html"
+  }
+  </script>
+  <style>
+    .article { max-width: 760px; margin: auto; padding: 56px 24px 80px; }
+    .article section { margin: 0 0 56px; }
+    .article h2 { margin: 0 0 18px; font: 500 clamp(22px, 3.4vw, 30px)/1.55 var(--serif); color: var(--blue); }
+    .article h3 { margin: 26px 0 8px; font: 500 18px/1.6 var(--serif); color: var(--blue); }
+    .article p { margin: 0 0 16px; }
+    .article a { text-decoration: underline; text-underline-offset: 3px; }
+    .article ol, .article ul { padding-left: 1.4em; }
+    .article li { margin: 6px 0; }
+    .meta { margin-top: 18px; font-size: 12px; opacity: .7; }
+    .sample { margin: 22px 0; padding: 20px 22px; border: 1px solid var(--line); border-radius: 22px 8px; background: rgba(255,255,255,.55); }
+    .sample-label { display: inline-block; margin: 0 0 8px; padding: 2px 10px; border-radius: 999px; background: #e4ecec; color: var(--blue); font-size: 12px; letter-spacing: .08em; }
+    .sample pre { margin: 0 0 4px; white-space: pre-wrap; word-break: break-word; font: 14px/1.85 var(--sans); }
+    .arrow-down { text-align: center; color: var(--blue); opacity: .6; margin: -6px 0 -6px; }
+    .note { padding: 14px 18px; border-left: 3px solid var(--blue); background: rgba(228,236,236,.6); font-size: 14px; }
+    .cta { margin: 40px 0 56px; padding: 28px 26px; border: 1px solid var(--blue); border-radius: 30px 10px; background: #e4ecec; }
+    .cta h2 { margin-bottom: 10px; }
+    .cta .prices { display: flex; flex-wrap: wrap; gap: 10px 24px; margin: 14px 0 18px; font: 500 18px var(--serif); color: var(--blue); }
+    .cta .prices small { font: 13px var(--sans); color: var(--ink); }
+    .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 10px 26px; border-radius: 999px; background: var(--blue); color: #fff !important; font-weight: 700; text-decoration: none !important; }
+    .btn:hover { background: #294b59; }
+    .btn.alt { background: transparent; color: var(--blue) !important; border: 1px solid var(--blue); }
+    .btn.alt:hover { background: rgba(255,255,255,.6); }
+    .small { font-size: 13px; color: #46595d; }
+    details { margin: 12px 0; padding: 12px 18px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255,255,255,.5); }
+    summary { cursor: pointer; font-weight: 700; }
+    details p { margin: 10px 0 4px; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { white-space: nowrap; color: var(--blue); font-weight: 500; }
+    @media (max-width: 600px) {
+      .article { padding: 40px 20px 64px; }
+      .cta { padding: 22px 20px; }
+      .btn { display: flex; width: 100%; }
+      .room-hero { min-height: 0; }
+      .room-hero h1 { font-size: 26px; letter-spacing: .04em; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header"><a class="brand" href="index.html"><span class="brand-mark">結</span><span class="brand-name">らくらくの読みもの</span></a><a class="header-back" href="rakuraku.html">← らくらくの部屋へ</a></header>
+  <main>
+    <section class="room-hero care">
+      <div class="thread-line"></div>
+      <div class="eyebrow">ケアマネ・経過記録とAI</div>
+      <h1>AIへの指示文で、<br>手が止まっていませんか。</h1>
+      <p>経過記録をAIで整えたい。でも、毎回の指示文（プロンプト）を考えるのが面倒。そんなケアマネジャーのために、AIに渡す前の整理のしかたと、指示文に入れておきたい約束をまとめました。</p>
+      <p class="meta">結ゆう（介護現場25年・ケアマネジャー）／らくらくの部屋</p>
+    </section>
+
+    <article class="article">
+      <section>
+        <h2>「AIを使えば早い」と言われても、指示文で止まる</h2>
+        <p>記録の文章をAIで整えようとしたとき、最初につまずくのは「AIに何て頼めばいいか」ではありませんか。</p>
+        <p>必要なのは、気の利いた命令文ではありません。<strong>自分が見たこと・聞いたことを、AIに渡せる形で整理すること</strong>と、<strong>AIに「書いていないことは足さないで」と約束させること</strong>。この2つを記録の種類ごとに型にしておけば、毎回ゼロから考えなくて済みます。</p>
+      </section>
+
+      <section>
+        <h2>AIに渡す前に整理したい4つのこと</h2>
+        <ol>
+          <li><strong>いつ・どの場面か：</strong>日時と、訪問・電話（受・発）・来所などのやり取り。</li>
+          <li><strong>誰の話か：</strong>本人の言葉、家族の話、事業所からの報告。複数の人が出てくるときは、文頭に「長女より」のように書いておく。</li>
+          <li><strong>何を聞いた・見た・話したか：</strong>思いつくままの話し言葉でかまいません。整えるのはAIの役目です。</li>
+          <li><strong>どう対応し、次に何をするか：</strong>実際にした対応と、次に確認すること。</li>
+        </ol>
+        <p>4つが全部そろっていなくても大丈夫です。電話で報告を受けただけの短い記録なら、短いまま整えてもらえば十分です。</p>
+      </section>
+
+      <section>
+        <h2>指示文に入れておきたい約束</h2>
+        <p>経過記録は、あとから読み返され、運営指導でも確認される公的な記録です。AIに整えてもらうときは、次の約束を指示文に入れておくと、内容が勝手に変わるのを防ぎやすくなります。</p>
+        <ul>
+          <li>役割は<strong>校正</strong>であって、代筆ではない</li>
+          <li>下書きにない情報・憶測・気持ちの推測を足さない</li>
+          <li>誰の話か読み取れないときは、推測せず「要確認」と示す</li>
+          <li>マークダウンの記号（** や #）を使わず、記録ソフトにそのまま貼れる平文で出す</li>
+        </ul>
+        <p class="note">最後の約束は意外と大事です。AIの出力に装飾記号や目に見えない特殊文字が混じると、介護ソフトに貼り付けたあと日本語入力がおかしくなることがあります。</p>
+      </section>
+
+      <section>
+        <h2>架空の例で見てみる</h2>
+        <p class="small">ここに出てくる人物・内容はすべて架空です。</p>
+        <div class="sample">
+          <span class="sample-label">1. 話し言葉のままの下書き</span>
+          <pre>長女さんから電話。最近デイから帰ったら疲れたーって言ってすぐ横になるって。ご飯は食べてるし熱もないって。本人はデイは楽しいから行きたいって言ってるらしい。デイに様子聞いてみますって伝えた。次の訪問で生活の様子みる。</pre>
+        </div>
+        <p class="arrow-down" aria-hidden="true">↓</p>
+        <div class="sample">
+          <span class="sample-label">2. 下書きに付ける指示文（要点）</span>
+          <pre>あなたは介護支援専門員の記録校正を補助するアシスタントです。以下の下書きを、居宅介護支援の経過記録として整えてください。
+・下書きにある情報だけを、話し言葉から書き言葉に整える
+・下書きにない情報の追加、憶測、感情の推測はしない
+・マークダウン記法を使わず、平文で出力する
+・文体は「〜した。」の常体で、簡潔に
+【下書き】（上の下書きを貼る）</pre>
+        </div>
+        <p class="arrow-down" aria-hidden="true">↓</p>
+        <div class="sample">
+          <span class="sample-label">3. AIの出力例（イメージ）</span>
+          <pre>長女より電話あり。最近、通所介護から帰宅すると「疲れた」と言い、すぐに横になっているとのこと。食事は摂れており、発熱はない。本人は通所介護は楽しいので続けたいと話しているとのこと。
+通所介護事業所へ利用中の様子を確認することを伝えた。
+次回訪問時に生活の様子を確認する。</pre>
+        </div>
+        <p>AIの出力は、使うAIやその日によって言い回しが変わります。<strong>出力はあくまで下書き</strong>です。入力した事実と照らし合わせ、足されたことや抜けたことがないかをケアマネジャー自身が確認してから記録にします。</p>
+      </section>
+
+      <section>
+        <h2>毎回、指示文を書かないための道具</h2>
+        <p>記録の種類が変わると、整え方も変わります。担当者会議なら第4表の要点として、区分変更なら申請書の概況欄として。種類ごとに一から指示文を作るのは手間です。</p>
+        <p>「らくらく経過記録」は、その手間を減らすための道具です。できることは2つあります。</p>
+        <h3>記録を作る（AIを使わない）</h3>
+        <p>記録の種類を選び、やり取り・相手・内容・対応などを入力すると、経過記録の形に組み立てます。入れた項目だけが記録になり、そのまま記録ソフトへコピーできます。</p>
+        <h3>AIで整える（AIは外部のものを使います）</h3>
+        <p>話し言葉の下書きを入れて「AI整形用にコピー」を押すと、記録の種類に合わせた指示文が付いた状態でコピーされます。それを、ふだんお使いのAI（ChatGPT・Geminiなど）に貼り付けて使います。指示文には、上で紹介した「足さない・平文で出す」などの約束があらかじめ入っています。</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>記録の種類</th><th>AIで整えるときの方向</th></tr></thead>
+            <tbody>
+              <tr><td>通常の記録</td><td>話し言葉を記録の文章へ。気づき・確認事項を別枠で出してもらうかを選べる</td></tr>
+              <tr><td>担当者会議</td><td>テーマに沿って、第4表の要点として整理</td></tr>
+              <tr><td>区分変更申請</td><td>変化前→現在→支障の流れで、概況欄の文章へ</td></tr>
+              <tr><td>入院時・通院時情報連携、退院・退所</td><td>内容と順序は変えず、軽い校正のみ</td></tr>
+              <tr><td>初回相談・居宅契約・軽微な変更・会議出欠表</td><td>AIを使わず、定型の記録としてそのまま使う</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="small">ツールに入力した内容は、お使いの端末の中だけで処理され、ツールから外部へ送信されることはありません。AIへ貼り付ける操作はご自身で行うもので、その時点で内容はそのAIサービスへ送られます。貼り付ける前に氏名などの個人情報を取り除き、職場の情報管理のルールも確認してください。</p>
+      </section>
+
+      <div class="cta" id="tool">
+        <div class="eyebrow">ケアマネジャーのための仕事の道具</div>
+        <h2>らくらく経過記録</h2>
+        <p>通常の記録・担当者会議・初回相談・居宅契約・軽微な変更・区分変更・入院時／通院時情報連携・退院退所などに対応。AIへの指示文を考える手間を減らし、記録の中身に集中できます。</p>
+        <div class="prices"><span>経過記録 666<small>円</small></span><span>アセスメントとのセット 1,111<small>円</small></span></div>
+        <a class="btn" href="rakuraku-shop.html">機能・購入方法を見る →</a>
+        <p class="small" style="margin-top:14px">お支払いはPayPal（カード払い可）。決済の確認後、公式LINEまたはメールで利用案内を手動でお送りします。</p>
+      </div>
+
+      <section>
+        <h2>まずは無料のツールで試したい方へ</h2>
+        <p>いきなり購入するのが不安なら、同じらくらくシリーズのモニタリングや予防プランを0円から使えます。項目を選んで文章を組み立てる感覚を、先に試してみてください。</p>
+        <a class="btn alt" href="rakuraku.html">らくらくの部屋を見る →</a>
+      </section>
+
+      <section>
+        <h2>よくある質問</h2>
+        <details><summary>ChatGPTなどのAIがないと使えませんか？</summary><p>「記録を作る」はAIなしで使えます。「AIで整える」を使う場合は、ChatGPTやGeminiなどのAIサービスを別にご用意ください（無料の範囲で使えるものもあります）。ツールそのものはAIではなく、AIへの指示文を用意する道具です。</p></details>
+        <details><summary>個人情報をそのまま入力していいですか？</summary><p>ツールへの入力は端末の中だけで処理されます。ただし外部のAIへ貼り付ける前には、氏名などの個人情報を取り除いてください。職場の情報管理のルールも確認してください。</p></details>
+        <details><summary>AIの文章をそのまま記録にしていいですか？</summary><p>いいえ。AIの出力は下書きです。事実と違うところや足されたところがないか、最終的には記録するケアマネジャー自身が確認・判断してください。</p></details>
+        <details><summary>購入後はどうやって受け取りますか？</summary><p>決済の確認後、公式LINEまたはメールで利用案内をお送りします（手動のため、少しお時間をいただくことがあります）。詳しくは<a href="rakuraku-shop.html">販売ページ</a>をご覧ください。</p></details>
+      </section>
+    </article>
+  </main>
+  <footer class="site-footer"><a href="rakuraku.html">← らくらくの部屋へ</a><span>結 ｜ you-no-oto.jp</span><a href="legal.html">特定商取引法・プライバシー・利用規約</a></footer>
+  <!-- Cloudflare Web Analytics（閲覧数の計測。ツールページには入れない） -->
+  <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "62b678ba35a84c4a98d2397f501cb489"}'></script>
+  <!-- End Cloudflare Web Analytics -->
+</body>
+</html>
