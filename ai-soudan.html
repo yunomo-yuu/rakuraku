@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="ケアマネジャー向けのオンライン個別相談。経過記録・アセスメントなど、あなたの書類用のAI指示文を30分で一緒に作ります。30分3,000円。">
+  <title>ケアマネのAI書類相談｜結</title>
+  <link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png?v=3">
+  <link rel="stylesheet" href="styles.css?v=4">
+  <style>
+    :root{--k-ink:#27383e;--k-night:#263e49;--k-gold:#a67c2e;--k-paper:#f4efe4;--k-line:#d8d3c6}
+    html{scroll-behavior:smooth}
+    body{background:var(--k-paper);color:var(--k-ink);line-height:1.9}
+    .k-header{max-width:720px;margin:auto;padding:13px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .k-logo{font-family:"Shippori Mincho","Yu Mincho",serif;font-size:21px;letter-spacing:.14em}
+    .k-back{font-size:12px;text-decoration:underline;text-underline-offset:4px}
+    .k-hero{background:var(--k-night);color:#f7f2e6;text-align:center;padding:30px 22px 36px;border-radius:0 0 36px 12px}
+    .k-eyebrow{font-family:"Yu Mincho",serif;letter-spacing:.24em;color:#d4b984;font-size:12px;margin:0 0 5px}
+    .k-hero h1{font-family:"Shippori Mincho","Yu Mincho","Hiragino Mincho ProN",serif;font-size:clamp(30px,8vw,41px);font-weight:500;letter-spacing:.08em;margin:0}
+    .k-price{display:flex;justify-content:center;align-items:baseline;gap:12px;flex-wrap:wrap;margin:12px 0 8px}
+    .k-price strong{font-family:"Yu Mincho",serif;font-size:clamp(27px,8vw,38px);font-weight:600}
+    .k-price span{font-size:13px;color:#eee5d7}
+    .k-intro{margin:12px 0 20px;font-size:16px;line-height:1.7}
+    .k-button{display:block;max-width:420px;margin:0 auto;padding:15px 20px;text-align:center;text-decoration:none;background:#f7f2e6;color:#24334d;font-size:16px;font-weight:700;letter-spacing:.05em;border:2px solid #d7b475;border-radius:7px;line-height:1.55;min-height:55px}
+    .k-button:hover,.k-button:focus-visible{background:#fff;outline:3px solid #b89049;outline-offset:2px}
+    .k-hero-note{font-size:12px;color:#efe5d4;margin:10px 0 0}
+    .k-main{max-width:720px;margin:0 auto;padding:0 22px}
+    .k-section{padding:31px 0;border-bottom:1px solid var(--k-line)}
+    .k-section h2{font-family:"Shippori Mincho","Yu Mincho",serif;font-size:21px;font-weight:600;color:#304956;letter-spacing:.06em;margin:0 0 16px}
+    .k-section p{margin:0 0 11px;font-size:15px}
+    .k-section p:last-child{margin-bottom:0}
+    .k-points{padding:0;list-style:none;display:grid;gap:12px}
+    .k-points li{padding:14px 16px;background:#faf8f2;border:1px solid var(--k-line);border-radius:6px;font-size:14px}
+    .k-label{display:block;font-weight:700;color:#365f70;font-size:13px}
+    .k-steps{list-style:none;padding:0;counter-reset:step;display:grid;gap:15px}
+    .k-steps li{counter-increment:step;display:flex;gap:13px;align-items:start;font-size:14px}
+    .k-steps li::before{content:counter(step);display:grid;place-items:center;flex:0 0 30px;width:30px;height:30px;border-radius:50%;border:1px solid var(--k-gold);color:#815d25;font-weight:700;font-size:13px;line-height:1}
+    .k-note{font-size:13px;color:#5c5b57}
+    .k-cta{padding:34px 0 25px;text-align:center}
+    .k-cta .k-button{background:var(--k-night);color:#fff}
+    .k-cta .k-button:hover,.k-cta .k-button:focus-visible{background:#365765}
+    .k-small-links{padding:18px 0 30px;text-align:center;font-size:13px;line-height:2}
+    .k-small-links a{text-decoration:underline;text-underline-offset:3px}
+    .k-footer{text-align:center;border-top:1px solid var(--k-line);padding:20px;font-size:12px;color:#666}
+    .k-footer a{text-decoration:underline}
+    @media(max-width:420px){.k-header{padding:11px 19px}.k-hero{padding:24px 18px 28px}.k-hero h1{font-size:30px}.k-intro{margin:10px 0 17px}.k-main{padding:0 20px}.k-section{padding:27px 0}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  </style>
+</head>
+<body>
+  <header class="k-header">
+    <a class="k-logo" href="rakuraku.html" aria-label="らくらくの部屋へ">結</a>
+    <a class="k-back" href="rakuraku.html">← らくらくの部屋へ</a>
+  </header>
+  <main>
+    <section class="k-hero" aria-labelledby="k-heading">
+      <p class="k-eyebrow">FOR CARE MANAGERS</p>
+      <h1 id="k-heading">ケアマネのAI書類相談</h1>
+      <div class="k-price"><strong>30分　3,000円</strong><span>（オンライン）</span></div>
+      <p class="k-intro">あなたがいちばん困っている書類の、<br>AIへの頼み方（指示文）を30分で一緒に作ります。<br>完成した指示文は、そのまま持ち帰って明日から使えます。</p>
+      <a class="k-button" href="PAYPAL_LINK" target="_blank" rel="noopener">PayPalで申し込む（3,000円）</a>
+      <p class="k-hero-note">お支払いの確認後に、日程のご相談をメールでお送りします。</p>
+    </section>
+
+    <div class="k-main">
+      <section class="k-section">
+        <h2>こんな方に</h2>
+        <ul class="k-points">
+          <li><span class="k-label">経過記録</span>書いているうちに、何の記録だったか分からなくなる</li>
+          <li><span class="k-label">アセスメント・第2表</span>根拠のつながった文章にするのに時間がかかる</li>
+          <li><span class="k-label">モニタリング・評価</span>毎月の文章が同じになってしまう</li>
+          <li><span class="k-label">AIそのもの</span>使ってみたいけれど、個人情報が心配で手が止まっている</li>
+        </ul>
+      </section>
+
+      <section class="k-section">
+        <h2>30分の流れ</h2>
+        <ol class="k-steps">
+          <li><div><strong>はじめの5分</strong><br>個人情報をAIに入れない使い方と、指示文の考え方をお伝えします。</div></li>
+          <li><div><strong>残りの25分</strong><br>あなたが選んだ書類1つについて、画面を見ながら指示文を一緒に作ります。実際の利用者さんの情報は使わず、架空の例で進めます。</div></li>
+          <li><div><strong>おわりに</strong><br>完成した指示文をお渡しします。そのままコピーして、お手元のAI（ChatGPTやGeminiなど）で使えます。</div></li>
+        </ol>
+      </section>
+
+      <section class="k-section">
+        <h2>指示文に入れるルールの例</h2>
+        <p>現場で揉まれてきた書き方を、あなたの指示文にそのまま組み込みます。</p>
+        <ul class="k-points">
+          <li>入力に書いていない事実を、AIに作らせない</li>
+          <li>「〜のため、〜が必要」の形で、支援が必要な根拠として書く</li>
+          <li>「安心・安全」のような、中身の伝わらない言葉を使わない</li>
+        </ul>
+      </section>
+
+      <section class="k-section">
+        <h2>相談するのは</h2>
+        <p>結ゆう。介護現場25年（施設長を含む）、2024年からケアマネジャー。現場の書類を楽にするために、らくらくシリーズ（モニタリング・経過記録・アセスメント・予防プラン）を自分で作ってきました。</p>
+      </section>
+
+      <section class="k-section">
+        <h2>お申し込みから当日まで</h2>
+        <ol class="k-steps">
+          <li><div>このページのボタンから、PayPalで3,000円をお支払いください。</div></li>
+          <li><div>お支払いの確認後、PayPalにご登録のメールアドレスあてに、日程のご相談をお送りします。</div></li>
+          <li><div>当日はGoogle Meetでお話しします。平日は夜、土日はご相談ください。</div></li>
+        </ol>
+        <p class="k-note">キャンセル・返金については<a href="legal.html#tokusho" style="text-decoration:underline">キャンセル・返金規定</a>をご確認ください。お問い合わせは younooto.info@gmail.com まで。</p>
+      </section>
+
+      <div class="k-cta">
+        <a class="k-button" href="PAYPAL_LINK" target="_blank" rel="noopener">PayPalで申し込む（3,000円）</a>
+      </div>
+      <div class="k-small-links">
+        <a href="rakuraku.html">らくらくの部屋へもどる</a>　<a href="legal.html">特定商取引法・プライバシーポリシー</a>
+      </div>
+    </div>
+  </main>
+  <footer class="k-footer">結 ｜ you-no-oto.jp</footer>
+  <!-- Cloudflare Web Analytics（閲覧数の計測。ツールページには入れない） -->
+  <script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "62b678ba35a84c4a98d2397f501cb489"}'></script>
+  <!-- End Cloudflare Web Analytics -->
+</body>
+</html>
