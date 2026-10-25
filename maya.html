@@ -223,6 +223,18 @@ select{width:100%;min-height:48px;padding:0 10px;border-radius:12px;border:1px s
 .copy.done{background:linear-gradient(180deg,#4f7c5f,#2f5240)}
 .copy:disabled{opacity:.45;cursor:default}
 .paper .fine{color:var(--washi-dim);text-align:center}
+.pair{display:grid;gap:10px;padding-top:16px;border-top:1px solid rgba(120,90,40,.3)}
+.pair-lead{margin:0;font-size:13px;line-height:1.8;color:var(--washi-dim)}
+.paper select{background:#fffdf7;color:var(--washi-ink);border:1px solid rgba(120,90,40,.35)}
+.paper .selects label,.pair-rel{color:#8a6a2e}
+.pair-rel{display:grid;gap:3px;font-size:11px;letter-spacing:.1em}
+.pair-res{display:grid;gap:8px}
+.pair-res:empty{display:none}
+.pair-who{margin:0;font-family:var(--display);font-weight:700;font-size:16px}
+.pair-who .k{font-family:var(--sans);font-weight:400;font-size:11px;letter-spacing:.14em;color:#8a6a2e;margin-right:10px}
+.pair-list{margin:0;padding:0;list-style:none;display:grid;gap:6px}
+.pair-list li{font-size:13.5px;line-height:1.7;padding:8px 12px;border-radius:4px;background:rgba(255,255,255,.5);border:1px solid rgba(120,90,40,.2)}
+.pair-note{margin:0;font-size:13px;line-height:1.8;color:var(--washi-dim)}
 .copy-fallback{width:100%;min-height:170px;border-radius:6px;border:1px solid rgba(120,90,40,.35);background:#fffdf7;color:var(--washi-ink);font-size:12.5px;padding:10px}
 .links{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 16px;font-size:14px}
 .links a,.links button{display:inline-flex;align-items:center;min-height:44px;padding:0 4px;background:none;border:0;cursor:pointer;color:#5d4416;text-decoration:underline;text-underline-offset:4px}
@@ -1322,6 +1334,20 @@ select{width:100%;min-height:48px;padding:0 10px;border-radius:12px;border:1px s
         '<div class="c wide"><span class="k">鏡の向こうのKIN</span><span class="v">KIN '+r.mirrorKin+'</span><span class="w">'+chip(mS.color)+mT.name+'の'+mS.name+'</span></div></div>'+
       '<button class="copy" type="button" id="copyBtn">AIへの発注文をコピーする</button>'+
       '<p class="fine">コピーした文をAIに貼ると、そのまま鑑定をお願いできます</p>'+
+      '<section class="pair" aria-labelledby="pairH">'+
+        '<p class="sect" id="pairH">相手との関係を聞く</p>'+
+        '<p class="pair-lead">気になる人の生年月日を入れると、2人分のデータと関係性の聞き方をまとめた発注文ができます。</p>'+
+        '<div class="selects pair-sel">'+
+          '<label for="pY">年<select id="pY"></select></label>'+
+          '<label for="pM">月<select id="pM"></select></label>'+
+          '<label for="pD">日<select id="pD"></select></label>'+
+        '</div>'+
+        '<label class="pair-rel" for="pRel">相手との関係'+
+          '<select id="pRel"><option value="">えらばない</option><option>家族</option><option>パートナー・恋人</option><option>友人</option><option>職場の人</option><option>その他</option></select>'+
+        '</label>'+
+        '<button class="copy" type="button" id="pairBtn">2人の発注文をコピーする</button>'+
+        '<div class="pair-res" id="pairRes" aria-live="polite"></div>'+
+      '</section>'+
       '<div class="links"><button type="button" data-again>はじめからもう一度</button><a href="https://you-no-oto.jp/maya-navi.html">表で見る（KINナビ）</a><a href="https://you-no-oto.jp/uranai.html">占いの部屋へ</a></div>';
   }
 
@@ -1488,9 +1514,10 @@ select{width:100%;min-height:48px;padding:0 10px;border-radius:12px;border:1px s
     else if(k==="ArrowUp"||k==="PageUp"){if(scrollable(document.activeElement,-1)) return;e.preventDefault();go(-1)}
   });
   document.addEventListener("click",function(e){
-    var t=e.target.closest&&e.target.closest("[data-next],[data-again],#copyBtn");if(!t) return;
+    var t=e.target.closest&&e.target.closest("[data-next],[data-again],#copyBtn,#pairBtn");if(!t) return;
     if(t.hasAttribute("data-next"))go(1);
     else if(t.hasAttribute("data-again")){$("endScroll").scrollTop=0;jumpTo(0);setTimeout(function(){selY.focus({preventScroll:true})},500)}
+    else if(t.id==="pairBtn")copyPair(t);
     else copyPrompt(t);
   });
 
@@ -1499,7 +1526,7 @@ select{width:100%;min-height:48px;padding:0 10px;border-radius:12px;border:1px s
     e.preventDefault();
     res=compute(+selY.value,+selM.value,+selD.value);hunab=!!res.hunab;
     document.body.classList.toggle("is-hunab",hunab);
-    render();
+    render();if(!hunab)setupPair();
     order=hunab?[0,1,5]:[0,1,2,3,4,5];
     SCN.forEach(function(s){if(order.indexOf(s.i)>=0)s.el.removeAttribute("data-off");else s.el.setAttribute("data-off","")});
     ensureRings();paintResults();
@@ -1599,6 +1626,83 @@ select{width:100%;min-height:48px;padding:0 10px;border-radius:12px;border:1px s
     function(c,t){var g=geo.sea,y0=g?g.hor:H*.5,y1=g?g.near:H*.75,x0=g?g.roadX:W*.5;glints(4,c,t,.035,function(){return {x:x0+(Math.random()-.5)*W*.5,y:y0+Math.random()*(y1-y0)}},"220,232,255",5)},
     function(c,t){var s=geo.dawnSun||{x:W*.5,y:H*.44};godRays(c,s.x,s.y,t,10,-Math.PI/2,3.4,H*.7,.06,"255,232,180",55);glints(5,c,t,.02,function(){return {x:W*(.1+Math.random()*.8),y:s.y+H*(.02+Math.random()*.12)}},"255,236,190",3)}
   ];
+
+  /* ================= 相手との関係を聞く ================= */
+  function fillDateSelects(sy,sm,sd,yv){
+    var now=new Date();sy.innerHTML="";sm.innerHTML="";
+    for(var y=now.getFullYear();y>=1900;y--){var o=document.createElement("option");o.value=y;o.textContent=y+"年";sy.appendChild(o)}
+    sy.value=yv||1980;
+    for(var m=1;m<=12;m++){var o2=document.createElement("option");o2.value=m;o2.textContent=m+"月";sm.appendChild(o2)}
+    function days(){var y=+sy.value,m=+sm.value,dim=[31,isLeap(y)?29:28,31,30,31,30,31,31,30,31,30,31][m-1],cur=+sd.value||1;sd.innerHTML="";
+      for(var d=1;d<=dim;d++){var o3=document.createElement("option");o3.value=d;o3.textContent=d+"日";sd.appendChild(o3)}sd.value=Math.min(cur,dim)}
+    sy.addEventListener("change",days);sm.addEventListener("change",days);days();
+  }
+  function setupPair(){var y=$("pY");if(!y) return;fillDateSelects(y,$("pM"),$("pD"),1980)}
+  /* 1人分のデータ行（元の発注文と同じ書き方） */
+  function personLines(d){
+    var mk=d.mirrorKin;
+    return "■生年月日："+d.date+"\n"+
+      "■KIN："+d.kin+"（"+d.tone.name+"の"+d.seal.name+"）\n"+
+      "■太陽の紋章："+d.seal.name+"（キーワード："+d.seal.kw+"）\n"+
+      "■ウェイブスペル："+d.ws.name+"\n"+
+      "■銀河の音：音"+d.toneNo+"・"+d.tone.name+"（キーワード："+d.tone.kw+"）\n"+
+      "■城："+d.castle+"\n"+
+      "■ガイドの紋章："+sealLine(d.guideSealNo)+"\n"+
+      "■類似の紋章："+sealLine(d.analogSealNo)+"\n"+
+      "■反対の紋章："+sealLine(d.antiSealNo)+"\n"+
+      "■神秘の紋章："+sealLine(d.occultSealNo)+"\n"+
+      "■鏡の向こうのKIN：KIN"+mk+"（"+TONES[toneIdx(mk)].name+"の"+SEALS[sealIdx(mk)].name+"）";
+  }
+  /* 2人の関係：元の計算で出る関係だけを並べる（意味づけはしない） */
+  function pairRelations(a,b){
+    var r=[],bs=SEALS[b.sealNo-1].name,as=SEALS[a.sealNo-1].name;
+    if(a.kin===b.kin) r.push("2人は同じKIN（KIN"+a.kin+"）です");
+    else if(b.kin===a.mirrorKin) r.push("2人はおたがいに「鏡の向こうのKIN」です");
+    if(a.sealNo===b.sealNo) r.push("2人は同じ太陽の紋章（"+as+"）です");
+    if(b.sealNo===a.analogSealNo) r.push("相手の紋章（"+bs+"）は、あなたの「類似の紋章（支え合う）」です");
+    if(b.sealNo===a.antiSealNo) r.push("相手の紋章（"+bs+"）は、あなたの「反対の紋章（学び合う）」です");
+    if(b.sealNo===a.occultSealNo) r.push("相手の紋章（"+bs+"）は、あなたの「神秘の紋章（ひかれ合う）」です");
+    if(b.sealNo===a.guideSealNo) r.push("相手の紋章（"+bs+"）は、あなたの「ガイドの紋章（導き）」です");
+    if(a.sealNo===b.guideSealNo) r.push("あなたの紋章（"+as+"）は、相手の「ガイドの紋章（導き）」です");
+    if(a.wsKin===b.wsKin) r.push("2人は同じウェイブスペル（"+a.ws.name+"）です");
+    if(a.toneNo===b.toneNo) r.push("2人は同じ銀河の音（音"+a.toneNo+"・"+a.tone.name+"）です");
+    if(a.castle===b.castle) r.push("2人は同じ城（"+a.castle+"）です");
+    return r;
+  }
+  function pairPrompt(a,b,rels,kind){
+    return "以下はマヤ暦（ツォルキン／ドリームスペル）の、2人分の鑑定データです。\n"+
+      "このデータをもとに、2人の関係性の傾向と、うまく付き合うためのヒントをわかりやすく解説してください。\n\n"+
+      (kind?"■2人の関係："+kind+"\n\n":"")+
+      "【あなた】\n"+personLines(a)+"\n\n"+
+      "【相手】\n"+personLines(b)+"\n\n"+
+      "【2人の紋章の関係（データから分かること）】\n"+
+      (rels.length?rels.map(function(x){return "・"+x}).join("\n"):"・ガイド・類似・反対・神秘の関係や、同じ紋章・音・ウェイブスペル・城の重なりはありません")+"\n\n"+
+      "【解説の観点】\n"+
+      "・それぞれの太陽の紋章・ウェイブスペル・銀河の音を短く押さえたうえで、2人の関係に焦点を当ててください\n"+
+      "・ひかれ合うところ、すれ違いやすいところ、どう接するとよいかを具体的に教えてください\n"+
+      "・上のデータにない関係や相性を作り出さないでください\n"+
+      "・断定しすぎず、本人が自分に還るキッカケになる言葉でお願いします";
+  }
+  function copyText(btn,text,label){
+    function done(){var br=btn.getBoundingClientRect();sparkEmit(br.left+br.width/2,br.top+br.height/2,26,{v:1.7,life:1100});btn.textContent="コピーしました";btn.classList.add("done");setTimeout(function(){btn.textContent=label;btn.classList.remove("done")},2200)}
+    function fallback(){
+      var ta=btn.parentNode.querySelector(".copy-fallback");
+      if(!ta){ta=document.createElement("textarea");ta.className="copy-fallback";ta.readOnly=true;ta.setAttribute("aria-label",label);btn.insertAdjacentElement("afterend",ta)}
+      ta.value=text;ta.focus();ta.select();var ok=false;try{ok=document.execCommand("copy")}catch(err){}
+      if(ok)done();else btn.textContent="下の文を長押ししてコピーしてください";
+    }
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(done).catch(fallback);else fallback();
+  }
+  function copyPair(btn){
+    if(!res||hunab) return;
+    var b=compute(+$("pY").value,+$("pM").value,+$("pD").value),out=$("pairRes");
+    if(b.hunab){out.innerHTML='<p class="pair-note">相手の生年月日（'+b.date+'）は、ドリームスペルでは特定のKINを持たない「フナブ・クの日」のため、2人の発注文は作れません。</p>';return}
+    var rels=pairRelations(res,b),kind=$("pRel").value;
+    out.innerHTML='<p class="pair-who"><span class="k">相手</span>KIN '+b.kin+'　'+b.tone.name+'の'+b.seal.name+'</p>'+
+      (rels.length?'<ul class="pair-list">'+rels.map(function(x){return "<li>"+x+"</li>"}).join("")+'</ul>':'<p class="pair-note">紋章どうしの特別な関係はありませんでした。それぞれの性質から、AIに読み解いてもらえます。</p>')+
+      '<p class="fine">コピーした文をAIに貼ると、2人の関係を読み解いてもらえます</p>';
+    copyText(btn,pairPrompt(res,b,rels,kind),"2人の発注文をコピーする");
+  }
 })();
 </script>
 <noscript><p style="position:fixed;inset:auto 16px 16px;z-index:99;background:#0b1f1c;color:#ece6d6;padding:12px;border-radius:8px">この旅はJavaScriptを使います。表形式の<a href="https://you-no-oto.jp/maya-navi.html">KINナビ</a>もご利用いただけます。</p></noscript>
