@@ -1,0 +1,1606 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050b14">
+<link rel="icon" href="favicon.svg?v=3" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=3">
+<title>マヤ暦の旅｜結ゆう</title>
+<meta name="description" content="生年月日からマヤ暦のKINをたどる、スワイプで世界がめくれていく体験型の占い。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@500;700;800&family=Noto+Sans+JP:wght@400;500&display=swap">
+<style>
+/* Layout: 6枚の「絵」を重ねた舞台。指の動きに合わせて場面ごとに違う転換（光・窓・層・遠ざかり・御簾）で次の世界へ。文字は絵の余白に置き、場面ごとに位置を変える */
+:root{
+  color-scheme:dark;
+  --ink:#efe8d8;
+  --ink-dim:#c2c7bd;
+  --ink-faint:#8f9a93;
+  --gold:#d9b871;
+  --gold-hi:#f6dfa3;
+  --night:#050b14;
+  --scrim:rgba(4,9,14,.72);
+  --washi:#f2ebdd;
+  --washi-ink:#2b2823;
+  --washi-dim:#6c6559;
+  --display:"Shippori Mincho B1","Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;
+  --sans:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  --ease:cubic-bezier(.2,.75,.15,1);
+  --safe-t:env(safe-area-inset-top,0px); --safe-b:env(safe-area-inset-bottom,0px);
+  --safe-l:env(safe-area-inset-left,0px); --safe-r:env(safe-area-inset-right,0px);
+}
+*{box-sizing:border-box}
+html,body{height:100%;overscroll-behavior:none}
+body{margin:0;background:var(--night);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.8;-webkit-font-smoothing:antialiased;overflow:hidden;-webkit-tap-highlight-color:transparent}
+button,select{font:inherit;color:inherit}
+a{color:var(--gold-hi)}
+:focus-visible{outline:2px solid var(--gold-hi);outline-offset:3px;border-radius:6px}
+.stage{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.stage .paper,.stage .copy-fallback{-webkit-user-select:text;user-select:text}
+.spark{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:25}
+/* 見出しを光がすっと撫でる */
+.s2 h2,.s3 h2,.s4 .wsh{position:relative}
+.s2 h2::after,.s3 h2::after,.s4 .wsh::after{content:"";position:absolute;inset:-25% -12%;pointer-events:none;opacity:0;mix-blend-mode:screen;
+  background:linear-gradient(105deg,transparent 38%,rgba(255,240,205,.55) 50%,transparent 62%);background-size:260% 100%;background-position:130% 0}
+.s2.in h2::after{animation:shine 1.8s var(--ease) 1.9s both}
+.s3.in h2::after{animation:shine 1.8s var(--ease) 2.1s both}
+.s4.in .wsh::after{animation:shine 1.8s var(--ease) 2.3s both}
+@keyframes shine{0%{opacity:1;background-position:130% 0}100%{opacity:1;background-position:-30% 0}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- 舞台 ---------- */
+.stage{position:fixed;inset:0;overflow:hidden;touch-action:none;background:var(--night)}
+.sc{position:absolute;inset:0;overflow:hidden;visibility:hidden;contain:strict;transform-origin:50% 50%}
+.sc.on{visibility:visible}
+.sc[data-off]{display:none}
+.ly{position:absolute;inset:0;width:100%;height:100%;display:block;transform-origin:50% 50%;will-change:transform}
+.ui{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;touch-action:pan-y;-webkit-overflow-scrolling:touch;
+  padding:calc(var(--safe-t) + 62px) max(22px,var(--safe-r)) calc(var(--safe-b) + 84px) max(22px,var(--safe-l));
+  scrollbar-width:none}
+.ui::-webkit-scrollbar{display:none}
+.ui>*{min-width:0;max-width:100%}
+.bloom{position:absolute;inset:-20%;pointer-events:none;opacity:0;z-index:20;
+  background:radial-gradient(circle at 50% 44%,#fffaf0 0%,#fbe7b8 22%,rgba(246,215,150,.75) 45%,rgba(246,215,150,0) 75%)}
+.veil{position:absolute;inset:0;pointer-events:none;opacity:0;z-index:19;background:#02060b}
+
+/* 共通の文字部品 */
+.eb{margin:0;font-size:11px;letter-spacing:.34em;color:var(--gold);font-weight:500}
+.cap{margin:0;font-size:13px;letter-spacing:.1em;color:var(--ink-dim)}
+.tate{writing-mode:vertical-rl;-webkit-writing-mode:vertical-rl;text-orientation:upright;font-family:var(--display);font-weight:700;letter-spacing:.18em;margin:0;line-height:1.2;width:1.3em;min-width:1.3em;max-width:1.3em;flex:none;white-space:nowrap}
+.chars{display:inline}
+.chars>span{display:inline-block}
+.js .sc:not(.in) .chars>span{opacity:0;transform:translateY(.5em);filter:blur(6px)}
+.js .sc.in .chars>span{transition:opacity .9s var(--ease),transform 1.1s var(--ease),filter 1s var(--ease);transition-delay:calc(var(--b,0s) + var(--i)*70ms)}
+.js .sc:not(.in) .tate .chars>span{transform:translateY(-.5em)}
+.rise{transition:opacity 1s var(--ease) var(--d,0s),transform 1.2s var(--ease) var(--d,0s)}
+.js .sc:not(.in) .rise{opacity:0;transform:translateY(24px)}
+
+.next{position:absolute;left:50%;bottom:calc(var(--safe-b) + 14px);transform:translateX(-50%);z-index:5;
+  display:flex;flex-direction:column;align-items:center;gap:0;font-size:10px;letter-spacing:.3em;color:var(--ink-dim);
+  background:none;border:0;cursor:pointer;min-height:44px;min-width:88px;padding:2px 10px}
+.next svg{width:22px;height:22px;stroke:var(--gold-hi);animation:bob 2.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-5px)}}
+
+.back{position:fixed;z-index:30;top:calc(var(--safe-t) + 10px);left:max(12px,var(--safe-l));
+  display:inline-flex;align-items:center;min-height:40px;padding:0 14px;font-size:12px;letter-spacing:.1em;color:var(--ink);
+  text-decoration:none;border-radius:999px;background:rgba(5,11,20,.42);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.08)}
+.dots{position:fixed;z-index:30;right:max(4px,var(--safe-r));top:50%;transform:translateY(-50%);display:grid;gap:0;margin:0;padding:0;list-style:none}
+.dots button{width:28px;height:30px;display:grid;place-items:center;background:none;border:0;cursor:pointer;padding:0}
+.dots button i{width:5px;height:5px;border-radius:50%;background:var(--ink);opacity:.35;transition:all .5s var(--ease)}
+.dots button[aria-current="step"] i{height:16px;border-radius:3px;background:var(--gold-hi);opacity:1}
+.dots button:disabled{cursor:default}.dots button:disabled i{opacity:.12}
+
+/* ---------- 0 夜明け前の山河 ---------- */
+.s0 .ui{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto 1fr auto;gap:0 14px}
+.s0 .title{grid-column:2;grid-row:1;justify-self:end;width:auto;display:flex;gap:10px;align-items:flex-start;padding-top:8px}
+.s0 .title .tate{font-size:clamp(46px,14vw,66px);color:#fbf4e4;text-shadow:0 0 30px rgba(246,215,150,.35),0 2px 18px rgba(0,0,0,.5)}
+.s0 .title .sub{writing-mode:vertical-rl;-webkit-writing-mode:vertical-rl;font-size:11px;letter-spacing:.5em;color:var(--gold-hi);margin:6px 0 0;font-family:var(--sans);width:1.6em;min-width:1.6em;max-width:1.6em;flex:none;white-space:nowrap;line-height:1.6em}
+.s0 .intro{grid-column:1/-1;grid-row:2;align-self:end;display:grid;gap:8px;padding:0 0 16px;max-width:17em}
+.s0 .intro p{margin:0}
+.s0 .lead{font-family:var(--display);font-size:16px;line-height:2;color:#f8f2e4;text-shadow:0 1px 3px rgba(0,0,0,.7),0 0 18px rgba(0,8,16,.8)}
+.s0 .today{font-size:12px;color:var(--ink-dim);text-shadow:0 1px 8px rgba(0,0,0,.7)}
+.s0 .today b{color:var(--gold-hi);font-weight:500}
+.form{grid-column:1/-1;grid-row:3;align-self:end;display:grid;gap:12px;padding:18px 16px 16px;border-radius:22px;
+  background:linear-gradient(180deg,rgba(9,22,32,.42),rgba(5,12,20,.68));border:1px solid rgba(246,223,163,.2);
+  backdrop-filter:blur(14px) saturate(120%);-webkit-backdrop-filter:blur(14px) saturate(120%);box-shadow:0 20px 50px rgba(0,0,0,.35)}
+fieldset{border:0;margin:0;padding:0;min-width:0;display:grid;gap:12px}
+legend{padding:0;margin:0 0 2px;font-family:var(--display);font-size:15px;letter-spacing:.16em;color:#f6efdf}
+.selects{display:grid;grid-template-columns:1.35fr 1fr 1fr;gap:8px}
+.selects label{display:grid;gap:3px;font-size:11px;color:var(--ink-dim);letter-spacing:.1em}
+select{width:100%;min-height:48px;padding:0 10px;border-radius:12px;border:1px solid rgba(246,223,163,.28);background:rgba(3,10,16,.6);font-size:17px;color:#fff}
+.go{min-height:54px;border-radius:999px;border:0;cursor:pointer;color:#20160a;font-family:var(--display);font-weight:700;font-size:18px;letter-spacing:.24em;
+  background:linear-gradient(180deg,#f8e6b4,#d6b26a);box-shadow:0 0 0 1px rgba(255,240,200,.4) inset,0 10px 30px rgba(214,178,106,.35)}
+.go:active{transform:scale(.98)}
+.fine{margin:0;font-size:11px;color:var(--ink-faint)}
+
+/* ---------- 1 二百六十の星 ---------- */
+.rings{position:absolute;left:var(--ox,50%);top:var(--oy,46%);width:150vmax;height:150vmax;transform:translate(-50%,-50%);pointer-events:none}
+.rings img{position:absolute;inset:0;width:100%;height:100%;opacity:0;transform:scale(.05)}
+.s1.in .rings img{animation:ringOut 5.5s cubic-bezier(.3,.6,.2,1) infinite}
+.s1.in .rings img:nth-child(2){animation-delay:1.8s}
+.s1.in .rings img:nth-child(3){animation-delay:3.6s}
+@keyframes ringOut{0%{opacity:0;transform:scale(.05) rotate(0)}18%{opacity:.75}100%{opacity:0;transform:scale(1) rotate(30deg)}}
+.s1 .ui{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto 1fr auto;gap:0 10px}
+.s1 .cap-top{grid-column:1;grid-row:1;display:grid;gap:6px;padding-top:6px}
+.s1 .name{grid-column:2;grid-row:1/3;justify-self:end}
+.s1 .name .tate{font-size:clamp(26px,7.6vw,34px);color:#fbf4e4;text-shadow:0 0 24px rgba(0,0,0,.6)}
+.s1 .kin{grid-column:1/-1;grid-row:3;align-self:end;display:grid;gap:4px}
+.s1 .kin .lbl{font-size:12px;letter-spacing:.6em;color:var(--gold)}
+.knum{font-family:var(--display);font-weight:800;font-size:clamp(110px,40vw,170px);line-height:.86;letter-spacing:-.02em;font-variant-numeric:tabular-nums;
+  background:linear-gradient(180deg,#fff7df 0%,#f3d58f 45%,#b98a3c 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 22px rgba(246,215,150,.45))}
+.js .s1:not(.in) .knum{opacity:0;transform:scale(1.3);filter:blur(12px)}
+.s1.in .knum{transition:opacity 1.2s var(--ease) .5s,transform 1.6s var(--ease) .5s,filter 1.4s var(--ease) .5s}
+.maya{display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-height:20px}
+.maya .dr{display:flex;gap:8px}
+.maya .dr i{width:12px;height:12px;border-radius:50%;background:var(--gold-hi);box-shadow:0 0 12px rgba(246,215,150,.8)}
+.maya .bar{width:78px;height:9px;border-radius:5px;background:var(--gold-hi);box-shadow:0 0 12px rgba(246,215,150,.7)}
+.js .sc:not(.in) .maya>*{opacity:0;transform:scaleX(.2)}
+.sc.in .maya>*{transition:opacity .6s var(--ease) calc(var(--b,0s) + var(--i)*.2s),transform .8s var(--ease) calc(var(--b,0s) + var(--i)*.2s);transform-origin:left center}
+.hunab .green{font-family:var(--display);font-size:clamp(34px,10vw,46px);color:#a9e8c6;letter-spacing:.12em;line-height:1.3;margin:0}
+.hunab p{margin:0}
+
+/* ---------- 2 本質（紋章の世界） ---------- */
+.s2 .ui{display:flex;flex-direction:column;justify-content:flex-end}
+.s2 .side{position:absolute;right:max(14px,var(--safe-r));top:calc(var(--safe-t) + 64px)}
+.s2 .side .tate{font-size:15px;letter-spacing:.6em;color:var(--gold-hi);font-weight:500}
+.note-img{white-space:nowrap;font-size:10px;letter-spacing:.1em;color:var(--ink-dim);padding:4px 10px;border-radius:999px;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.12);margin:0}
+.s2 .note-img{position:absolute;left:max(20px,var(--safe-l));top:calc(var(--safe-t) + 66px);font-size:10px;letter-spacing:.14em;color:var(--ink-dim);
+  padding:4px 10px;border-radius:999px;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.12)}
+.s2 .block{display:grid;gap:12px;max-width:30em}
+.s2 h2{margin:0;font-family:var(--display);font-weight:800;font-size:clamp(40px,12.5vw,62px);line-height:1.12;letter-spacing:.04em;color:#fff8e8;
+  text-shadow:0 2px 26px rgba(0,0,0,.55)}
+.kw{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.kw li{font-family:var(--display);font-size:clamp(19px,5.6vw,23px);letter-spacing:.14em;display:flex;align-items:center;gap:12px}
+.kw li::before{content:"";width:22px;height:1px;background:var(--sc,var(--gold-hi));box-shadow:0 0 8px var(--sc,var(--gold-hi))}
+.js .sc:not(.in) .kw li{opacity:0;transform:translateX(-26px)}
+.sc.in .kw li{transition:opacity .9s var(--ease) calc(var(--b,0s) + var(--i)*.22s),transform 1.1s var(--ease) calc(var(--b,0s) + var(--i)*.22s)}
+
+/* ---------- 3 才能（十三段のピラミッド） ---------- */
+.s3 .ui{display:flex;flex-direction:column;justify-content:space-between;gap:16px}
+.s3 .head{display:grid;gap:6px;max-width:20em}
+.s3 h2{margin:0;font-family:var(--display);font-weight:800;font-size:clamp(30px,9vw,44px);line-height:1.15;letter-spacing:.06em;color:#fff6e2;text-shadow:0 2px 20px rgba(0,0,0,.6)}
+.s3 .tkw{margin:0;font-family:var(--display);font-size:18px;letter-spacing:.16em;color:var(--gold-hi)}
+.gate-mark{position:absolute;left:0;top:0;transform:translate(-50%,-100%);pointer-events:none}
+.gate-mark .maya{align-items:center}
+.card{display:grid;gap:3px;padding:14px 16px;border-radius:16px;background:rgba(4,10,16,.6);border:1px solid rgba(246,223,163,.2);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.card .k{font-size:11px;letter-spacing:.2em;color:var(--gold)}
+.card .v{font-family:var(--display);font-size:19px;font-weight:700;letter-spacing:.06em}
+.card .w{font-size:13px;color:var(--ink-dim)}
+.chip{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;vertical-align:.1em;box-shadow:0 0 10px currentColor}
+.s3 .foot3{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+.s3 .card{width:min(58%,250px)}
+.s3 .foot3 .note-img{align-self:flex-end;margin-bottom:4px}
+
+/* ---------- 4 使命・課題（灯籠の海） ---------- */
+.s4 .ui{display:flex;flex-direction:column;justify-content:flex-end;gap:10px}
+.s4 .wsinfo{display:grid;gap:6px}
+.s4 .wsh{margin:0;font-family:var(--display);font-weight:800;font-size:clamp(34px,10.5vw,48px);line-height:1.15;letter-spacing:.06em;color:#fff8e6;text-shadow:0 2px 22px rgba(0,0,0,.7)}
+.s4 .day{margin:0;font-family:var(--display);font-size:15px;line-height:1.9;color:#f6efdf;text-shadow:0 1px 12px rgba(0,0,0,.7)}
+.s4 .day b{font-size:26px;color:var(--gold-hi);font-weight:800;margin:0 2px}
+.face{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:8px;padding:14px 4px 0}
+.face .cap{grid-column:1/-1;text-align:center;margin-bottom:4px}
+.face .p{display:grid;gap:4px;justify-items:center;text-align:center;min-width:0}
+.face .orb{width:42px;height:42px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#fff,var(--sc) 55%,transparent 72%);box-shadow:0 0 30px 6px color-mix(in srgb,var(--sc) 50%,transparent)}
+.face .lb{font-size:10px;letter-spacing:.2em;color:var(--gold)}
+.face .nm{font-family:var(--display);font-size:16px;font-weight:700;line-height:1.45}
+.face .w{font-size:11px;color:var(--ink-dim)}
+.face .mid{align-self:center;width:46px;height:1px;background:linear-gradient(90deg,transparent,var(--gold-hi),transparent);margin-bottom:40px}
+.js .sc:not(.in) .face .p.l{opacity:0;transform:translateX(-30px)}
+.js .sc:not(.in) .face .p.r{opacity:0;transform:translateX(30px)}
+.sc.in .face .p{transition:opacity 1.2s var(--ease) 2.4s,transform 1.4s var(--ease) 2.4s}
+
+/* ---------- 5 旅の終着（雲海の夜明け） ---------- */
+.s5 .ui{display:flex;flex-direction:column;align-items:stretch;gap:0}
+.s5 .crest{min-height:44vh;display:flex;flex-direction:column;justify-content:flex-start;align-items:center;text-align:center;gap:8px;padding-top:4px}
+.s5 .crest h2{margin:0;font-family:var(--display);font-weight:800;font-size:clamp(26px,7.4vw,34px);letter-spacing:.1em;color:#fffaf0;text-shadow:0 2px 24px rgba(60,30,10,.55)}
+.s5 .crest .cap{color:#fdf1dc;text-shadow:0 1px 10px rgba(60,30,10,.6)}
+.paper{position:relative;color:var(--washi-ink);background-color:var(--washi);background-image:var(--washi-tex);border-radius:6px;
+  padding:26px 20px 22px;box-shadow:0 30px 60px rgba(0,0,0,.45),0 0 0 1px rgba(120,90,40,.25) inset;display:grid;gap:18px}
+.paper::before{content:"";position:absolute;inset:8px;border:1px solid rgba(160,120,50,.45);border-radius:3px;pointer-events:none}
+.paper .head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:start}
+.paper .head .tate{font-size:20px;color:#7c5a22;letter-spacing:.3em}
+.paper .kintitle{margin:0;font-family:var(--display);font-weight:800;font-size:clamp(24px,7vw,30px);line-height:1.35;letter-spacing:.04em}
+.paper .date{margin:4px 0 0;font-size:12px;color:var(--washi-dim);letter-spacing:.1em}
+.paper .rows{display:grid;border-top:1px solid rgba(120,90,40,.3)}
+.paper .row{display:grid;grid-template-columns:6.6em minmax(0,1fr);gap:10px;padding:11px 0;border-bottom:1px solid rgba(120,90,40,.22)}
+.paper .row .k{font-size:11px;letter-spacing:.14em;color:#8a6a2e;padding-top:4px}
+.paper .row .v{font-family:var(--display);font-size:17px;font-weight:700;line-height:1.55}
+.paper .row .v small{display:block;font-family:var(--sans);font-weight:400;font-size:12.5px;color:var(--washi-dim)}
+.paper .rel{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.paper .rel .c{display:grid;gap:1px;padding:10px 12px;border-radius:4px;background:rgba(255,255,255,.45);border:1px solid rgba(120,90,40,.2)}
+.paper .rel .c.wide{grid-column:1/-1}
+.paper .rel .k{font-size:10.5px;letter-spacing:.12em;color:#8a6a2e}
+.paper .rel .v{font-family:var(--display);font-weight:700;font-size:15px}
+.paper .rel .w{font-size:11.5px;color:var(--washi-dim)}
+.paper .sect{margin:0;font-size:11px;letter-spacing:.3em;color:#8a6a2e}
+.paper .chip{box-shadow:0 0 0 1px rgba(0,0,0,.15)}
+.copy{min-height:54px;border-radius:999px;border:0;cursor:pointer;font-weight:500;font-size:16px;letter-spacing:.12em;color:#fff8ea;
+  background:linear-gradient(180deg,#3a5a63,#22383f);box-shadow:0 8px 20px rgba(20,40,45,.25)}
+.copy.done{background:linear-gradient(180deg,#4f7c5f,#2f5240)}
+.copy:disabled{opacity:.45;cursor:default}
+.paper .fine{color:var(--washi-dim);text-align:center}
+.copy-fallback{width:100%;min-height:170px;border-radius:6px;border:1px solid rgba(120,90,40,.35);background:#fffdf7;color:var(--washi-ink);font-size:12.5px;padding:10px}
+.links{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 16px;font-size:14px}
+.links a,.links button{display:inline-flex;align-items:center;min-height:44px;padding:0 4px;background:none;border:0;cursor:pointer;color:#5d4416;text-decoration:underline;text-underline-offset:4px}
+.foot{margin:18px 0 0;text-align:center;font-size:11px;color:#f6ead2;text-shadow:0 1px 6px rgba(0,0,0,.5)}
+.foot a{color:inherit}
+.js .s5:not(.in) .paper{opacity:0;transform:translateY(60px)}
+.s5.in .paper{transition:opacity 1.2s var(--ease) .5s,transform 1.4s var(--ease) .5s}
+
+@media (max-height:700px){
+  .s0 .intro{padding-top:20px}
+  .s0 .title .tate{font-size:clamp(40px,12vw,54px)}
+  .knum{font-size:clamp(96px,34vw,140px)}
+  .s5 .crest{min-height:36vh}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .js .sc .chars>span,.js .sc .rise,.js .sc .kw li,.js .sc .maya>*,.js .sc .face .p,.js .s1 .knum,.js .s5 .paper{opacity:1!important;transform:none!important;filter:none!important}
+  .rings{display:none}
+}
+</style>
+</head>
+<body>
+
+
+<div class="stage" id="stage">
+
+  <!-- 0 夜明け前の山河 -->
+  <section class="sc s0" id="sc0" aria-labelledby="t0" data-name="はじまり">
+    <canvas class="ly" data-l="back"></canvas>
+    <canvas class="ly" data-l="mid"></canvas>
+    <canvas class="ly fx" data-l="fx"></canvas>
+    <canvas class="ly" data-l="front"></canvas>
+    <div class="ui">
+      <div class="title">
+        <p class="sub">TZOLKIN · DREAMSPELL</p>
+        <h1 class="tate" id="t0"><span class="chars" data-chars style="--b:.2s">マヤ暦の旅</span></h1>
+      </div>
+      <div class="intro">
+        <p class="lead rise" style="--d:1.1s">生まれた日の紋章をたどって、あなたの世界をめぐります</p>
+        <p class="today rise" id="todayKin" style="--d:1.4s"></p>
+      </div>
+      <form class="form rise" id="form" style="--d:1.6s" novalidate>
+        <fieldset>
+          <legend>生年月日をえらぶ</legend>
+          <div class="selects">
+            <label for="selYear">年<select id="selYear"></select></label>
+            <label for="selMonth">月<select id="selMonth"></select></label>
+            <label for="selDay">日<select id="selDay"></select></label>
+          </div>
+          <button class="go" type="submit">旅をはじめる</button>
+          <p class="fine">生年月日はこの画面の中だけで計算し、どこにも送りません。</p>
+        </fieldset>
+      </form>
+    </div>
+  </section>
+
+  <!-- 1 二百六十の星 -->
+  <section class="sc s1" id="sc1" aria-labelledby="t1" data-name="KIN" data-off>
+    <canvas class="ly" data-l="back"></canvas>
+    <div class="ly rings" aria-hidden="true"><img alt=""><img alt=""><img alt=""></div>
+    <canvas class="ly" data-l="mid"></canvas>
+    <canvas class="ly fx" data-l="fx"></canvas>
+    <canvas class="ly" data-l="front"></canvas>
+    <div class="ui">
+      <div class="cap-top">
+        <p class="eb rise" id="t1">YOUR KIN</p>
+        <p class="cap rise" id="kinCap" style="--d:.3s">二百六十日の暦のなかの、あなたの一粒</p>
+      </div>
+      <div class="name" id="kinNameBox"></div>
+      <div class="kin" id="kinBox"></div>
+    </div>
+    <button class="next" type="button" data-next aria-label="次の場面へ"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.4" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>SWIPE</button>
+  </section>
+
+  <!-- 2 本質 -->
+  <section class="sc s2" id="sc2" aria-labelledby="t2" data-name="本質" data-off>
+    <canvas class="ly" data-l="back"></canvas>
+    <canvas class="ly" data-l="mid"></canvas>
+    <canvas class="ly fx" data-l="fx"></canvas>
+    <canvas class="ly" data-l="front"></canvas>
+    <div class="ui">
+      <p class="note-img">紋章のイメージ（象徴表現）</p>
+      <div class="side"><p class="tate">本質</p></div>
+      <div class="block">
+        <p class="eb rise">太陽の紋章 ｜ 顕在意識・表の顔</p>
+        <h2 id="t2"></h2>
+        <ul class="kw" id="coreKw"></ul>
+      </div>
+    </div>
+    <button class="next" type="button" data-next aria-label="次の場面へ"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.4" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>SWIPE</button>
+  </section>
+
+  <!-- 3 才能 -->
+  <section class="sc s3" id="sc3" aria-labelledby="t3" data-name="才能" data-off>
+    <canvas class="ly" data-l="back"></canvas>
+    <canvas class="ly" data-l="mid"></canvas>
+    <canvas class="ly fx" data-l="fx"></canvas>
+    <canvas class="ly" data-l="front"></canvas>
+    <div class="ly gate-layer" aria-hidden="true"><div class="gate-mark" id="gateMark"></div></div>
+    <div class="ui">
+      <div class="head">
+        <p class="eb rise">才能 ｜ 銀河の音</p>
+        <p class="cap rise" style="--d:.15s">行動リズム・役割</p>
+        <h2 id="t3"></h2>
+        <p class="tkw rise" id="toneKw" style="--d:1.2s"></p>
+        <p class="cap rise" id="gateCap" style="--d:1.4s"></p>
+      </div>
+      <div class="foot3"><p class="note-img rise" style="--d:1.6s">ピラミッドのイメージ（象徴表現）</p><div class="card rise" id="guideCard" style="--d:1.8s"></div></div>
+    </div>
+    <button class="next" type="button" data-next aria-label="次の場面へ"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.4" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>SWIPE</button>
+  </section>
+
+  <!-- 4 使命・課題 -->
+  <section class="sc s4" id="sc4" aria-labelledby="t4" data-name="使命・課題" data-off>
+    <canvas class="ly" data-l="back"></canvas>
+    <canvas class="ly" data-l="mid"></canvas>
+    <canvas class="ly fx" data-l="fx"></canvas>
+    <canvas class="ly" data-l="front"></canvas>
+    <div class="ui">
+      <div class="wsinfo">
+        <p class="eb rise">使命・課題 ｜ ウェイブスペル</p>
+        <p class="cap rise" style="--d:.15s">13日間の目的・潜在意識</p>
+        <h2 class="wsh" id="t4"></h2>
+        <p class="day rise" id="wsDay" style="--d:1.6s"></p>
+      </div>
+      <div class="face" id="face"></div>
+    </div>
+    <button class="next" type="button" data-next aria-label="次の場面へ"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.4" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>SWIPE</button>
+  </section>
+
+  <!-- 5 旅の終着 -->
+  <section class="sc s5" id="sc5" aria-labelledby="t5" data-name="旅の終着" data-off>
+    <canvas class="ly" data-l="back"></canvas>
+    <canvas class="ly" data-l="mid"></canvas>
+    <canvas class="ly fx" data-l="fx"></canvas>
+    <canvas class="ly" data-l="front"></canvas>
+    <div class="ui" id="endScroll">
+      <div class="crest">
+        <p class="eb rise" style="color:#fff3d6">THE END OF THE JOURNEY</p>
+        <h2 id="t5"><span class="chars" data-chars style="--b:.3s">旅の終着</span></h2>
+        <p class="cap rise" style="--d:1s">指でゆっくり、鑑定書をひらいてください</p>
+      </div>
+      <article class="paper" id="paper"></article>
+      <p class="foot">you-no-oto ｜ 結ゆう　<a href="https://you-no-oto.jp/legal.html">特定商取引法・プライバシー・利用規約</a></p>
+    </div>
+  </section>
+
+  <div class="veil" id="veil"></div>
+  <div class="bloom" id="bloom"></div>
+</div>
+
+<canvas class="spark" id="spark" aria-hidden="true"></canvas>
+<a class="back" href="https://you-no-oto.jp/uranai.html">← 占いの部屋へ</a>
+<ol class="dots" id="dots" aria-label="場面"></ol>
+<p class="sr" aria-live="polite" id="live"></p>
+
+<script>
+(function(){
+  "use strict";
+  /* ==== ここから maya.html の計算ロジックと鑑定データ（そのまま移植・変更なし） ==== */
+  // ---- データ定義 ----
+  var SEALS = [
+    {name:"赤い龍", color:"red", kw:"いのちを育む・母性・誕生"},
+    {name:"白い風", color:"white", kw:"メッセージ・共感・スピリット"},
+    {name:"青い夜", color:"blue", kw:"夢・豊かさ・直感"},
+    {name:"黄色い種", color:"yellow", kw:"気づき・開花・探究心"},
+    {name:"赤い蛇", color:"red", kw:"情熱・生命力・本能"},
+    {name:"白い世界の橋渡し", color:"white", kw:"橋渡し・死と再生・おもてなし"},
+    {name:"青い手", color:"blue", kw:"癒し・遂行・チャンス"},
+    {name:"黄色い星", color:"yellow", kw:"美と調和・芸術・職人"},
+    {name:"赤い月", color:"red", kw:"浄化・新しい流れ・使命感"},
+    {name:"白い犬", color:"white", kw:"誠実・家族愛・忠実"},
+    {name:"青い猿", color:"blue", kw:"遊び心・ひらめき・魔術"},
+    {name:"黄色い人", color:"yellow", kw:"自由意志・道理・感化"},
+    {name:"赤い空歩く人", color:"red", kw:"探究・成長・人助け"},
+    {name:"白い魔法使い", color:"white", kw:"魅了・受容・永遠"},
+    {name:"青いワシ", color:"blue", kw:"先見性・観察力・知性"},
+    {name:"黄色い戦士", color:"yellow", kw:"挑戦・知性・自問自答"},
+    {name:"赤い地球", color:"red", kw:"シンクロ・絆・舵取り"},
+    {name:"白い鏡", color:"white", kw:"映し出す・永遠性・調和"},
+    {name:"青い嵐", color:"blue", kw:"変容・かまど・エネルギー"},
+    {name:"黄色い太陽", color:"yellow", kw:"太陽の力・公平・完成"}
+  ];
+  var TONES = [
+    {name:"磁気", kw:"目的・引き寄せる"},
+    {name:"月", kw:"挑戦・見きわめる"},
+    {name:"電気", kw:"奉仕・活性化する"},
+    {name:"自己存在", kw:"形・測る"},
+    {name:"倍音", kw:"輝き・中心を定める"},
+    {name:"律動", kw:"バランス・組織する"},
+    {name:"共振", kw:"調律・通わせる"},
+    {name:"銀河", kw:"調和・誠実さ"},
+    {name:"太陽", kw:"意図・脈動させる"},
+    {name:"惑星", kw:"仕上げ・実らせる"},
+    {name:"スペクトル", kw:"解放・手放す"},
+    {name:"水晶", kw:"協力・分かち合う"},
+    {name:"宇宙", kw:"超越・持ちこたえる"}
+  ];
+  var CASTLES = ["赤い東の城（回す・始まり）","白い北の城（浄化・洗練）","青い西の城（変容・燃やす）","黄色い南の城（実り・与える）","緑の中央の城（魔法・共時性）"];
+  var SEAL_COLOR = {red:"var(--seal-red)", white:"var(--seal-white)", blue:"var(--seal-blue)", yellow:"var(--seal-yellow)"};
+  var GUIDE_OFFSET = {1:0,6:0,11:0, 2:12,7:12,12:12, 3:4,8:4,13:4, 4:16,9:16, 5:8,10:8};
+
+  // ---- KIN計算（アンカー: 2012-12-21 = KIN207 / 2月29日はKINを持たない）----
+  function isLeap(y){return (y%4===0 && y%100!==0) || y%400===0;}
+  function serial(y,m,d){return Date.UTC(y,m-1,d)/86400000;}
+  function leapDaysUpTo(y,m,d){
+    var c=0;
+    for(var yy=1800; yy<=y; yy++){
+      if(!isLeap(yy)) continue;
+      if(yy<y || m>2 || (m===2 && d>=29)) c++;
+    }
+    return c;
+  }
+  function dayCounter(y,m,d){return serial(y,m,d) - leapDaysUpTo(y,m,d);}
+  var ANCHOR = dayCounter(2012,12,21); // KIN207
+  function kinOf(y,m,d){
+    if(m===2 && d===29) return null; // フナブ・クの日
+    var diff = dayCounter(y,m,d) - ANCHOR;
+    var k = ((207 - 1 + diff) % 260 + 260) % 260 + 1;
+    return k;
+  }
+  function sealIdx(kin){return ((kin-1) % 20);}          // 0-19
+  function toneIdx(kin){return ((kin-1) % 13);}          // 0-12
+  function wsStartKin(kin){return Math.floor((kin-1)/13)*13 + 1;}
+  function castleIdx(kin){return Math.floor((kin-1)/52);}
+  function kinFrom(sealNo, toneNo){ // 1-20, 1-13
+    for(var k=1;k<=260;k++){
+      if(sealIdx(k)===sealNo-1 && toneIdx(k)===toneNo-1) return k;
+    }
+    return null;
+  }
+  function sealLine(sealNo){
+    var s=SEALS[sealNo-1];
+    return s.name+"（"+s.kw+"）";
+  }
+  /* ==== ここまで ==== */
+  function compute(y,m,d){
+    var kin=kinOf(y,m,d);
+    if(kin===null) return {hunab:true,date:y+"年"+m+"月"+d+"日"};
+    var sIdx=sealIdx(kin), tIdx=toneIdx(kin);
+    var seal=SEALS[sIdx], tone=TONES[tIdx];
+    var toneNo=tIdx+1, sealNo=sIdx+1;
+    var wsKin=wsStartKin(kin);
+    var ws=SEALS[sealIdx(wsKin)];
+    var castle=CASTLES[castleIdx(kin)];
+
+    // 関係する紋章
+    var guideSealNo=((sealNo-1+GUIDE_OFFSET[toneNo])%20)+1;
+    var analogSealNo=((19-sealNo)%20+20)%20; if(analogSealNo===0) analogSealNo=20;
+    var antiSealNo=((sealNo+10-1)%20)+1;
+    var occultSealNo=21-sealNo;
+    var mirrorKin=261-kin; // 鏡の向こうのKIN
+    return {date:y+"年"+m+"月"+d+"日",kin:kin,seal:seal,ws:ws,toneNo:toneNo,tone:tone,castle:castle,sealNo:sealNo,sIdx:sIdx,wsKin:wsKin,
+      guideSealNo:guideSealNo,analogSealNo:analogSealNo,antiSealNo:antiSealNo,occultSealNo:occultSealNo,mirrorKin:mirrorKin};
+  }
+  function buildPrompt(d){
+    var mk=d.mirrorKin;
+    var text=
+"以下はマヤ暦（ツォルキン／ドリームスペル）の鑑定データです。\n"+
+"このデータをもとに、性格・才能・使命の傾向をわかりやすく解説してください。\n\n"+
+"■生年月日："+d.date+"\n"+
+"■KIN："+d.kin+"（"+d.tone.name+"の"+d.seal.name+"）\n"+
+"■太陽の紋章："+d.seal.name+"（キーワード："+d.seal.kw+"）\n"+
+"■ウェイブスペル："+d.ws.name+"\n"+
+"■銀河の音：音"+d.toneNo+"・"+d.tone.name+"（キーワード："+d.tone.kw+"）\n"+
+"■城："+d.castle+"\n"+
+"■ガイドの紋章："+sealLine(d.guideSealNo)+"\n"+
+"■類似の紋章："+sealLine(d.analogSealNo)+"\n"+
+"■反対の紋章："+sealLine(d.antiSealNo)+"\n"+
+"■神秘の紋章："+sealLine(d.occultSealNo)+"\n"+
+"■鏡の向こうのKIN：KIN"+mk+"（"+TONES[toneIdx(mk)].name+"の"+SEALS[sealIdx(mk)].name+"）\n\n"+
+"【解説の観点】\n"+
+"・太陽の紋章＝顕在意識（表の顔）、ウェイブスペル＝潜在意識（内なる目的）として読み解いてください\n"+
+"・銀河の音は行動リズム・役割として解説してください\n"+
+"・関係する紋章（ガイド・類似・反対・神秘）は人間関係のご縁の傾向として触れてください\n"+
+"・断定しすぎず、本人が自分に還るキッカケになる言葉でお願いします";
+    return text;
+  }
+  /* ================= 絵を描く道具 ================= */
+  var TAU=Math.PI*2;
+  var PR=Math.min(1.5,window.devicePixelRatio||1);
+  function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;var t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+  function prep(cv,w,h,pr){pr=pr||PR;cv.width=Math.round(w*pr);cv.height=Math.round(h*pr);var c=cv.getContext("2d");c.setTransform(pr,0,0,pr,0,0);c.clearRect(0,0,w,h);return c}
+  function lg(c,x0,y0,x1,y1,st){var g=c.createLinearGradient(x0,y0,x1,y1);for(var i=0;i<st.length;i++)g.addColorStop(st[i][0],st[i][1]);return g}
+  function rgba(rgb,a){return "rgba("+rgb+","+a+")"}
+  function glow(c,x,y,r,rgb,a,core){
+    var g=c.createRadialGradient(x,y,0,x,y,r);
+    g.addColorStop(0,rgba(rgb,a));g.addColorStop(core||.25,rgba(rgb,a*.45));g.addColorStop(.6,rgba(rgb,a*.12));g.addColorStop(1,rgba(rgb,0));
+    c.fillStyle=g;c.beginPath();c.arc(x,y,r,0,TAU);c.fill();
+  }
+  function disc(c,x,y,r,fill){c.fillStyle=fill;c.beginPath();c.arc(x,y,r,0,TAU);c.fill()}
+  function stars(c,w,h,n,R,maxY,gold,minA){
+    for(var i=0;i<n;i++){
+      var x=R()*w,y=Math.pow(R(),1.4)*h*maxY,s=R(),r=s<.92?.4+R()*.7:1+R()*.9;
+      c.globalAlpha=(minA||.25)+R()*.7;
+      c.fillStyle=R()<(gold||.1)?"#f6dfa3":"#eef3f6";
+      c.beginPath();c.arc(x,y,r,0,TAU);c.fill();
+      if(r>1.3){glow(c,x,y,r*6,"240,230,200",.25)}
+    }
+    c.globalAlpha=1;
+  }
+  function noise1(R){var v=[];for(var i=0;i<256;i++)v.push(R());return function(x){var i=Math.floor(x),f=x-i,a=v[i&255],b=v[(i+1)&255],t=(1-Math.cos(f*Math.PI))/2;return a+(b-a)*t}}
+  function fbm(n,x,oct){var s=0,a=.5,f=1,norm=0;for(var o=0;o<(oct||5);o++){s+=a*n(x*f);norm+=a;a*=.5;f*=2.1}return s/norm}
+  function ridge(c,w,h,base,amp,freq,R,fill,opt){
+    opt=opt||{};var n=noise1(R),pts=[],step=w/160,off=R()*100;
+    c.beginPath();c.moveTo(-10,h+10);
+    for(var x=-10;x<=w+10;x+=step){
+      var v=fbm(n,off+x/w*freq,opt.oct||6);
+      if(opt.sharp)v=1-Math.abs(v*2-1);
+      var y=base-amp*v*(opt.shape?opt.shape(x/w):1);
+      pts.push([x,y]);c.lineTo(x,y);
+    }
+    c.lineTo(w+10,h+10);c.closePath();c.fillStyle=fill;c.fill();
+    if(opt.rim){c.save();c.globalCompositeOperation="lighter";c.strokeStyle=opt.rim;c.lineWidth=opt.rimW||1;c.beginPath();
+      for(var i=0;i<pts.length;i++){if(i)c.lineTo(pts[i][0],pts[i][1]);else c.moveTo(pts[i][0],pts[i][1])}c.stroke();c.restore()}
+    return pts;
+  }
+  function band(c,w,y,hh,rgb,a){c.fillStyle=lg(c,0,y-hh,0,y+hh,[[0,rgba(rgb,0)],[.5,rgba(rgb,a)],[1,rgba(rgb,0)]]);c.fillRect(0,y-hh,w,hh*2)}
+  function puff(c,x,y,r,top,body,a){
+    var g=c.createRadialGradient(x-r*.25,y-r*.45,r*.1,x,y,r);
+    g.addColorStop(0,rgba(top,a));g.addColorStop(.55,rgba(body,a*.85));g.addColorStop(1,rgba(body,0));
+    c.fillStyle=g;c.beginPath();c.arc(x,y,r,0,TAU);c.fill();
+  }
+  function cloudSea(c,w,y,depth,R,top,body,a,scale){
+    for(var row=0;row<depth;row++){
+      var yy=y+row*row*6*(scale||1)+row*10,rr=(18+row*row*5)*(scale||1),cnt=Math.ceil(w/(rr*.9))+2;
+      for(var i=0;i<cnt;i++){puff(c,i*rr*.9-rr+R()*rr*.5,yy+R()*rr*.4,rr*(.8+R()*.6),top,body,a)}
+    }
+  }
+  function shimmer(c,cx,y0,y1,width,rgb,a,R,n){
+    c.save();c.globalCompositeOperation="lighter";
+    for(var i=0;i<(n||160);i++){
+      var t=R(),y=y0+(y1-y0)*Math.pow(t,1.6),spread=width*(.25+Math.pow(t,1.2)),x=cx+(R()-.5)*spread,len=4+R()*28*(.3+t);
+      c.fillStyle=rgba(rgb,a*(1-t*.6)*(.3+R()*.7));c.fillRect(x-len/2,y,len,.8+t*1.6);
+    }
+    c.restore();
+  }
+  function rays(c,x,y,n,len,spread,dir,rgb,a,R){
+    c.save();c.globalCompositeOperation="lighter";
+    for(var i=0;i<n;i++){
+      var ang=dir+(R()-.5)*spread,wd=.01+R()*.035,l=len*(.5+R()*.6);
+      var g=c.createRadialGradient(x,y,0,x,y,l);g.addColorStop(0,rgba(rgb,a*(.4+R()*.6)));g.addColorStop(1,rgba(rgb,0));
+      c.fillStyle=g;c.beginPath();c.moveTo(x,y);c.arc(x,y,l,ang-wd,ang+wd);c.closePath();c.fill();
+    }
+    c.restore();
+  }
+  function torii(c,x,base,s,fill){
+    c.fillStyle=fill;
+    var pw=s*.075,span=s*.78;
+    c.fillRect(x-span/2-pw/2,base-s*.92,pw,s*.92);c.fillRect(x+span/2-pw/2,base-s*.92,pw,s*.92);
+    c.fillRect(x-span*.62,base-s*.74,span*1.24,s*.055);
+    c.fillRect(x-span*.6,base-s*.9,span*1.2,s*.06);
+    c.beginPath();
+    c.moveTo(x-span*.82,base-s*1.02);c.quadraticCurveTo(x,base-s*.9,x+span*.82,base-s*1.02);
+    c.lineTo(x+span*.74,base-s*.93);c.quadraticCurveTo(x,base-s*.84,x-span*.74,base-s*.93);c.closePath();c.fill();
+    c.fillRect(x-pw*.35,base-s*.9,pw*.7,s*.16);
+  }
+  function stepPyr(c,x,base,wb,ht,n,fill){
+    c.fillStyle=fill;var th=ht/n;
+    for(var i=0;i<n;i++){var ww=wb*(1-i/n*.72);c.fillRect(x-ww/2,base-(i+1)*th,ww,th+.5)}
+    c.fillRect(x-wb*.09,base-ht-th*1.4,wb*.18,th*1.5);
+    c.fillRect(x-wb*.05,base-ht,wb*.1,ht);
+  }
+  function stoneLantern(c,x,base,s,body,lit){
+    c.fillStyle=body;
+    c.fillRect(x-s*.22,base-s*.12,s*.44,s*.12);
+    c.fillRect(x-s*.08,base-s*.55,s*.16,s*.45);
+    c.fillRect(x-s*.2,base-s*.62,s*.4,s*.08);
+    c.beginPath();c.moveTo(x-s*.3,base-s*.86);c.lineTo(x,base-s*1.02);c.lineTo(x+s*.3,base-s*.86);c.closePath();c.fill();
+    c.fillStyle=lit?"rgba(255,214,140,.95)":body;c.fillRect(x-s*.13,base-s*.84,s*.26,s*.22);
+    if(lit){glow(c,x,base-s*.73,s*1.4,"255,190,110",.5)}
+  }
+  function conifers(c,w,base,h0,R,fill,dens,fromX,toX){
+    c.fillStyle=fill;
+    for(var x=(fromX||0)-20;x<(toX||w)+20;x+=4+R()*(dens||10)){
+      var th=h0*(.55+R()*.6),tw=th*(.22+R()*.12);
+      c.beginPath();c.moveTo(x-tw,base);c.lineTo(x,base-th);c.lineTo(x+tw,base);c.closePath();c.fill();
+    }
+    c.fillRect(0,base-1,w,c.canvas.height);
+  }
+  function vignette(c,w,h,a){var g=c.createRadialGradient(w/2,h*.45,Math.min(w,h)*.3,w/2,h*.5,Math.max(w,h)*.85);g.addColorStop(0,"rgba(0,0,0,0)");g.addColorStop(1,"rgba(2,5,9,"+a+")");c.fillStyle=g;c.fillRect(0,0,w,h)}
+  function scrim(c,w,h,from,to,a,rgb){c.fillStyle=lg(c,0,h*from,0,h*to,[[0,rgba(rgb||"3,7,12",0)],[1,rgba(rgb||"3,7,12",a)]]);c.fillRect(0,h*from,w,h*(to-from)+2)}
+
+  /* ================= 0 夜明け前の山河 ================= */
+  function paintOpening(L,w,h){
+    var R=rng(7),c=L.back,sunX=w*.58,sunY=h*.55;
+    c.fillStyle=lg(c,0,0,0,h*.62,[[0,"#040a16"],[.35,"#0b1d33"],[.62,"#1a3a4a"],[.82,"#5c6a5c"],[1,"#d9b77a"]]);c.fillRect(0,0,w,h);
+    stars(c,w,h,170,R,.42,.08,.15);
+    glow(c,sunX,sunY,h*.55,"255,214,150",.55,.18);
+    glow(c,sunX,sunY,h*.16,"255,244,214",.9,.3);
+    rays(c,sunX,sunY,26,h*.75,1.9,-Math.PI/2,"255,226,170",.16,R);
+    // 遠い山並み（霞む）
+    ridge(c,w,h,h*.56,h*.16,2.2,R,"rgba(70,96,104,.85)",{rim:"rgba(255,226,170,.25)"});
+    band(c,w,h*.55,h*.03,"220,200,170",.35);
+    ridge(c,w,h,h*.6,h*.14,3,R,"#24414a",{sharp:true,rim:"rgba(255,220,160,.18)"});
+    band(c,w,h*.6,h*.028,"190,200,190",.28);
+    var m=L.mid;
+    ridge(m,w,h,h*.645,h*.12,3.4,R,"#12272c",{sharp:true});
+    band(m,w,h*.64,h*.02,"160,180,175",.22);
+    // 湖
+    m.fillStyle=lg(m,0,h*.655,0,h,[[0,"#3a4c4c"],[.12,"#1a2e34"],[1,"#050c12"]]);m.fillRect(0,h*.655,w,h);
+    shimmer(m,sunX,h*.66,h*.98,w*.5,"255,222,160",.55,R,260);
+    // 対岸の小さな階段ピラミッド
+    m.fillStyle="#0a1418";m.beginPath();m.ellipse(w*.24,h*.672,w*.17,h*.011,0,0,TAU);m.fill();
+    stepPyr(m,w*.24,h*.668,w*.2,h*.055,7,"#0a1418");
+    m.save();m.globalAlpha=.32;m.translate(0,h*.672*2);m.scale(1,-1);stepPyr(m,w*.24,h*.668,w*.2,h*.055,7,"#0a1418");m.restore();
+    var f=L.front;
+    // 手前の岸と葦
+    f.fillStyle="#03080b";f.beginPath();f.moveTo(0,h);f.lineTo(0,h*.86);
+    for(var x=0;x<=w;x+=6){f.lineTo(x,h*.9+Math.sin(x*.02)*h*.012+(x>w*.6?(x-w*.6)*.14:0)-(x<w*.3?(w*.3-x)*.08:0))}
+    f.lineTo(w,h);f.closePath();f.fill();
+    f.strokeStyle="#03080b";f.lineCap="round";
+    for(var i=0;i<70;i++){var bx=R()<.5?R()*w*.28:w*.72+R()*w*.28,bh=h*(.06+R()*.12),lean=(R()-.5)*30;f.lineWidth=1+R()*1.6;
+      f.beginPath();f.moveTo(bx,h*.93);f.quadraticCurveTo(bx+lean*.3,h*.93-bh*.6,bx+lean,h*.93-bh);f.stroke()}
+    scrim(f,w,h,.62,1,.55);
+    scrim(f,w,h,.3,0,.0);
+    var g=f.createLinearGradient(0,0,0,h*.35);g.addColorStop(0,"rgba(3,7,12,.45)");g.addColorStop(1,"rgba(3,7,12,0)");f.fillStyle=g;f.fillRect(0,0,w,h*.35);
+    return {sunX:sunX,sunY:sunY};
+  }
+
+  /* ================= 1 二百六十の星 ================= */
+  function paintCosmos(L,w,h,kin,hunab){
+    var R=rng(260),c=L.back;
+    c.fillStyle=lg(c,0,0,0,h,[[0,"#02040b"],[.5,"#06122a"],[1,"#020509"]]);c.fillRect(0,0,w,h);
+    c.save();c.globalCompositeOperation="lighter";
+    for(var i=0;i<14;i++){glow(c,R()*w,h*(.1+R()*.7),w*(.3+R()*.5),R()<.5?"40,90,120":"70,50,110",.12)}
+    glow(c,w*.5,h*.38,w*.9,"200,160,90",.08);
+    c.restore();
+    stars(c,w,h,420,R,1,.12,.1);
+    // 天の川の帯
+    c.save();c.translate(w*.5,h*.4);c.rotate(-.5);c.globalCompositeOperation="lighter";
+    for(var j=0;j<900;j++){var x=(R()-.5)*w*2.2,y=(R()+R()+R()-1.5)*h*.09;c.fillStyle="rgba(230,225,255,"+(R()*.35)+")";c.fillRect(x,y,1,1)}
+    c.restore();
+    // 260の星の床（13列×20段を奥へ倒す）
+    var m=L.mid,hor=h*.34,near=h*1.02,cx=w*.5,pos=null;
+    for(var r=19;r>=0;r--){
+      var z=1+r*.42,y=hor+(near-hor)/z,sp=w*.135/z;
+      for(var col=0;col<13;col++){
+        var k=col*20+r+1,x=cx+(col-6)*sp,rad=Math.max(.6,3.2/z);
+        if(!hunab&&k===kin){pos={x:x,y:y,z:z};continue}
+        var gold=R()<.08;
+        m.fillStyle=hunab?"rgba(150,230,190,"+(.85/Math.sqrt(z))+")":gold?"rgba(246,215,150,"+(.9/Math.sqrt(z))+")":"rgba(220,232,240,"+(.75/Math.sqrt(z))+")";
+        m.beginPath();m.arc(x,y,rad,0,TAU);m.fill();
+        if(r<6&&R()<.5)glow(m,x,y,rad*5,hunab?"150,230,190":"220,230,240",.12);
+      }
+    }
+    // 床の格子線（かすかに）
+    m.save();m.globalAlpha=.12;m.strokeStyle="#d9e6ff";m.lineWidth=.6;
+    for(var col2=0;col2<13;col2++){m.beginPath();m.moveTo(cx+(col2-6)*w*.135/1,hor+(near-hor));m.lineTo(cx+(col2-6)*w*.135/9,hor+(near-hor)/9);m.stroke()}
+    m.restore();
+    if(hunab){pos={x:cx,y:h*.46,z:1}}
+    var f=L.front;scrim(f,w,h,.5,1,.65);vignette(f,w,h,.6);
+    return pos;
+  }
+  function asanohaRing(size){
+    var cv=document.createElement("canvas");cv.width=cv.height=size;var c=cv.getContext("2d"),cx=size/2,s=size/26,hgt=s*Math.sqrt(3)/2;
+    c.save();c.beginPath();c.arc(cx,cx,size*.5,0,TAU);c.arc(cx,cx,size*.36,0,TAU,true);c.clip();
+    c.strokeStyle="rgba(246,215,150,.7)";c.lineWidth=size/900;
+    for(var row=-17;row<=17;row++){
+      for(var col=-16;col<=16;col++){
+        var ox=cx+col*s+(row%2?s/2:0),oy=cx+row*hgt;
+        var tris=[[[ox,oy],[ox+s,oy],[ox+s/2,oy+hgt]],[[ox+s/2,oy+hgt],[ox+s,oy],[ox+s*1.5,oy+hgt]]];
+        for(var t=0;t<2;t++){var T=tris[t],gx=(T[0][0]+T[1][0]+T[2][0])/3,gy=(T[0][1]+T[1][1]+T[2][1])/3;
+          c.beginPath();c.moveTo(T[0][0],T[0][1]);c.lineTo(T[1][0],T[1][1]);c.lineTo(T[2][0],T[2][1]);c.closePath();
+          for(var v=0;v<3;v++){c.moveTo(gx,gy);c.lineTo(T[v][0],T[v][1])}c.stroke()}
+      }
+    }
+    c.restore();
+    var g=c.createRadialGradient(cx,cx,size*.36,cx,cx,size*.5);g.addColorStop(0,"rgba(0,0,0,1)");g.addColorStop(.5,"rgba(0,0,0,0)");g.addColorStop(1,"rgba(0,0,0,1)");
+    c.globalCompositeOperation="destination-out";c.fillStyle=g;c.fillRect(0,0,size,size);
+    return cv.toDataURL("image/png");
+  }
+
+  /* ================= 2 紋章の世界（20の象徴画・創作） ================= */
+  var FAM={
+    red:{sky:[["#0d0408",0],["#24090f",.45],["#4a1716",.75],["#6e2a1c",1]],acc:"240,120,96",lt:"255,196,150",ink:"#140507"},
+    white:{sky:[["#04060f",0],["#121a2e",.45],["#2b3550",.8],["#4a5470",1]],acc:"236,233,245",lt:"235,240,255",ink:"#070a14"},
+    blue:{sky:[["#020712",0],["#071a33",.5],["#0f3355",.85],["#1d4b6b",1]],acc:"107,150,230",lt:"175,210,255",ink:"#020810"},
+    yellow:{sky:[["#040b07",0],["#0f2015",.45],["#2f3418",.8],["#5a4a1c",1]],acc:"230,198,95",lt:"255,226,150",ink:"#050b06"}
+  };
+  function sky(c,w,h,F,to){c.fillStyle=lg(c,0,0,0,h*(to||1),F.sky.map(function(s){return [s[1],s[0]]}));c.fillRect(0,0,w,h)}
+  var SEALART=[
+    function(c,m,f,w,h,R,F){ // 赤い龍：原初の海から立ち昇る光の龍
+      sky(c,w,h,F,.75);stars(c,w,h,140,R,.6,.1,.15);
+      glow(c,w*.5,h*.74,w*.95,F.acc,.38);
+      m.fillStyle=lg(m,0,h*.72,0,h,[[0,"#2a0c0e"],[1,"#070203"]]);m.fillRect(0,h*.72,w,h*.28);
+      shimmer(m,w*.5,h*.725,h,w*.85,F.lt,.55,R,220);
+      function P(t){var y=h*.76-t*h*.64,amp=w*.26*(1-t*.5);return [w*.5+Math.sin(t*9.5+.6)*amp,y]}
+      m.save();m.globalCompositeOperation="lighter";m.lineCap="round";m.lineJoin="round";
+      var passes=[[46,.035,F.acc],[22,.09,F.acc],[9,.22,F.lt],[3,.75,"255,240,225"]];
+      for(var q=0;q<passes.length;q++){for(var i=0;i<60;i++){var t0=i/60,t1=(i+1)/60,p0=P(t0),p1=P(t1),taper=1-t0*.75;
+        m.strokeStyle=rgba(passes[q][2],passes[q][1]);m.lineWidth=passes[q][0]*taper;m.beginPath();m.moveTo(p0[0],p0[1]);m.lineTo(p1[0],p1[1]);m.stroke()}}
+      for(var sN=0;sN<70;sN++){var t=sN/70,pp=P(t),pn=P(t+.01),ang=Math.atan2(pn[1]-pp[1],pn[0]-pp[0]);m.strokeStyle=rgba(F.lt,.45*(1-t));m.lineWidth=1.1;
+        m.beginPath();m.arc(pp[0],pp[1],9*(1-t*.6),ang+Math.PI*.6,ang+Math.PI*1.4);m.stroke()}
+      var hd=P(1);glow(m,hd[0],hd[1],w*.16,F.lt,.75);disc(m,hd[0],hd[1],3,"#fff");
+      for(var k=0;k<160;k++){var t2=R(),p2=P(t2);glow(m,p2[0]+(R()-.5)*60*(1-t2),p2[1]+(R()-.5)*40,1.5+R()*3,F.lt,.6)}
+      m.restore();
+    },
+    function(c,m,f,w,h,R,F){ // 白い風：空を渡る風の流れ
+      sky(c,w,h,F);stars(c,w,h,90,R,.5,.05,.1);glow(c,w*.8,h*.2,w*.5,F.lt,.18);
+      m.save();m.globalCompositeOperation="lighter";m.lineCap="round";
+      for(var i=0;i<34;i++){var y=h*(.12+R()*.66),a=R()*.36+.05;m.strokeStyle=rgba(F.lt,a);m.lineWidth=.5+R()*2.2;
+        m.beginPath();m.moveTo(-40,y);m.bezierCurveTo(w*.3,y-h*.12*R(),w*.6,y+h*.14*(R()-.3),w+40,y-h*.08*R());m.stroke()}
+      for(var p=0;p<60;p++){var px=R()*w,py=h*(.2+R()*.6);m.fillStyle=rgba(F.lt,.5+R()*.4);m.save();m.translate(px,py);m.rotate(R()*TAU);m.beginPath();m.ellipse(0,0,4+R()*4,1.4,0,0,TAU);m.fill();m.restore()}
+      m.restore();
+      ridge(m,w,h,h*.88,h*.12,2,R,F.ink,{rim:rgba(F.lt,.25)});
+    },
+    function(c,m,f,w,h,R,F){ // 青い夜：満月の森と灯る家
+      sky(c,w,h,F,.8);stars(c,w,h,520,R,.75,.08,.12);
+      disc(c,w*.68,h*.24,w*.13,"#eef2ff");glow(c,w*.68,h*.24,w*.62,F.lt,.35);
+      conifers(m,w,h*.74,h*.2,R,"#06142a",8);
+      conifers(m,w,h*.82,h*.26,R,F.ink,9);
+      m.fillStyle="#1b2a2e";m.fillRect(w*.3,h*.785,w*.07,h*.035);m.beginPath();m.moveTo(w*.29,h*.787);m.lineTo(w*.335,h*.765);m.lineTo(w*.38,h*.787);m.fill();
+      m.fillStyle="#ffd68e";m.fillRect(w*.325,h*.795,w*.015,h*.012);glow(m,w*.333,h*.8,w*.12,"255,200,120",.55);
+    },
+    function(c,m,f,w,h,R,F){ // 黄色い種：黄金角で並ぶ種の螺旋
+      sky(c,w,h,F);stars(c,w,h,140,R,.5,.3,.1);
+      var cx=w*.54,cy=h*.42,k=Math.min(w,h)*.0165;
+      glow(c,cx,cy,w*.7,F.acc,.25);
+      m.save();m.globalCompositeOperation="lighter";
+      for(var i=1;i<520;i++){var a=i*2.39996,r=k*Math.sqrt(i),x=cx+r*Math.cos(a),y=cy+r*Math.sin(a)*.92,s=1+Math.sqrt(i)*.12;
+        m.fillStyle=rgba(i<60?F.lt:F.acc,.85-i/800);m.beginPath();m.ellipse(x,y,s*1.4,s,a,0,TAU);m.fill()}
+      glow(m,cx,cy,k*8,F.lt,.8);m.restore();
+      ridge(m,w,h,h*.9,h*.06,1.5,R,F.ink);
+    },
+    function(c,m,f,w,h,R,F){ // 赤い蛇：大地を這う光の蛇行
+      sky(c,w,h,F,.5);stars(c,w,h,100,R,.35,.1,.1);
+      var hor=h*.46;glow(c,w*.5,hor,w*.8,F.acc,.4);
+      m.fillStyle=lg(m,0,hor,0,h,[[0,"#3b1210"],[1,"#080203"]]);m.fillRect(0,hor,w,h-hor);
+      ridge(m,w,h,hor,h*.03,4,R,"#2a0c0b");
+      m.save();m.globalCompositeOperation="lighter";
+      for(var i=0;i<700;i++){var t=i/700,z=1+t*9,y=hor+(h*1.02-hor)/z,x=w*.5+Math.sin(t*10)*w*.9/z,r=Math.max(.5,7/z);
+        m.fillStyle=rgba(i%9===0?F.lt:F.acc,.5);m.beginPath();m.arc(x,y,r,0,TAU);m.fill();if(i%35===0)glow(m,x,y,r*7,F.lt,.25)}
+      m.restore();
+    },
+    function(c,m,f,w,h,R,F){ // 白い世界の橋渡し：雲海に架かる光の橋
+      sky(c,w,h,F);stars(c,w,h,160,R,.5,.06,.12);glow(c,w*.5,h*.48,w*.7,F.lt,.25);
+      m.fillStyle=F.ink;m.beginPath();m.moveTo(-10,h*.7);m.lineTo(w*.06,h*.46);m.lineTo(w*.2,h*.62);m.lineTo(w*.22,h*.75);m.lineTo(-10,h*.8);m.fill();
+      m.beginPath();m.moveTo(w+10,h*.68);m.lineTo(w*.9,h*.5);m.lineTo(w*.78,h*.64);m.lineTo(w*.78,h*.76);m.lineTo(w+10,h*.8);m.fill();
+      m.save();m.globalCompositeOperation="lighter";
+      for(var b=0;b<6;b++){m.strokeStyle=rgba(F.lt,.5-b*.07);m.lineWidth=6-b;m.beginPath();m.ellipse(w*.5,h*.62,w*.37,h*.2+b*2,0,Math.PI,TAU);m.stroke()}
+      for(var p=0;p<140;p++){var a=Math.PI+R()*Math.PI;var x=w*.5+Math.cos(a)*w*.37,y=h*.62+Math.sin(a)*h*.2;glow(m,x+(R()-.5)*8,y+(R()-.5)*8,3+R()*6,F.lt,.5)}
+      m.restore();
+      cloudSea(m,w,h*.66,6,R,"220,226,240","90,100,130",.55,1.1);
+    },
+    function(c,m,f,w,h,R,F){ // 青い手：静かな水面にひろがる癒しの水紋
+      sky(c,w,h,F,.45);stars(c,w,h,220,R,.4,.06,.12);
+      var hor=h*.44;m.fillStyle=lg(m,0,hor,0,h,[[0,"#123a5a"],[.3,"#08203a"],[1,"#020812"]]);m.fillRect(0,hor,w,h-hor);
+      glow(c,w*.5,h*.3,w*.25,F.lt,.7);disc(c,w*.5,h*.3,5,"#fff");
+      shimmer(m,w*.5,hor,h*.62,w*.3,F.lt,.4,R,100);
+      m.save();m.globalCompositeOperation="lighter";
+      for(var i=1;i<16;i++){m.strokeStyle=rgba(F.lt,.55-i*.032);m.lineWidth=1.4;m.beginPath();m.ellipse(w*.5,h*.66,i*w*.06,i*w*.06*.2,0,0,TAU);m.stroke()}
+      glow(m,w*.5,h*.66,w*.1,F.lt,.6);m.restore();
+    },
+    function(c,m,f,w,h,R,F){ // 黄色い星：美と調和の星の幾何
+      sky(c,w,h,F);stars(c,w,h,300,R,.9,.25,.12);
+      var cx=w*.5,cy=h*.38,Rr=w*.46;glow(c,cx,cy,Rr*1.4,F.acc,.22);
+      m.save();m.globalCompositeOperation="lighter";m.strokeStyle=rgba(F.lt,.5);m.lineWidth=.9;
+      for(var q=0;q<4;q++){m.save();m.translate(cx,cy);m.rotate(q*Math.PI/8);m.strokeRect(-Rr*.62,-Rr*.62,Rr*1.24,Rr*1.24);m.restore()}
+      for(var cr=1;cr<=4;cr++){m.beginPath();m.arc(cx,cy,Rr*cr*.22,0,TAU);m.stroke()}
+      m.beginPath();for(var i=0;i<=16;i++){var a=i*TAU/16-Math.PI/2,r=i%2?Rr*.35:Rr*.9;var x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r;if(i)m.lineTo(x,y);else m.moveTo(x,y)}m.stroke();
+      for(var l=0;l<32;l++){var a2=l*TAU/32;m.strokeStyle=rgba(F.lt,.12);m.beginPath();m.moveTo(cx,cy);m.lineTo(cx+Math.cos(a2)*Rr,cy+Math.sin(a2)*Rr);m.stroke()}
+      glow(m,cx,cy,Rr*.25,F.lt,.9);m.restore();
+    },
+    function(c,m,f,w,h,R,F){ // 赤い月：水面に映る紅の月
+      sky(c,w,h,F,.6);stars(c,w,h,160,R,.45,.05,.1);
+      var mx=w*.5,my=h*.34,mr=w*.2;glow(c,mx,my,mr*4.5,F.acc,.4);
+      var g=c.createRadialGradient(mx-mr*.3,my-mr*.3,mr*.1,mx,my,mr);g.addColorStop(0,"#ffd2b8");g.addColorStop(.6,"#e2765e");g.addColorStop(1,"#a33a2e");disc(c,mx,my,mr,g);
+      var hor=h*.56;m.fillStyle=lg(m,0,hor,0,h,[[0,"#3a1012"],[1,"#060102"]]);m.fillRect(0,hor,w,h-hor);
+      ridge(m,w,h,hor,h*.03,3,R,"#1c0608");
+      shimmer(m,mx,hor,h,w*.55,"255,150,120",.7,R,300);
+    },
+    function(c,m,f,w,h,R,F){ // 白い犬：灯籠の灯りが続く、誠実な道
+      sky(c,w,h,F,.6);stars(c,w,h,140,R,.4,.05,.1);
+      var vx=w*.5,vy=h*.48;glow(c,vx,vy,w*.5,"255,220,170",.45);
+      m.fillStyle=lg(m,0,vy,0,h,[[0,"#1c2234"],[1,"#04060c"]]);m.beginPath();m.moveTo(vx-2,vy);m.lineTo(vx+2,vy);m.lineTo(w*.95,h);m.lineTo(w*.05,h);m.fill();
+      conifers(m,w,vy+2,h*.18,R,"#05070f",7,0,vx-12);conifers(m,w,vy+2,h*.18,R,"#05070f",7,vx+12,w);
+      m.fillStyle="#05070f";m.fillRect(0,vy,w*.5-6,h);m.fillRect(w*.5+6,vy,w,h);
+      m.fillStyle=lg(m,0,vy,0,h,[[0,"#1c2234"],[1,"#060812"]]);m.beginPath();m.moveTo(vx-3,vy);m.lineTo(vx+3,vy);m.lineTo(w*.9,h);m.lineTo(w*.1,h);m.fill();
+      for(var k=8;k>=1;k--){var z=Math.pow(1.45,k-1),y=vy+(h*.98-vy)/z,dx=(w*.46)/z,s=h*.13/z;stoneLantern(m,vx-dx,y,s,"#0c0e16",true);stoneLantern(m,vx+dx,y,s,"#0c0e16",true)}
+    },
+    function(c,m,f,w,h,R,F){ // 青い猿：遊ぶように舞う蛍の光
+      sky(c,w,h,F,.85);stars(c,w,h,200,R,.6,.1,.12);
+      ridge(m,w,h,h*.78,h*.1,2,R,"#04101e");
+      m.save();m.globalCompositeOperation="lighter";m.lineCap="round";
+      for(var i=0;i<14;i++){var cx=w*(.1+R()*.8),cy=h*(.3+R()*.4),rr=10+R()*30,loops=2+R()*3,ph=R()*TAU;m.strokeStyle=rgba(F.lt,.22);m.lineWidth=1;m.beginPath();
+        for(var t=0;t<=1;t+=.01){var x=cx+(t-.5)*w*.4+Math.cos(t*loops*TAU+ph)*rr,y=cy+Math.sin(t*loops*TAU+ph)*rr*.7-t*30;if(t)m.lineTo(x,y);else m.moveTo(x,y)}m.stroke();
+        glow(m,x,y,16,F.lt,.8);disc(m,x,y,2,"#fff")}
+      m.restore();
+      m.strokeStyle="#04101e";for(var g=0;g<120;g++){var gx=R()*w;m.lineWidth=1;m.beginPath();m.moveTo(gx,h);m.quadraticCurveTo(gx+5,h*.9,gx+(R()-.5)*20,h*(.78+R()*.08));m.stroke()}
+    },
+    function(c,m,f,w,h,R,F){ // 黄色い人：地平へ続く一本の道
+      sky(c,w,h,F,.62);stars(c,w,h,90,R,.4,.2,.1);
+      var hor=h*.55;glow(c,w*.62,hor,w*.7,F.lt,.45);disc(c,w*.62,hor,w*.035,"#fff4d0");
+      m.fillStyle=lg(m,0,hor,0,h,[[0,"#3a3418"],[1,"#060a05"]]);m.fillRect(0,hor,w,h-hor);
+      m.save();m.globalCompositeOperation="lighter";m.fillStyle=rgba(F.lt,.25);m.beginPath();
+      for(var t=0;t<=1;t+=.02){var z=1+t*10,y=hor+(h-hor)/z,x=w*.62+Math.sin(t*5)*w*.5/z-(1-t)*w*.1,ww=w*.18/z;if(t)m.lineTo(x+ww,y);else m.moveTo(x+ww,y)}
+      for(t=1;t>=0;t-=.02){z=1+t*10;y=hor+(h-hor)/z;x=w*.62+Math.sin(t*5)*w*.5/z-(1-t)*w*.1;ww=w*.18/z;m.lineTo(x-ww,y)}m.fill();m.restore();
+      var fx=w*.41,fy=h*.72;m.fillStyle="#050805";m.beginPath();m.arc(fx,fy-h*.062,h*.008,0,TAU);m.fill();m.beginPath();m.moveTo(fx-h*.009,fy-h*.052);m.lineTo(fx+h*.009,fy-h*.052);m.lineTo(fx+h*.006,fy);m.lineTo(fx-h*.006,fy);m.fill();
+    },
+    function(c,m,f,w,h,R,F){ // 赤い空歩く人：雲を抜けて空へ昇る光の階
+      sky(c,w,h,F);stars(c,w,h,200,R,.7,.12,.12);
+      glow(c,w*.5,h*.06,w*.9,F.lt,.5,.12);rays(c,w*.5,-h*.05,30,h*.9,1.1,Math.PI/2,F.lt,.1,R);
+      cloudSea(c,w,h*.62,6,R,"250,190,160","80,24,30",.5);
+      var vx=w*.5;
+      for(var i=26;i>=0;i--){var t=i/26,z=1+t*7,y=h*.98-(1-1/z)*h*.98,ww=w*.62/z,th=Math.max(1.2,h*.032/z),rise=h*.045/z;
+        m.fillStyle=lg(m,0,y-rise,0,y,[[0,"rgba(60,16,18,.95)"],[1,"rgba(20,5,8,.95)"]]);m.fillRect(vx-ww/2,y-rise,ww,rise);
+        m.fillStyle=lg(m,vx-ww/2,0,vx+ww/2,0,[[0,rgba(F.lt,.15)],[.5,rgba(F.lt,.85-t*.4)],[1,rgba(F.lt,.15)]]);m.fillRect(vx-ww/2,y-rise-th,ww,th);
+      }
+      m.save();m.globalCompositeOperation="lighter";glow(m,vx,h*.13,w*.2,F.lt,.75);m.restore();
+      cloudSea(m,w,h*.86,3,R,"200,120,110","40,10,14",.55,1.2);
+    },
+    function(c,m,f,w,h,R,F){ // 白い魔法使い：雪嶺にゆらめく光の帳
+      sky(c,w,h,F);stars(c,w,h,260,R,.8,.05,.12);
+      c.save();c.globalCompositeOperation="lighter";
+      var cols=["120,230,200","170,200,255","236,233,245"];
+      for(var band2=0;band2<4;band2++){var base=h*(.18+band2*.08),col=cols[band2%3];
+        for(var x=0;x<w;x+=2){var y=base+Math.sin(x*.012+band2)*h*.05+Math.sin(x*.031)*h*.02,len=h*(.18+.1*Math.sin(x*.02+band2*2));
+          c.fillStyle=lg(c,0,y,0,y+len,[[0,rgba(col,0)],[.15,rgba(col,.18)],[1,rgba(col,0)]]);c.fillRect(x,y,2,len)}}
+      c.restore();
+      ridge(m,w,h,h*.78,h*.3,2,R,"#1a2236",{sharp:true,rim:"rgba(235,240,255,.6)",rimW:1.4});
+      ridge(m,w,h,h*.86,h*.12,3,R,F.ink);
+    },
+    function(c,m,f,w,h,R,F){ // 青いワシ：雲海を見下ろす高みと翼の弧
+      sky(c,w,h,F,.7);stars(c,w,h,160,R,.5,.06,.12);
+      c.fillStyle=lg(c,0,h*.5,0,h*.62,[[0,"rgba(175,210,255,0)"],[1,"rgba(175,210,255,.25)"]]);c.fillRect(0,h*.5,w,h*.12);
+      cloudSea(m,w,h*.6,7,R,"200,220,250","40,70,110",.55,.8);
+      m.save();m.globalCompositeOperation="lighter";m.lineCap="round";
+      for(var side=-1;side<=1;side+=2){for(var i=0;i<26;i++){var t=i/26;m.strokeStyle=rgba(F.lt,.38-t*.25);m.lineWidth=1.6-t;m.beginPath();
+        m.moveTo(w*.5,h*.4);m.quadraticCurveTo(w*.5+side*w*(.2+t*.15),h*(.18+t*.06),w*.5+side*w*(.5+t*.15),h*(.24+t*.16));m.stroke()}}
+      glow(m,w*.5,h*.4,w*.12,F.lt,.7);m.restore();
+    },
+    function(c,m,f,w,h,R,F){ // 黄色い戦士：雲を貫く光の剣
+      sky(c,w,h,F);
+      cloudSea(c,w,h*.04,4,R,"120,110,70","20,24,14",.7);
+      var x0=w*.5;glow(c,x0,h*.5,w*.6,F.acc,.25);
+      m.save();m.globalCompositeOperation="lighter";
+      m.fillStyle=lg(m,x0-14,0,x0+14,0,[[0,rgba(F.lt,0)],[.5,rgba(F.lt,.9)],[1,rgba(F.lt,0)]]);m.fillRect(x0-14,0,28,h*.82);
+      m.fillStyle="rgba(255,255,240,.95)";m.fillRect(x0-1.5,0,3,h*.82);
+      for(var b=0;b<7;b++){var y=h*(.15+R()*.55),x=x0,dir=R()<.5?-1:1;m.strokeStyle=rgba(F.lt,.6);m.lineWidth=1.2;m.beginPath();m.moveTo(x,y);
+        for(var s=0;s<7;s++){x+=dir*(6+R()*14);y+=4+R()*14;m.lineTo(x,y)}m.stroke()}
+      glow(m,x0,h*.82,w*.25,F.lt,.8);m.restore();
+      ridge(m,w,h,h*.84,h*.05,2,R,F.ink);
+    },
+    function(c,m,f,w,h,R,F){ // 赤い地球：地平に昇る大きな惑星
+      sky(c,w,h,F,.7);stars(c,w,h,320,R,.65,.06,.12);
+      var px=w*.5,py=h*1.0,pr=w*.9;glow(c,px,py-pr*.6,pr*1.4,F.acc,.35);
+      m.save();m.beginPath();m.arc(px,py,pr,0,TAU);m.clip();
+      var g=m.createRadialGradient(px-pr*.25,py-pr*.9,pr*.1,px,py,pr);g.addColorStop(0,"#f0a07a");g.addColorStop(.35,"#b5543c");g.addColorStop(.8,"#4a1712");g.addColorStop(1,"#1c0807");
+      m.fillStyle=g;m.fillRect(0,py-pr,w,pr);
+      for(var i=0;i<90;i++){var a2=Math.PI+R()*Math.PI,r=pr*(.15+R()*.85),x=px+Math.cos(a2)*r,y=py+Math.sin(a2)*r;m.fillStyle="rgba(60,20,14,"+(.18+R()*.3)+")";m.beginPath();m.ellipse(x,y,20+R()*70,6+R()*18,R()*.5,0,TAU);m.fill()}
+      for(var j=0;j<40;j++){var a3=Math.PI+R()*Math.PI,r3=pr*(.3+R()*.7);m.fillStyle="rgba(255,220,190,"+(R()*.12)+")";m.beginPath();m.ellipse(px+Math.cos(a3)*r3,py+Math.sin(a3)*r3,30+R()*80,3+R()*6,0,0,TAU);m.fill()}
+      m.restore();
+      m.save();m.globalCompositeOperation="lighter";for(var b2=0;b2<4;b2++){m.strokeStyle=rgba(F.lt,.55-b2*.12);m.lineWidth=2+b2*5;m.beginPath();m.arc(px,py,pr+b2*3,Math.PI*1.02,Math.PI*1.98);m.stroke()}m.restore();
+    },
+    function(c,m,f,w,h,R,F){ // 白い鏡：上下に映しあう水鏡の世界
+      sky(c,w,h,F,.5);stars(c,w,h,140,R,.42,.05,.12);
+      var hor=h*.5;glow(c,w*.5,h*.2,w*.12,F.lt,.9);disc(c,w*.5,h*.2,w*.045,"#f4f6ff");
+      var pts=ridge(c,w,h,hor,h*.2,2.6,R,lg(c,0,hor-h*.2,0,hor,[[0,"#4a5674"],[1,"#1a2236"]]),{sharp:true,rim:"rgba(235,240,255,.45)"});
+      ridge(c,w,h,hor,h*.08,4,R,"#0e1424");
+      c.fillStyle="#0e1424";c.fillRect(0,hor,w,h-hor);
+      m.save();m.translate(0,hor*2);m.scale(1,-1);m.globalAlpha=.55;m.drawImage(c.canvas,0,0,c.canvas.width,c.canvas.height*(hor/h),0,0,w,hor);m.restore();
+      m.save();m.globalCompositeOperation="lighter";m.fillStyle="rgba(235,240,255,.5)";m.fillRect(0,hor-.5,w,1);m.restore();
+      shimmer(m,w*.5,hor+4,h*.92,w*.4,F.lt,.35,R,120);
+    },
+    function(c,m,f,w,h,R,F){ // 青い嵐：渦巻く雲と変容の光
+      sky(c,w,h,F);
+      var cx=w*.5,cy=h*.4;
+      for(var arm=0;arm<4;arm++){for(var i=0;i<130;i++){var t=i/130,a=arm*TAU/4+t*5.2,r=w*.04*Math.exp(t*2.6);var x=cx+Math.cos(a)*r,y=cy+Math.sin(a)*r*.62;
+        puff(c,x,y,8+t*40,"150,180,220","20,40,70",.35*(1-t*.5))}}
+      glow(m,cx,cy,w*.3,F.lt,.6);
+      m.save();m.globalCompositeOperation="lighter";m.strokeStyle="rgba(230,240,255,.8)";m.lineWidth=1.2;
+      for(var b=0;b<4;b++){var x2=cx,y2=cy;m.beginPath();m.moveTo(x2,y2);var ang=R()*TAU;for(var s=0;s<9;s++){ang+=(R()-.5)*1.2;x2+=Math.cos(ang)*14;y2+=Math.sin(ang)*14;m.lineTo(x2,y2)}m.stroke()}
+      m.restore();
+      ridge(m,w,h,h*.86,h*.07,3,R,F.ink);
+    },
+    function(c,m,f,w,h,R,F){ // 黄色い太陽：日輪と光芒
+      sky(c,w,h,F,.62);
+      var sx=w*.5,sy=h*.4;glow(c,sx,sy,w*1.1,F.lt,.45,.12);
+      rays(c,sx,sy,60,h*.9,TAU,0,F.lt,.12,R);
+      disc(c,sx,sy,w*.11,"#fff9e6");glow(c,sx,sy,w*.2,"255,250,230",.9);
+      c.save();c.globalCompositeOperation="lighter";c.strokeStyle=rgba(F.lt,.25);for(var r=1;r<5;r++){c.lineWidth=1;c.beginPath();c.arc(sx,sy,w*.11+r*w*.06,0,TAU);c.stroke()}c.restore();
+      var hor=h*.66;m.fillStyle=lg(m,0,hor,0,h,[[0,"#5a4a1c"],[.2,"#2a2410"],[1,"#050803"]]);m.fillRect(0,hor,w,h-hor);
+      shimmer(m,sx,hor,h,w*.7,F.lt,.55,R,260);
+    }
+  ];
+  function paintSeal(L,w,h,sIdx,color){
+    var F=FAM[color],R=rng(1000+sIdx*97);
+    SEALART[sIdx](L.back,L.mid,L.front,w,h,R,F);
+    var f=L.front;scrim(f,w,h,.45,1,.82);vignette(f,w,h,.45);
+  }
+
+  /* ================= 3 十三段のピラミッドとククルカン（象徴表現） ================= */
+  function canopy(c,w,base,hh,R,fill){
+    c.fillStyle=fill;c.beginPath();c.moveTo(-10,base+hh);
+    for(var x=-10;x<w+30;x+=8+R()*16){var r=hh*(.35+R()*.65);c.arc(x,base-r*.35,r,Math.PI,0)}
+    c.lineTo(w+10,base+hh*2);c.lineTo(-10,base+hh*2);c.closePath();c.fill();
+  }
+  function paintPyramid(L,w,h,toneNo){
+    var R=rng(13),c=L.back,base=h*.745,cx=w*.5;
+    // 夕暮れの空（左から低い陽）
+    c.fillStyle=lg(c,0,0,0,base,[[0,"#030814"],[.45,"#0d2234"],[.75,"#3c4a4a"],[.92,"#b0784a"],[1,"#e2a660"]]);c.fillRect(0,0,w,h);
+    stars(c,w,h,140,R,.35,.08,.1);
+    glow(c,-w*.05,base-h*.04,w*1.1,"255,170,100",.42,.15);
+    rays(c,-w*.05,base-h*.05,18,w*1.3,.7,-.2,"255,200,140",.08,R);
+    disc(c,w*.82,h*.1,w*.028,"#f3f1e6");glow(c,w*.82,h*.1,w*.24,"220,230,240",.18);
+    canopy(c,w,base-h*.05,h*.045,R,"#1d2a28");
+    canopy(c,w,base-h*.015,h*.04,R,"#0f1918");
+    // ピラミッド本体
+    var m=L.mid,n=13,ht=h*.34,th=ht/n,wb=w*.84,wt=w*.2,stairB=w*.17,stairT=w*.085,tiers=[];
+    for(var i=0;i<n;i++){
+      var t=i/(n-1),ww=wb+(wt-wb)*t,yb=base-i*th,yt=yb-th,inset=th*.42,me=(i+1===toneNo);
+      // 正面の段（左が夕陽を受ける）
+      var face=m.createLinearGradient(cx-ww/2,0,cx+ww/2,0);
+      if(me){face.addColorStop(0,"#f1c27a");face.addColorStop(.5,"#d9984f");face.addColorStop(1,"#8a5226")}
+      else{var k=.82+.18*t;face.addColorStop(0,"rgb("+Math.round(132*k)+","+Math.round(104*k)+","+Math.round(78*k)+")");face.addColorStop(.55,"rgb("+Math.round(84*k)+","+Math.round(68*k)+","+Math.round(56*k)+")");face.addColorStop(1,"rgb(38,32,30)")}
+      m.fillStyle=face;
+      m.beginPath();m.moveTo(cx-ww/2,yb);m.lineTo(cx+ww/2,yb);m.lineTo(cx+ww/2-inset,yt);m.lineTo(cx-ww/2+inset,yt);m.closePath();m.fill();
+      // 段の上面の縁（光）
+      m.fillStyle=me?"rgba(255,232,180,.95)":"rgba(240,200,150,"+(.22+.2*t)+")";m.fillRect(cx-ww/2+inset,yt,ww-inset*2,Math.max(1,th*.1));
+      // 石積みの目地
+      m.strokeStyle="rgba(20,14,10,.22)";m.lineWidth=.6;m.beginPath();m.moveTo(cx-ww/2+inset*.5,yb-th*.5);m.lineTo(cx+ww/2-inset*.5,yb-th*.5);m.stroke();
+      for(var j=0;j<14;j++){var xx=cx-ww/2+inset+(ww-inset*2)*(j+.5)/14;m.beginPath();m.moveTo(xx,yb-(j%2?th*.5:0));m.lineTo(xx,yb-(j%2?th:th*.5));m.stroke()}
+      tiers.push({yb:yb,yt:yt,ww:ww});
+    }
+    // 正面の大階段
+    for(var s2=0;s2<n*5;s2++){var t2=s2/(n*5),sw=stairB+(stairT-stairB)*t2,y=base-ht*t2,stp=ht/(n*5);
+      m.fillStyle=s2%2?"#4c3e33":"#5a4a3d";m.fillRect(cx-sw/2,y-stp,sw,stp+.5);
+      m.fillStyle="rgba(240,205,160,.18)";m.fillRect(cx-sw/2,y-stp,sw,.8)}
+    // 欄干
+    m.fillStyle="#2c241f";
+    m.beginPath();m.moveTo(cx-stairB/2-w*.022,base);m.lineTo(cx-stairB/2,base);m.lineTo(cx-stairT/2,base-ht);m.lineTo(cx-stairT/2-w*.016,base-ht);m.closePath();m.fill();
+    m.fillStyle="#3a2f28";
+    m.beginPath();m.moveTo(cx+stairB/2,base);m.lineTo(cx+stairB/2+w*.022,base);m.lineTo(cx+stairT/2+w*.016,base-ht);m.lineTo(cx+stairT/2,base-ht);m.closePath();m.fill();
+    // 頂上の神殿
+    var ty=base-ht;m.fillStyle="#3e3229";m.fillRect(cx-wt*.36,ty-th*2.1,wt*.72,th*2.1);
+    m.fillStyle="#2a211b";m.fillRect(cx-wt*.42,ty-th*2.5,wt*.84,th*.45);
+    m.fillStyle="#120c09";for(var d=-1;d<=1;d++){m.fillRect(cx+d*wt*.2-wt*.045,ty-th*1.5,wt*.09,th*1.5)}
+    m.fillStyle="rgba(240,200,150,.25)";m.fillRect(cx-wt*.36,ty-th*2.1,wt*.72,1);
+    // 階段下の蛇の頭（左右）
+    function head(x,dir,lit){m.fillStyle=lit?"#7a5a3a":"#2a211b";m.beginPath();m.moveTo(x,base);m.lineTo(x+dir*w*.07,base);m.quadraticCurveTo(x+dir*w*.085,base-h*.03,x+dir*w*.05,base-h*.034);m.lineTo(x,base-h*.03);m.closePath();m.fill();
+      m.fillStyle=lit?"rgba(255,220,170,.9)":"rgba(255,220,170,.2)";m.fillRect(x+dir*w*.045-1.5,base-h*.024,3,3)}
+    head(cx-stairB/2,-1,false);head(cx+stairB/2,1,true);
+    // 水彩の質感：にじみ・夕陽の色・裾の霧（ピラミッドの上だけに）
+    m.save();m.globalCompositeOperation="source-atop";
+    for(var bl=0;bl<5000;bl++){var bx=cx+(R()-.5)*wb,by=base-R()*ht*1.12;m.fillStyle=R()<.6?"rgba(20,14,10,"+(.08+R()*.14)+")":"rgba(255,230,190,"+(.05+R()*.08)+")";m.fillRect(bx,by,1+R()*1.6,1+R()*1.2)}
+    m.fillStyle=lg(m,cx-wb/2,0,cx+wb/2,0,[[0,"rgba(255,170,90,.22)"],[.6,"rgba(255,170,90,0)"],[1,"rgba(20,40,60,.25)"]]);m.fillRect(0,base-ht*1.2,w,ht*1.2);
+    m.fillStyle=lg(m,0,base-ht*.22,0,base,[[0,"rgba(150,165,175,0)"],[1,"rgba(150,165,175,.32)"]]);m.fillRect(0,base-ht*.22,w,ht*.22);
+    m.restore();
+    // 足もとの森と霧
+    m.fillStyle=lg(m,0,base-h*.03,0,h,[[0,"rgba(6,12,14,0)"],[.12,"rgba(6,12,14,.85)"],[.4,"rgba(4,8,10,.97)"],[1,"#030607"]]);m.fillRect(0,base-h*.03,w,h-base+h*.03);
+    var braz=[[w*.08,base+h*.03],[w*.92,base+h*.03]];
+    braz.forEach(function(b){m.fillStyle="#120c09";m.fillRect(b[0]-w*.02,b[1]-h*.012,w*.04,h*.03);glow(m,b[0],b[1]-h*.02,w*.16,"255,150,70",.45)});
+    // ククルカンの光の三角（右の欄干に落ちる光と影）
+    var serp=[];for(var q=0;q<7;q++){var tq=(q+.5)/7.6,y3=base-ht*tq,x3=cx+stairB/2+(stairT-stairB)/2*tq+w*.011;serp.push([x3,y3,ht/7.6*.5])}
+    var sel=tiers[toneNo-1];
+    var f=L.front;
+    var g=f.createLinearGradient(0,0,0,h*.42);g.addColorStop(0,"rgba(2,6,12,.82)");g.addColorStop(.7,"rgba(2,6,12,.45)");g.addColorStop(1,"rgba(2,6,12,0)");f.fillStyle=g;f.fillRect(0,0,w,h*.42);
+    scrim(f,w,h,.74,1,.75);
+    return {x:cx-sel.ww*.34,y:sel.yt-th*.4,s:th*6,tierY:sel.yt,tierB:sel.yb,tierW:sel.ww,th:th,cx:cx,braz:braz,serp:serp};
+  }
+
+  /* ================= 4 灯籠の海 ================= */
+  function paintSea(L,w,h){
+    var R=rng(4),c=L.back,hor=h*.5;
+    c.fillStyle=lg(c,0,0,0,hor,[[0,"#02050d"],[.6,"#081a30"],[1,"#18344a"]]);c.fillRect(0,0,w,h);
+    stars(c,w,h,300,R,.48,.06,.12);
+    var m=L.mid;
+    m.fillStyle=lg(m,0,hor,0,h,[[0,"#16304a"],[.12,"#0a1c30"],[1,"#01060c"]]);m.fillRect(0,hor,w,h-hor);
+    m.save();m.globalAlpha=.5;m.strokeStyle="rgba(150,190,230,.25)";
+    for(var i=0;i<220;i++){var t=R(),z=1+t*12,y=hor+(h-hor)/z,x=R()*w,l=24/z+R()*30/z;m.lineWidth=Math.max(.4,1.2/z);m.beginPath();m.moveTo(x-l,y);m.quadraticCurveTo(x,y-2/z,x+l,y);m.stroke()}
+    m.restore();
+    ridge(m,w,h,hor+1,h*.02,3,R,"#0b1626");
+    var f=L.front;
+    var g=f.createLinearGradient(0,0,0,h*.42);g.addColorStop(0,"rgba(2,5,12,.55)");g.addColorStop(1,"rgba(2,5,12,0)");f.fillStyle=g;f.fillRect(0,0,w,h*.42);
+    scrim(f,w,h,.68,1,.75);
+  }
+
+  /* ================= 5 雲海の夜明け ================= */
+  function paintDawn(L,w,h){
+    var R=rng(55),c=L.back,sx=w*.5,sy=h*.44;
+    c.fillStyle=lg(c,0,0,0,h*.5,[[0,"#0b1a3a"],[.35,"#3b4a78"],[.62,"#c47f78"],[.82,"#f0b56c"],[1,"#ffe2a8"]]);c.fillRect(0,0,w,h);
+    stars(c,w,h,40,R,.18,0,.08);
+    glow(c,sx,sy,w*1.2,"255,214,150",.55,.15);
+    rays(c,sx,sy,40,h*.8,2.4,-Math.PI/2,"255,236,190",.12,R);
+    disc(c,sx,sy,w*.12,"#fffaf0");glow(c,sx,sy,w*.22,"255,250,235",.9);
+    var m=L.mid;
+    for(var row=0;row<8;row++){var y=h*(.45+row*row*.007+row*.02),rr=w*(.08+row*.035),cnt=Math.ceil(w/(rr*.7))+2;
+      for(var i=0;i<cnt;i++){var x=i*rr*.7-rr+R()*rr*.4;puff(m,x,y+R()*rr*.3,rr*(.8+R()*.5),row<2?"255,230,190":"255,214,180",row<3?"190,140,140":"90,80,120",.75)}}
+    var f=L.front;scrim(f,w,h,.55,1,.35,"40,30,50");
+  }
+  /* ================= 舞台装置 ================= */
+  var reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var $=function(id){return document.getElementById(id)};
+  var stage=$("stage"),bloomEl=$("bloom"),veilEl=$("veil");
+  document.documentElement.classList.add("js");
+  var SCN=[0,1,2,3,4,5].map(function(i){
+    var el=$("sc"+i),L={};
+    [].forEach.call(el.querySelectorAll("canvas[data-l]"),function(cv){L[cv.getAttribute("data-l")]=cv});
+    L.ui=el.querySelector(".ui");L.rings=el.querySelector(".rings");L.gate=el.querySelector(".gate-layer");
+    return {el:el,L:L,i:i};
+  });
+  var W=innerWidth,H=innerHeight,res=null,hunab=false,lastData=null;
+  var geo={sun:{x:0,y:0},star:{x:0,y:0},gate:null};
+
+  /* 文字を一文字ずつ */
+  function chars(el){
+    if(!el) return;
+    var t=el.textContent;el.textContent="";
+    Array.from(t).forEach(function(ch,i){var s=document.createElement("span");s.textContent=ch;s.style.setProperty("--i",i);el.appendChild(s)});
+    el.setAttribute("aria-label",t);
+  }
+  function charsHtml(text,base){
+    return '<span class="chars" style="--b:'+base+'s" aria-label="'+text+'">'+Array.from(text).map(function(ch,i){return '<span aria-hidden="true" style="--i:'+i+'">'+ch+'</span>'}).join("")+'</span>';
+  }
+  [].forEach.call(document.querySelectorAll("[data-chars]"),chars);
+
+  /* 和紙の質感 */
+  (function(){
+    var cv=document.createElement("canvas");cv.width=cv.height=180;var c=cv.getContext("2d"),R=rng(31);
+    for(var i=0;i<2600;i++){c.fillStyle="rgba(120,100,70,"+(R()*.06)+")";c.fillRect(R()*180,R()*180,1+R()*2,1)}
+    c.strokeStyle="rgba(150,125,85,.12)";for(var j=0;j<70;j++){var x=R()*180,y=R()*180;c.lineWidth=.5;c.beginPath();c.moveTo(x,y);c.quadraticCurveTo(x+R()*20-10,y+R()*20-10,x+R()*40-20,y+R()*40-20);c.stroke()}
+    document.documentElement.style.setProperty("--washi-tex","url("+cv.toDataURL()+")");
+  })();
+
+  /* ================= 入力欄（元ツールと同じ範囲・初期値） ================= */
+  var selY=$("selYear"),selM=$("selMonth"),selD=$("selDay"),now=new Date();
+  for(var yy=now.getFullYear();yy>=1900;yy--){var o=document.createElement("option");o.value=yy;o.textContent=yy+"年";selY.appendChild(o)}
+  selY.value=1980;
+  for(var mm=1;mm<=12;mm++){var o2=document.createElement("option");o2.value=mm;o2.textContent=mm+"月";selM.appendChild(o2)}
+  function fillDays(){
+    var y=+selY.value,m=+selM.value,dim=[31,isLeap(y)?29:28,31,30,31,30,31,31,30,31,30,31][m-1],cur=+selD.value||1;
+    selD.innerHTML="";
+    for(var d=1;d<=dim;d++){var o3=document.createElement("option");o3.value=d;o3.textContent=d+"日";selD.appendChild(o3)}
+    selD.value=Math.min(cur,dim);
+  }
+  selY.addEventListener("change",fillDays);selM.addEventListener("change",fillDays);fillDays();
+  (function(){
+    var t=new Date(),k=kinOf(t.getFullYear(),t.getMonth()+1,t.getDate()),el=$("todayKin");
+    if(k===null) el.innerHTML="今日は <b>フナブ・クの日</b>（緑の日）";
+    else el.innerHTML="今日のKINは <b>KIN "+k+"</b> "+TONES[toneIdx(k)].name+"の"+SEALS[sealIdx(k)].name;
+  })();
+
+  /* ================= 絵を描く ================= */
+  function layers(s,pr){var o={};["back","mid","front"].forEach(function(k){o[k]=prep(s.L[k],W,H,pr)});prep(s.L.fx,W,H,1);return o}
+  /* マツコの絵（背景画）。focus＝狭い画面で残したい位置、sun＝光の中心（画像内の割合） */
+  var ART={
+    opening:{src:"maya-tabi/opening.webp",focus:.42,sun:[.388,.262]},
+    cosmos:{src:"maya-tabi/cosmos.webp",focus:.55},
+    talent:{src:"maya-tabi/talent.webp",focus:.55,zoom:1.16,fy:.5,px:[941,1672],stair:{yb:1005,yt:675,lb:442,rb:600,lt:478,rt:570,ob:626,ot:591},pyr:{lt:372,rt:668,lb:168,rb:900},head:[631,984]},
+    sea:{src:"maya-tabi/sea.webp",focus:.5,moon:[.3,.17],hor:.295,near:.52},
+    end:{src:"maya-tabi/end.webp",focus:.45,sun:[.548,.332]}
+  },artImg={};
+  /* 紋章の絵：描き上がった番号だけ。その人の紋章の1枚だけを読み込む */
+  var SEAL_DONE=[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],SEAL_FOCUS={1:.45,2:.55,3:.5,4:.38,5:.55,8:.5,9:.55,10:.6,11:.5,12:.6,13:.7,14:.55,15:.55,16:.6,17:.65,18:.55,19:.65,20:.62},
+      SEAL_FY={};
+  SEAL_DONE.forEach(function(n){ART["seal"+n]={src:"maya-tabi/seal"+(n<10?"0":"")+n+".webp",focus:SEAL_FOCUS[n]||.5,fy:SEAL_FY[n],lazy:true}});
+  function loadArt(key,cb){var a=ART[key];if(!a||!a.src||a.src.indexOf("/*")===0){cb(null);return}
+    if(artImg[key]){cb(artImg[key]);return}var im=new Image();im.onload=function(){artImg[key]=im;cb(im)};im.onerror=function(){cb(null)};im.src=a.src}
+  function cover(c,im,w,h,fx,zoom,fy){var sc=Math.max(w/im.naturalWidth,h/im.naturalHeight)*(zoom||1),dw=im.naturalWidth*sc,dh=im.naturalHeight*sc,
+      ox=Math.min(0,Math.max(w-dw,w/2-dw*fx)),oy=fy==null?(h-dh)/2:Math.min(0,Math.max(h-dh,h*.5-dh*fy));c.drawImage(im,ox,oy,dw,dh);return function(u,v){return {x:ox+u*dw,y:oy+v*dh}}}
+  function paintFirst(){
+    loadArt("opening",function(im){
+      var L=layers(SCN[0]);
+      if(!im){geo.sun=paintOpening(L,W,H);fx[0].init();ready[0]=true;return}
+      var map=cover(L.back,im,W,H,ART.opening.focus);geo.sun=map(ART.opening.sun[0],ART.opening.sun[1]);
+      var f=L.front;
+      var g=f.createRadialGradient(W,H*.18,0,W,H*.18,W*.75);g.addColorStop(0,"rgba(3,8,16,.5)");g.addColorStop(1,"rgba(3,8,16,0)");f.fillStyle=g;f.fillRect(0,0,W,H*.6);
+      scrim(f,W,H,.34,.62,.6);f.fillStyle="rgba(3,7,12,.6)";f.fillRect(0,H*.62,W,H*.38);
+      fx[0].init();ready[0]=true;
+    });
+    Object.keys(ART).forEach(function(k){if(k!=="opening"&&!ART[k].lazy)loadArt(k,function(){if(res)paintResults()})});
+  }
+  function backArt(L,key,clearMid){
+    var im=artImg[key];if(!im) return null;
+    var c=L.back;c.clearRect(0,0,W,H);var map=cover(c,im,W,H,ART[key].focus,ART[key].zoom,ART[key].fy);
+    if(clearMid)L.mid.clearRect(0,0,W,H);
+    return map;
+  }
+  /* マツコのピラミッドに合わせた光の位置（画像のピクセルで測った値から計算） */
+  function pyramidArt(L,map,toneNo){
+    var A=ART.talent,iw=A.px[0],ih=A.px[1],S=A.stair,P=A.pyr;
+    function M(x,y){return map(x/iw,y/ih)}
+    function at(a,b,t){return a+(b-a)*t}
+    var seg=(S.yb-S.yt)/13,segs=[];
+    for(var i=0;i<13;i++){var y0=S.yb-i*seg,y1=y0-seg,t0=(S.yb-y0)/(S.yb-S.yt),t1=(S.yb-y1)/(S.yb-S.yt);
+      segs.push({a:M(at(S.lb,S.lt,t0),y0),b:M(at(S.rb,S.rt,t0),y0),c:M(at(S.rt,S.rt,t1)*0+at(S.rb,S.rt,t1),y1),d:M(at(S.lb,S.lt,t1),y1),
+        wl:M(at(P.lb,P.lt,(t0+t1)/2),(y0+y1)/2),wr:M(at(P.rb,P.rt,(t0+t1)/2),(y0+y1)/2)})}
+    var serp=[];for(var q=0;q<7;q++){var tq=(q+.5)/7,y=at(S.yt,S.yb,tq),xi=at(S.rt,S.rb,tq),xo=at(S.ot,S.ob,tq),hh=(S.yb-S.yt)/7*.42;
+      var p0=M(xi,y-hh),p1=M(xo+6,y),p2=M(xi,y+hh);serp.push([p0,p1,p2])}
+    var sel=segs[toneNo-1],mk=M(at(S.lb,S.lt,(toneNo-.5)/13)-64,S.yb-(toneNo-.5)*seg-14);
+    var f=L.front;
+    var g=f.createLinearGradient(0,0,0,H*.36);g.addColorStop(0,"rgba(2,6,12,.8)");g.addColorStop(.75,"rgba(2,6,12,.35)");g.addColorStop(1,"rgba(2,6,12,0)");f.fillStyle=g;f.fillRect(0,0,W,H*.36);
+    scrim(f,W,H,.72,1,.7);
+    return {art:true,x:mk.x,y:mk.y,segs:segs,sel:sel,serp:serp,head:M(A.head[0],A.head[1])};
+  }
+  function paintResults(){
+    if(!res) return;
+    var L1=layers(SCN[1]);
+    geo.star=paintCosmos(L1,W,H,res.kin,hunab)||{x:W/2,y:H/2};backArt(L1,"cosmos",false);
+    SCN[1].L.rings.style.setProperty("--ox",geo.star.x+"px");SCN[1].L.rings.style.setProperty("--oy",geo.star.y+"px");
+    fx[1].init();fx[5].init();
+    var L5=layers(SCN[5]);paintDawn(L5,W,H);var m5=backArt(L5,"end",true);
+    geo.dawnSun=m5?m5(ART.end.sun[0],ART.end.sun[1]):{x:W*.5,y:H*.44};
+    if(m5){var f5=L5.front;f5.clearRect(0,0,W,H);var g5=f5.createLinearGradient(0,0,0,H*.3);g5.addColorStop(0,"rgba(10,16,34,.45)");g5.addColorStop(1,"rgba(10,16,34,0)");f5.fillStyle=g5;f5.fillRect(0,0,W,H*.3);scrim(f5,W,H,.5,1,.45,"14,20,40")}
+    ready[1]=ready[5]=true;
+    if(hunab) return;
+    var L2=layers(SCN[2]),sk="seal"+(res.sIdx+1);paintSeal(L2,W,H,res.sIdx,res.seal.color);
+    if(ART[sk]){if(artImg[sk]){backArt(L2,sk,true)}else{var want=res.sIdx;loadArt(sk,function(im){if(im&&res&&res.sIdx===want)paintResults()})}}
+    SCN[2].el.classList.toggle("has-art",!!artImg[sk]);
+    fx[2].init();
+    var L3=layers(SCN[3]),m3=backArt(L3,"talent",true);
+    if(m3){geo.gate=pyramidArt(L3,m3,res.toneNo)}else{geo.gate=paintPyramid(L3,W,H,res.toneNo)}
+    fx[3].init();
+    var gm=$("gateMark");if(geo.gate){gm.style.left=geo.gate.x+"px";gm.style.top=geo.gate.y+"px"}
+    var L4=layers(SCN[4]);paintSea(L4,W,H);var m4=backArt(L4,"sea",true);
+    if(m4){var A=ART.sea;geo.sea={img:true,moon:m4(A.moon[0],A.moon[1]),hor:m4(.5,A.hor).y,near:m4(.5,A.near).y,roadX:m4(A.moon[0],0).x};
+      var f4=L4.front;f4.clearRect(0,0,W,H);scrim(f4,W,H,.56,1,.8)}else geo.sea=null;
+    fx[4].init();
+    ready=[ready[0],true,true,true,true,true];
+  }
+  var ringSrc=null;
+  function ensureRings(){
+    if(ringSrc) return;
+    ringSrc=asanohaRing(Math.min(1400,Math.round(Math.max(W,H)*1.3)));
+    [].forEach.call(SCN[1].L.rings.querySelectorAll("img"),function(im){im.src=ringSrc});
+  }
+
+  /* ================= 場面ごとの「息づかい」（軽い粒子） ================= */
+  function fxc(i){return SCN[i].L.fx.getContext("2d")}
+  var fx=[
+    {init:function(){var R=rng(3);this.p=[];for(var i=0;i<22;i++)this.p.push({x:R()*W,y:H*(.5+R()*.42),a:R()*TAU,s:.15+R()*.3,r:R()*1.1+.7,ph:R()*TAU});
+       this.m=[];for(var j=0;j<5;j++)this.m.push({x:R()*W,y:H*(.36+R()*.26),rx:W*(.5+R()*.5),ry:H*(.035+R()*.04),v:(.08+R()*.14)*(R()<.5?-1:1),a:.05+R()*.06})},
+     draw:function(c,t){c.clearRect(0,0,W,H);
+       for(var j=0;j<this.m.length;j++){var m=this.m[j];m.x+=m.v;if(m.x>W+m.rx)m.x=-m.rx;if(m.x<-m.rx)m.x=W+m.rx;
+         var g=c.createRadialGradient(m.x,m.y,0,m.x,m.y,m.rx);g.addColorStop(0,"rgba(214,226,236,"+m.a+")");g.addColorStop(1,"rgba(214,226,236,0)");
+         c.save();c.translate(m.x,m.y);c.scale(1,m.ry/m.rx);c.translate(-m.x,-m.y);c.fillStyle=g;c.beginPath();c.arc(m.x,m.y,m.rx,0,TAU);c.fill();c.restore()}
+       c.globalCompositeOperation="lighter";
+       glow(c,geo.sun.x,geo.sun.y,W*.32*(1+.05*Math.sin(t/1600)),"255,214,150",.16);
+       for(var i=0;i<this.p.length;i++){var p=this.p[i];p.a+=(Math.sin(t/1700+p.ph)*.04);p.x+=Math.cos(p.a)*p.s;p.y+=Math.sin(p.a)*p.s*.6-.05;
+         if(p.x<-10)p.x=W+10;if(p.x>W+10)p.x=-10;if(p.y<H*.45)p.y=H*.95;if(p.y>H)p.y=H*.5;
+         var al=.35+.65*Math.max(0,Math.sin(t/900+p.ph));glow(c,p.x,p.y,10*p.r,"255,214,140",.5*al);disc(c,p.x,p.y,p.r,"rgba(255,244,210,"+al+")")}
+       c.globalCompositeOperation="source-over"}},
+    {init:function(){var R=rng(9);this.tw=[];for(var i=0;i<40;i++)this.tw.push({x:R()*W,y:R()*H*.9,ph:R()*TAU})},
+     draw:function(c,t,since){c.clearRect(0,0,W,H);c.globalCompositeOperation="lighter";
+       for(var i=0;i<this.tw.length;i++){var s=this.tw[i],a=Math.max(0,Math.sin(t/700+s.ph));if(a>.6){glow(c,s.x,s.y,8,"240,240,255",a*.6)}}
+       var g=geo.star,p=Math.min(1,since/1600),pul=.75+.25*Math.sin(t/500);
+       if(g&&!hunab){glow(c,g.x,g.y,70*p*pul,"255,220,150",.55);glow(c,g.x,g.y,16,"255,250,230",.95*p);
+         c.strokeStyle="rgba(255,236,190,"+(.5*p)+")";c.lineWidth=1;c.beginPath();c.moveTo(g.x-90*p,g.y);c.lineTo(g.x+90*p,g.y);c.moveTo(g.x,g.y-60*p);c.lineTo(g.x,g.y+60*p);c.stroke()}
+       if(hunab){glow(c,W/2,H*.46,160*pul,"150,230,190",.35)}
+       c.globalCompositeOperation="source-over"}},
+    {init:function(){var R=rng(21);this.p=[];for(var i=0;i<46;i++)this.p.push({x:R()*W,y:R()*H,v:.15+R()*.45,r:.6+R()*1.6,ph:R()*TAU})},
+     draw:function(c,t){c.clearRect(0,0,W,H);c.globalCompositeOperation="lighter";var rgb=res&&res.seal?FAM[res.seal.color].lt:"255,230,180";
+       for(var i=0;i<this.p.length;i++){var p=this.p[i];p.y-=p.v;p.x+=Math.sin(t/1400+p.ph)*.25;if(p.y<-10){p.y=H+10;p.x=Math.random()*W}
+         glow(c,p.x,p.y,p.r*7,rgb,.35);disc(c,p.x,p.y,p.r*.7,"rgba(255,255,255,.7)")}
+       c.globalCompositeOperation="source-over"}},
+    {init:function(){var R=rng(33);this.e=[];for(var i=0;i<34;i++)this.e.push({b:i%2,l:R(),v:.4+R()*.8,ph:R()*TAU,dx:(R()-.5)})},
+     draw:function(c,t,since){c.clearRect(0,0,W,H);var g=geo.gate;if(!g) return;if(g.art){this.drawArt(c,t,since,g);return}c.globalCompositeOperation="lighter";
+       var p=Math.min(1,since/1400),pul=.8+.2*Math.sin(t/520);
+       // 選ばれた段が帯状に光る
+       var band=c.createLinearGradient(0,g.tierY-g.th*1.5,0,g.tierB+g.th*1.5);band.addColorStop(0,"rgba(255,200,120,0)");band.addColorStop(.5,"rgba(255,200,120,"+(.35*p*pul)+")");band.addColorStop(1,"rgba(255,200,120,0)");
+       c.fillStyle=band;c.fillRect(g.cx-g.tierW*.6,g.tierY-g.th*1.5,g.tierW*1.2,g.th*4);
+       // ククルカン：光の三角が上から順に灯り、蛇が降りていく
+       for(var q=0;q<g.serp.length;q++){var sp=g.serp[q],on=Math.max(0,Math.min(1,(since-600-q*260)/500)),fl=.75+.25*Math.sin(t/300-q*.9);
+         if(on<=0) continue;c.fillStyle="rgba(255,214,150,"+(.85*on*fl)+")";c.beginPath();c.moveTo(sp[0],sp[1]-sp[2]);c.lineTo(sp[0]+sp[2]*.9,sp[1]);c.lineTo(sp[0],sp[1]+sp[2]);c.closePath();c.fill();
+         glow(c,sp[0]+sp[2]*.3,sp[1],sp[2]*2.4,"255,190,110",.25*on)}
+       // 篝火と火の粉
+       for(var k=0;k<g.braz.length;k++){var b=g.braz[k],fr=1+.18*Math.sin(t/90+k)+.1*Math.sin(t/37+k*2);glow(c,b[0],b[1]-H*.03,W*.05*fr,"255,170,80",.8);glow(c,b[0],b[1]-H*.025,W*.018*fr,"255,240,200",.9)}
+       for(var i=0;i<this.e.length;i++){var e=this.e[i],b2=g.braz[e.b];e.l+=.006*e.v;if(e.l>1)e.l=0;
+         var x=b2[0]+e.dx*W*.05+Math.sin(e.l*8+e.ph)*W*.02,y=b2[1]-H*.03-e.l*H*.22;c.fillStyle="rgba(255,190,110,"+(.85*(1-e.l))+")";c.beginPath();c.arc(x,y,1.3,0,TAU);c.fill()}
+       c.globalCompositeOperation="source-over"},
+     drawArt:function(c,t,since,g){c.globalCompositeOperation="lighter";
+       var p=reduce?1:Math.min(1,since/1600),pul=.82+.18*Math.sin(t/560);
+       // 下から順に階段をのぼる光（自分の番号で止まる）
+       var you=res?res.toneNo:1,climb=reduce?you:Math.min(you,Math.max(0,(since-500)/170));
+       for(var i=0;i<Math.floor(climb);i++){var s=g.segs[i],me=(i===you-1),a=me?.0:.16;
+         if(!me){c.fillStyle="rgba(255,210,150,"+a+")";c.beginPath();c.moveTo(s.a.x,s.a.y);c.lineTo(s.b.x,s.b.y);c.lineTo(s.c.x,s.c.y);c.lineTo(s.d.x,s.d.y);c.closePath();c.fill()}}
+       if(climb>=you){var s=g.sel,cy=(s.a.y+s.d.y)/2,cx=(s.a.x+s.b.x)/2,hw=(s.wr.x-s.wl.x)/2;
+         c.save();c.translate(cx,cy);c.scale(1,.16);var gr=c.createRadialGradient(0,0,0,0,0,hw*1.1);gr.addColorStop(0,"rgba(255,206,130,"+(.55*pul)+")");gr.addColorStop(.6,"rgba(255,190,110,"+(.18*pul)+")");gr.addColorStop(1,"rgba(255,190,110,0)");c.fillStyle=gr;c.beginPath();c.arc(0,0,hw*1.1,0,TAU);c.fill();c.restore();
+         c.fillStyle="rgba(255,226,170,"+(.75*pul)+")";c.beginPath();c.moveTo(s.a.x,s.a.y);c.lineTo(s.b.x,s.b.y);c.lineTo(s.c.x,s.c.y);c.lineTo(s.d.x,s.d.y);c.closePath();c.fill();
+         glow(c,cx,cy,(s.b.x-s.a.x)*1.3,"255,220,160",.5*pul)}
+       // ククルカン：欄干に光の三角が上から順に現れる
+       var last=0;
+       for(var q=0;q<g.serp.length;q++){var on=reduce?1:Math.max(0,Math.min(1,(since-1400-q*300)/500)),fl=.78+.22*Math.sin(t/320-q*.9),T=g.serp[q];if(on<=0) continue;last=q;
+         c.fillStyle="rgba(255,214,150,"+(.7*on*fl)+")";c.beginPath();c.moveTo(T[0].x,T[0].y);c.lineTo(T[1].x,T[1].y);c.lineTo(T[2].x,T[2].y);c.closePath();c.fill();
+         glow(c,(T[0].x+T[1].x)/2,T[1].y,(T[2].y-T[0].y)*1.1,"255,190,110",.22*on)}
+       // 光が蛇の頭に届くと、目が灯る
+       var eye=reduce?1:Math.max(0,Math.min(1,(since-1400-7*300)/600));
+       if(eye>0){glow(c,g.head.x,g.head.y,W*.07*(1+.08*Math.sin(t/400)),"255,200,120",.6*eye);disc(c,g.head.x,g.head.y,1.6,"rgba(255,245,220,"+eye+")")}
+       c.globalCompositeOperation="source-over"}},
+
+    {init:function(){var R=rng(44);this.road=[];for(var i=0;i<170;i++)this.road.push({t:R(),dx:R()-.5,l:R(),ph:R()*TAU});this.bob=[];for(var k=0;k<13;k++)this.bob.push(R()*TAU)},
+     draw:function(c,t,since){c.clearRect(0,0,W,H);if(geo.sea&&geo.sea.img){this.drawArt(c,t,since);return}var hor=H*.5,e=reduce?1:Math.min(1,since/5200),ee=1-Math.pow(1-e,3);
+       var mx=W*.6,my=hor-H*.02-ee*H*.16,mr=W*.065;
+       c.globalCompositeOperation="lighter";
+       glow(c,mx,my,mr*6,"200,220,255",.28);
+       var g=c.createRadialGradient(mx-mr*.3,my-mr*.3,mr*.1,mx,my,mr);g.addColorStop(0,"#ffffff");g.addColorStop(1,"#cfdcf0");c.globalCompositeOperation="source-over";disc(c,mx,my,mr,g);c.globalCompositeOperation="lighter";
+       for(var i=0;i<this.road.length;i++){var r=this.road[i],y=hor+(H-hor)*Math.pow(r.t,1.7),spread=W*(.04+r.t*.45),x=mx+r.dx*spread*(.4+ee*.6),a=(.15+.45*Math.max(0,Math.sin(t/600+r.ph)))*(.4+.6*ee)*(1-r.t*.5),len=5+r.l*26*(.3+r.t);
+         c.fillStyle="rgba(220,232,255,"+a+")";c.fillRect(x-len/2,y,len,1+r.t*1.6)}
+       if(!res||hunab){c.globalCompositeOperation="source-over";return}
+       var you=res.toneNo,lit=reduce?13:Math.min(13,Math.max(0,(since-900)/260));
+       for(var k=13;k>=1;k--){var z=Math.pow(1.24,k-1),y2=hor+(H*.93-hor)/z+Math.sin(t/900+this.bob[k-1])*3/z,x2=mx-W*.05+Math.sin(k*1.7)*W*.22/z,s=Math.max(3,W*.07/z);
+         var on=k<=lit,me=k===you,past=k<you;
+         if(on){var col=me?"255,206,120":past?"255,190,120":"170,190,220",al=me?1:past?.6:.22;
+           glow(c,x2,y2,s*(me?6:3.4),col,.45*al);
+           c.globalCompositeOperation="source-over";c.fillStyle=me?"#ffe2a6":past?"rgba(255,206,150,.85)":"rgba(160,180,210,.5)";
+           c.fillRect(x2-s*.32,y2-s*.9,s*.64,s*.8);c.fillStyle="rgba(10,14,20,.8)";c.fillRect(x2-s*.42,y2-s*.12,s*.84,s*.16);c.globalCompositeOperation="lighter";
+           c.fillStyle="rgba(255,210,150,"+(.25*al)+")";c.fillRect(x2-s*.25,y2+s*.1,s*.5,s*1.6)}
+       }
+       c.globalCompositeOperation="source-over"},
+     drawArt:function(c,t,since){var g=geo.sea,hor=g.hor,near=g.near;c.globalCompositeOperation="lighter";
+       var e=reduce?1:Math.min(1,since/4000);glow(c,g.moon.x,g.moon.y,W*.3*(1+.04*Math.sin(t/1500)),"255,236,180",.1+.12*e);
+       for(var i=0;i<this.road.length;i++){var r=this.road[i];if(r.t>.9) continue;var y=hor+(near-hor)*Math.pow(r.t,1.4),spread=W*(.04+r.t*.28),x=g.roadX+r.dx*spread,a=(.1+.35*Math.max(0,Math.sin(t/650+r.ph)))*(1-r.t*.4),len=4+r.l*20*(.3+r.t);
+         c.fillStyle="rgba(255,236,190,"+a+")";c.fillRect(x-len/2,y,len,1+r.t)}
+       if(!res||hunab){c.globalCompositeOperation="source-over";return}
+       var you=res.toneNo,lit=reduce?13:Math.min(13,Math.max(0,(since-900)/260));
+       for(var k=13;k>=1;k--){var z=Math.pow(1.24,k-1),y2=hor+(near-hor)/z+Math.sin(t/900+this.bob[k-1])*3/z,x2=g.roadX+Math.sin(k*1.7)*W*.16/z,s=Math.max(3,W*.085/z);
+         if(k>lit) continue;var me=k===you,past=k<you,col=me?"255,206,120":past?"255,190,120":"190,205,230",al=me?1:past?.65:.28;
+         glow(c,x2,y2,s*(me?6.5:3.4),col,.5*al);
+         c.globalCompositeOperation="source-over";c.fillStyle=me?"#ffe2a6":past?"rgba(255,206,150,.9)":"rgba(170,190,215,.55)";
+         c.fillRect(x2-s*.32,y2-s*.9,s*.64,s*.8);c.fillStyle="rgba(10,14,20,.85)";c.fillRect(x2-s*.42,y2-s*.12,s*.84,s*.16);c.globalCompositeOperation="lighter";
+         c.fillStyle="rgba(255,210,150,"+(.25*al)+")";c.fillRect(x2-s*.25,y2+s*.1,s*.5,s*1.4)}
+       c.globalCompositeOperation="source-over"}},
+    {init:function(){var R=rng(55);this.w=[];for(var i=0;i<7;i++)this.w.push({y:H*(.47+R()*.12),x:R()*W,l:W*(.3+R()*.5),v:.08+R()*.15});this.m=[];for(var j=0;j<26;j++)this.m.push({x:R()*W,y:H*(.1+R()*.4),ph:R()*TAU})},
+     draw:function(c,t){c.clearRect(0,0,W,H);c.globalCompositeOperation="lighter";
+       for(var i=0;i<this.w.length;i++){var w=this.w[i];w.x+=w.v;if(w.x>W+w.l)w.x=-w.l;c.fillStyle=lg(c,w.x-w.l/2,0,w.x+w.l/2,0,[[0,"rgba(255,230,200,0)"],[.5,"rgba(255,230,200,.18)"],[1,"rgba(255,230,200,0)"]]);c.fillRect(w.x-w.l/2,w.y,w.l,2.5)}
+       for(var j=0;j<this.m.length;j++){var m=this.m[j],a=.3+.4*Math.sin(t/1100+m.ph);glow(c,m.x,m.y+Math.sin(t/2000+m.ph)*6,7,"255,240,210",a*.5)}
+       var ds=geo.dawnSun||{x:W*.5,y:H*.44};glow(c,ds.x,ds.y,W*.4*(1+.03*Math.sin(t/1300)),"255,236,190",.12);
+       c.globalCompositeOperation="source-over"}}
+  ];
+  var enterAt=[0,0,0,0,0,0],visibleSet=[],ready=[false,false,false,false,false,false];
+  function loop(ts){
+    for(var i=0;i<visibleSet.length;i++){var k=visibleSet[i];if(ready[k]&&(k===0||res)){fx[k].draw(fxc(k),ts,ts-enterAt[k]);if(!reduce&&EX[k])EX[k](fxc(k),ts)}}
+    if(!reduce) requestAnimationFrame(loop);
+  }
+
+  /* ================= 結果を文字に ================= */
+  var SC={red:"var(--seal-red,#e06565)",white:"var(--seal-white,#ece9f5)",blue:"var(--seal-blue,#6b96e6)",yellow:"var(--seal-yellow,#e6c65f)"};
+  var SCHEX={red:"#e06565",white:"#ece9f5",blue:"#6b96e6",yellow:"#e6c65f"};
+  function chip(col){return '<span class="chip" style="background:'+SCHEX[col]+';color:'+SCHEX[col]+'"></span>'}
+  function mayaNum(n,base){
+    var bars=Math.floor(n/5),dots=n%5,h='<div class="maya" style="--b:'+base+'s" role="img" aria-label="マヤ数字の'+n+'">',i=0;
+    if(dots){h+='<div class="dr" style="--i:'+(i++)+'">';for(var d=0;d<dots;d++)h+="<i></i>";h+="</div>"}
+    for(var b=0;b<bars;b++)h+='<div class="bar" style="--i:'+(i++)+'"></div>';
+    return h+"</div>";
+  }
+  function relC(name,no,wide){var s=SEALS[no-1];return '<div class="c'+(wide?" wide":"")+'"><span class="k">'+name+'</span><span class="v">'+chip(s.color)+s.name+'</span><span class="w">'+s.kw+'</span></div>'}
+  function render(){
+    var r=res;
+    $("kinCap").textContent=hunab?"二百六十日の暦の、外側にある一日":"二百六十日の暦のなかの、あなたの一粒";
+    if(hunab){
+      lastData=null;
+      $("kinNameBox").innerHTML="";
+      $("kinBox").innerHTML='<div class="hunab rise" style="--d:.6s"><p class="green">フナブ・クの日</p><p>2月29日は、ドリームスペルでは<br>特定のKINを持たない「緑の日」とされています。</p></div>';
+      $("paper").innerHTML='<div class="head"><div><p class="kintitle">フナブ・クの日</p><p class="date">'+r.date+'</p></div><p class="tate">鑑定書</p></div>'+
+        '<p style="margin:0;font-family:var(--display);font-size:16px;line-height:2">時間の外側にある、宇宙とつながる特別な一日。</p>'+
+        '<div class="links"><button type="button" data-again>はじめからもう一度</button><a href="https://you-no-oto.jp/maya.html">表で見る（KINナビ）</a><a href="https://you-no-oto.jp/uranai.html">占いの部屋へ</a></div>';
+      return;
+    }
+    lastData={date:r.date,kin:r.kin,seal:r.seal,ws:r.ws,toneNo:r.toneNo,tone:r.tone,castle:r.castle,
+      guideSealNo:r.guideSealNo,analogSealNo:r.analogSealNo,antiSealNo:r.antiSealNo,occultSealNo:r.occultSealNo,mirrorKin:r.mirrorKin};
+    var nm=r.tone.name+"の"+r.seal.name;
+    $("kinNameBox").innerHTML='<p class="tate">'+charsHtml(nm,1.3)+'</p>';
+    $("kinBox").innerHTML=mayaNum(r.toneNo,.9)+'<span class="lbl rise" style="--d:.4s">KIN</span><span class="knum" id="knum">'+r.kin+'</span>';
+    // 本質
+    var sc=SCHEX[r.seal.color];
+    SCN[2].el.style.setProperty("--sc",sc);
+    $("t2").innerHTML=charsHtml(r.seal.name,.5);
+    $("coreKw").innerHTML=r.seal.kw.split("・").map(function(k,i){return '<li style="--i:'+i+';--b:1.4s">'+k+'</li>'}).join("");
+    // 才能
+    $("t3").innerHTML=charsHtml("音"+r.toneNo+"・"+r.tone.name,.6);
+    $("toneKw").textContent=r.tone.kw;
+    $("gateCap").textContent=artImg.talent?"十三の音を階段に重ねた、下から"+r.toneNo+"番目":"十三の段のうち、下から"+r.toneNo+"段目があなたの音";
+    $("gateMark").innerHTML=mayaNum(r.toneNo,1);
+    var g=SEALS[r.guideSealNo-1];
+    $("guideCard").innerHTML='<span class="k">ガイド（導き）</span><span class="v">'+chip(g.color)+g.name+'</span><span class="w">'+g.kw+'</span>';
+    // 使命・課題
+    $("t4").innerHTML=charsHtml(r.ws.name,.8);
+    $("wsDay").innerHTML="あなたのKINは、この13日の波の<b>"+r.toneNo+"</b>日目";
+    var a=SEALS[r.antiSealNo-1];
+    $("face").innerHTML='<p class="cap">反対（学び合う）</p>'+
+      '<div class="p l"><span class="orb" style="--sc:'+sc+'"></span><span class="lb">あなた</span><span class="nm">'+r.seal.name+'</span></div>'+
+      '<span class="mid" aria-hidden="true"></span>'+
+      '<div class="p r"><span class="orb" style="--sc:'+SCHEX[a.color]+'"></span><span class="lb">反対の紋章</span><span class="nm">'+a.name+'</span><span class="w">'+a.kw+'</span></div>';
+    // 終着
+    var mS=SEALS[sealIdx(r.mirrorKin)],mT=TONES[toneIdx(r.mirrorKin)];
+    $("paper").innerHTML=
+      '<div class="head"><div><p class="kintitle">KIN '+r.kin+'<br>'+nm+'</p><p class="date">'+r.date+'</p></div><p class="tate">鑑定書</p></div>'+
+      '<div class="rows">'+
+        '<div class="row"><span class="k">太陽の紋章</span><span class="v">'+chip(r.seal.color)+r.seal.name+'<small>'+r.seal.kw+'</small></span></div>'+
+        '<div class="row"><span class="k">ウェイブスペル</span><span class="v">'+chip(r.ws.color)+r.ws.name+'<small>13日間の目的・潜在意識</small></span></div>'+
+        '<div class="row"><span class="k">銀河の音</span><span class="v">音'+r.toneNo+'・'+r.tone.name+'<small>'+r.tone.kw+'</small></span></div>'+
+        '<div class="row"><span class="k">城</span><span class="v">'+r.castle+'</span></div>'+
+      '</div>'+
+      '<p class="sect">関係するKIN</p>'+
+      '<div class="rel">'+relC("ガイド（導き）",r.guideSealNo)+relC("類似（支え合う）",r.analogSealNo)+relC("反対（学び合う）",r.antiSealNo)+relC("神秘（ひかれ合う）",r.occultSealNo)+
+        '<div class="c wide"><span class="k">鏡の向こうのKIN</span><span class="v">KIN '+r.mirrorKin+'</span><span class="w">'+chip(mS.color)+mT.name+'の'+mS.name+'</span></div></div>'+
+      '<button class="copy" type="button" id="copyBtn">AIへの発注文をコピーする</button>'+
+      '<p class="fine">コピーした文をAIに貼ると、そのまま鑑定をお願いできます</p>'+
+      '<div class="links"><button type="button" data-again>はじめからもう一度</button><a href="https://you-no-oto.jp/maya.html">表で見る（KINナビ）</a><a href="https://you-no-oto.jp/uranai.html">占いの部屋へ</a></div>';
+  }
+
+  /* ================= 場面転換 ================= */
+  var order=[0],pos=0,anim=null;
+  function sm(a,b,x){var t=Math.min(1,Math.max(0,(x-a)/(b-a)));return t*t*(3-2*t)}
+  function eio(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2}
+  function eo(t){return 1-Math.pow(1-t,3)}
+  var KIND={"0-1":"bloom","1-2":"iris","2-3":"layers","3-4":"recede","4-5":"curtain","1-5":"curtain"};
+  var DUR={bloom:1700,iris:1250,layers:1000,recede:1250,curtain:1400,fade:260};
+  function kindOf(a,b){return reduce?"fade":KIND[a+"-"+b]||"fade"}
+  var props=["transform","opacity","clipPath","webkitClipPath","zIndex","borderRadius","transformOrigin","boxShadow"];
+  function clean(s){props.forEach(function(p){s.el.style[p]=""});["back","mid","fx","front","ui","rings","gate"].forEach(function(k){var e=s.L[k];if(e){e.style.transform="";e.style.opacity=""}})}
+  function tf(e,v){if(e)e.style.transform=v}
+  function op(e,v){if(e)e.style.opacity=v}
+  var T={
+    fade:function(A,B,t){op(A.el,1-t);op(B.el,t);B.el.style.zIndex=2},
+    bloom:function(A,B,t){
+      var e=eio(t);A.el.style.transformOrigin=(geo.sun.x/W*100)+"% "+(geo.sun.y/H*100)+"%";
+      tf(A.el,"scale("+(1+e*.9)+")");tf(A.L.front,"scale("+(1+e*.8)+")");tf(A.L.mid,"scale("+(1+e*.25)+")");op(A.L.ui,1-sm(0,.35,t));
+      var b=t<.55?Math.pow(t/.55,1.6):1-sm(.55,.95,t);op(bloomEl,b);
+      if(t>.08&&t<.6&&Math.random()<.5)sparkEmit(geo.sun.x+(Math.random()-.5)*W*.5,geo.sun.y+(Math.random()-.5)*H*.25,1,{v:1.4,life:900,r:1.6});
+      B.el.style.zIndex=2;op(B.el,sm(.5,.82,t));tf(B.el,"scale("+(1.22-.22*eo(sm(.5,1,t)))+")");
+    },
+    iris:function(A,B,t){
+      var e=eio(t),ox=geo.star.x,oy=geo.star.y,maxR=Math.hypot(Math.max(ox,W-ox),Math.max(oy,H-oy))*1.05,r=Math.max(0,e*maxR);
+      A.el.style.transformOrigin=ox+"px "+oy+"px";tf(A.el,"scale("+(1+e*.35)+")");op(A.L.ui,1-sm(0,.4,t));
+      B.el.style.zIndex=2;var cp="circle("+r.toFixed(1)+"px at "+ox.toFixed(1)+"px "+oy.toFixed(1)+"px)";B.el.style.clipPath=cp;B.el.style.webkitClipPath=cp;
+      if(r>8&&r<maxR*.9&&Math.random()<.7){var ia=Math.random()*TAU;sparkEmit(ox+Math.cos(ia)*r,oy+Math.sin(ia)*r,1,{v:.3,life:800})}
+      B.el.style.transformOrigin=ox+"px "+oy+"px";tf(B.L.back,"scale("+(1.35-.35*e)+")");tf(B.L.mid,"scale("+(1.6-.6*e)+")");op(B.L.ui,sm(.6,1,t));
+    },
+    layers:function(A,B,t){
+      var e=eio(t);
+      tf(A.L.back,"translateY("+(-H*.12*e)+"px) scale("+(1+.08*e)+")");tf(A.L.mid,"translateY("+(-H*.55*e)+"px)");tf(A.L.fx,"translateY("+(-H*.55*e)+"px)");
+      tf(A.L.front,"translateY("+(-H*.9*e)+"px)");tf(A.L.ui,"translateY("+(-H*1.05*e)+"px)");
+      B.el.style.zIndex=2;var f=1-e;
+      tf(B.L.back,"translateY("+(H*.1*f)+"px) scale("+(1.08-.08*e)+")");op(B.L.back,sm(.05,.7,t));
+      tf(B.L.mid,"translateY("+(H*.85*f)+"px)");tf(B.L.fx,"translateY("+(H*.85*f)+"px)");tf(B.L.gate,"translateY("+(H*.85*f)+"px)");
+      tf(B.L.front,"translateY("+(H*1.05*f)+"px)");tf(B.L.ui,"translateY("+(H*1.2*f)+"px)");
+    },
+    recede:function(A,B,t){
+      var e=eio(t);A.el.style.zIndex=2;
+      tf(A.el,"translateY("+(-H*.06*e)+"px) scale("+(1-.5*e)+")");A.el.style.borderRadius=(36*e)+"px";
+      A.el.style.boxShadow="0 40px 90px rgba(0,0,0,"+(.6*e)+")";op(A.el,1-sm(.55,.95,t));op(A.L.ui,1-sm(0,.3,t));
+      B.el.style.zIndex=1;tf(B.el,"scale("+(1.45-.45*eo(t))+")");op(B.el,sm(0,.45,t));op(B.L.ui,sm(.55,1,t));
+    },
+    curtain:function(A,B,t){
+      var e=eio(t);B.el.style.zIndex=2;
+      var edge=H*(1-e*1.14),pts=["0px "+H+"px"],amp=22*(1-e)+4;
+      for(var i=0;i<=18;i++){var x=W*i/18,y=edge+Math.sin(i/18*TAU*1.4+t*5)*amp+Math.sin(i/18*TAU*3.1-t*3)*amp*.4;pts.push(x.toFixed(1)+"px "+y.toFixed(1)+"px")}
+      pts.push(W+"px "+H+"px");var cp="polygon("+pts.join(",")+")";B.el.style.clipPath=cp;B.el.style.webkitClipPath=cp;
+      if(t>.03&&t<.95&&Math.random()<.65){var ci=Math.floor(Math.random()*19),cx2=W*ci/18,cy2=edge+Math.sin(ci/18*TAU*1.4+t*5)*amp;sparkEmit(cx2,cy2,1,{v:.25,up:.35,life:1100})}
+      tf(B.L.back,"translateY("+(H*.12*(1-e))+"px)");tf(B.L.mid,"translateY("+(H*.2*(1-e))+"px)");op(B.L.ui,sm(.55,1,t));
+      tf(A.L.mid,"translateY("+(-H*.12*e)+"px)");tf(A.L.fx,"translateY("+(-H*.12*e)+"px)");op(A.L.ui,1-sm(0,.35,t));
+    }
+  };
+  function inMark(s,on){if(on){if(!s.el.classList.contains("in")){s.el.classList.add("in");enterAt[s.i]=performance.now();if(s.i===1)countUp();onEnter(s.i)}}else s.el.classList.remove("in")}
+  function apply(){
+    var k=Math.floor(pos+1e-6),t=pos-k;if(k>=order.length-1){k=order.length-1;t=0}
+    var A=SCN[order[k]],B=t>1e-4?SCN[order[k+1]]:null;
+    op(bloomEl,0);
+    visibleSet=[];
+    SCN.forEach(function(s){
+      if(s===A||s===B){s.el.classList.add("on");clean(s);visibleSet.push(s.i)}
+      else{s.el.classList.remove("on");inMark(s,false)}
+    });
+    A.el.style.zIndex=1;
+    if(B){T[kindOf(A.i,B.i)](A,B,t);inMark(B,t>.6);inMark(A,t<.4)}
+    else inMark(A,true);
+  }
+  function settle(){
+    SCN.forEach(function(s){var cur=s===SCN[order[Math.round(pos)]];if(cur)s.el.removeAttribute("inert");else s.el.setAttribute("inert","");s.el.setAttribute("aria-hidden",cur?"false":"true")});
+    setDots();
+    var s=SCN[order[Math.round(pos)]];$("live").textContent=s.el.getAttribute("data-name");
+  }
+  function animateTo(target,fromDrag){
+    target=Math.max(0,Math.min(order.length-1,target));
+    var from=pos;if(Math.abs(target-from)<1e-4){pos=target;apply();settle();return}
+    var a=Math.floor(Math.min(from,target)),kind=kindOf(order[a],order[Math.min(order.length-1,a+1)]);
+    var dur=DUR[kind]*Math.max(.35,Math.abs(target-from)),t0=null;
+    cancelAnimationFrame(anim);
+    function step(ts){
+      if(t0===null)t0=ts;var p=Math.min(1,(ts-t0)/dur),e=fromDrag?eo(p):p;
+      pos=from+(target-from)*e;apply();
+      if(p<1)anim=requestAnimationFrame(step);else{anim=null;pos=target;apply();settle()}
+    }
+    anim=requestAnimationFrame(step);
+  }
+  function jumpTo(target){
+    cancelAnimationFrame(anim);veilEl.style.transition="opacity .3s";veilEl.style.opacity=1;
+    setTimeout(function(){pos=target;apply();settle();veilEl.style.opacity=0;setTimeout(function(){veilEl.style.transition=""},320)},reduce?0:300);
+  }
+  function go(dir){if(anim) return;var target=Math.round(pos)+dir;if(target<0||target>order.length-1) return;animateTo(target,false)}
+  function goIndex(sceneId){var idx=order.indexOf(sceneId);if(idx<0) return;if(Math.abs(idx-pos)===1)animateTo(idx,false);else if(idx!==pos)jumpTo(idx)}
+
+  /* 右端の点 */
+  function setDots(){
+    var ol=$("dots");if(!ol.children.length){SCN.forEach(function(s){var li=document.createElement("li"),b=document.createElement("button");b.type="button";b.innerHTML="<i></i>";b.setAttribute("aria-label",s.el.getAttribute("data-name"));b.addEventListener("click",function(){goIndex(s.i)});li.appendChild(b);ol.appendChild(li)})}
+    var cur=order[Math.round(pos)];
+    [].forEach.call(ol.querySelectorAll("button"),function(b,i){b.disabled=order.indexOf(i)<0;if(i===cur)b.setAttribute("aria-current","step");else b.removeAttribute("aria-current")});
+  }
+
+  /* KIN番号の数え上げ */
+  var cnt=null;
+  function countUp(){
+    var el=$("knum");if(!el||!lastData) return;var to=lastData.kin;
+    if(reduce){el.textContent=to;return}
+    cancelAnimationFrame(cnt);var t0=null;
+    function st(ts){if(t0===null)t0=ts;var p=Math.min(1,Math.max(0,(ts-t0-500)/1500)),e=eo(p);el.textContent=Math.max(1,Math.round(e*to));if(p<1)cnt=requestAnimationFrame(st)}
+    cnt=requestAnimationFrame(st);
+  }
+
+  /* ================= 指・ホイール・キー ================= */
+  function scrollable(el,dir){
+    while(el&&el!==stage){if(el.classList&&el.classList.contains("ui")){var can=el.scrollHeight>el.clientHeight+2;if(!can) return false;
+      return dir>0?el.scrollTop+el.clientHeight<el.scrollHeight-2:el.scrollTop>2}el=el.parentNode}
+    return false;
+  }
+  var tch=null;
+  stage.addEventListener("touchstart",function(e){
+    if(e.touches.length!==1){tch=null;return}
+    var p=e.touches[0];tch={x:p.clientX,y:p.clientY,t:performance.now(),mode:null,base:Math.round(pos),hist:[[p.clientY,performance.now()]],target:e.target};
+    if(anim){cancelAnimationFrame(anim);anim=null;tch.base=pos}
+  },{passive:true});
+  stage.addEventListener("touchmove",function(e){
+    if(!tch) return;var p=e.touches[0],dy=p.clientY-tch.y,dx=p.clientX-tch.x;
+    if(!tch.mode){
+      if(Math.abs(dy)<6&&Math.abs(dx)<6) return;
+      if(Math.abs(dx)>Math.abs(dy)){tch.mode="none";return}
+      var dir=dy<0?1:-1;
+      if(scrollable(tch.target,dir)){tch.mode="native";return}
+      if(tch.target.closest&&tch.target.closest("select")){tch.mode="none";return}
+      tch.mode="drag";
+    }
+    if(tch.mode!=="drag") return;
+    e.preventDefault();
+    tch.hist.push([p.clientY,performance.now()]);if(tch.hist.length>6)tch.hist.shift();
+    var span=H*.8,np=tch.base+(-dy/span),b0=Math.round(tch.base);
+    var lo=Math.max(0,b0-1),hi=Math.min(order.length-1,b0+1);
+    pos=Math.max(lo,Math.min(hi,np));apply();
+  },{passive:false});
+  stage.addEventListener("touchend",function(){
+    if(!tch||tch.mode!=="drag"){tch=null;return}
+    var h=tch.hist,v=0;if(h.length>1){var a=h[0],b=h[h.length-1];v=(b[0]-a[0])/Math.max(1,b[1]-a[1])}
+    var base=Math.round(tch.base),d=pos-base,target=base;
+    if(d>1e-3){if(d>.18||v<-.45)target=base+1}else if(d<-1e-3){if(d<-.18||v>.45)target=base-1}
+    target=Math.max(0,Math.min(order.length-1,target));
+    tch=null;animateTo(target,true);
+  });
+  stage.addEventListener("touchcancel",function(){if(tch&&tch.mode==="drag")animateTo(Math.round(pos),true);tch=null});
+  var wheelAcc=0,wheelLock=0;
+  stage.addEventListener("wheel",function(e){
+    var dir=e.deltaY>0?1:-1;
+    if(scrollable(e.target,dir)) return;
+    e.preventDefault();
+    if(anim||performance.now()<wheelLock) return;
+    wheelAcc+=e.deltaY;if(Math.abs(wheelAcc)>40){go(wheelAcc>0?1:-1);wheelAcc=0;wheelLock=performance.now()+700}
+  },{passive:false});
+  window.addEventListener("keydown",function(e){
+    var tag=(document.activeElement&&document.activeElement.tagName)||"";
+    if(tag==="SELECT"||tag==="TEXTAREA") return;
+    var k=e.key;
+    if(k==="ArrowDown"||k==="PageDown"||(k===" "&&tag!=="BUTTON"&&tag!=="A")){if(scrollable(document.activeElement,1)) return;e.preventDefault();go(1)}
+    else if(k==="ArrowUp"||k==="PageUp"){if(scrollable(document.activeElement,-1)) return;e.preventDefault();go(-1)}
+  });
+  document.addEventListener("click",function(e){
+    var t=e.target.closest&&e.target.closest("[data-next],[data-again],#copyBtn");if(!t) return;
+    if(t.hasAttribute("data-next"))go(1);
+    else if(t.hasAttribute("data-again")){$("endScroll").scrollTop=0;jumpTo(0);setTimeout(function(){selY.focus({preventScroll:true})},500)}
+    else copyPrompt(t);
+  });
+
+  /* ================= はじまり ================= */
+  $("form").addEventListener("submit",function(e){
+    e.preventDefault();
+    res=compute(+selY.value,+selM.value,+selD.value);hunab=!!res.hunab;
+    document.body.classList.toggle("is-hunab",hunab);
+    render();
+    order=hunab?[0,1,5]:[0,1,2,3,4,5];
+    SCN.forEach(function(s){if(order.indexOf(s.i)>=0)s.el.removeAttribute("data-off");else s.el.setAttribute("data-off","")});
+    ensureRings();paintResults();
+    SCN.forEach(function(s){if(s.i>0)inMark(s,false)});
+    $("endScroll").scrollTop=0;
+    $("live").textContent=hunab?"フナブ・クの日です。":"KIN "+res.kin+"、"+res.tone.name+"の"+res.seal.name+"。上へスワイプすると続きをめくれます。";
+    setDots();
+    if(Math.round(pos)!==0){pos=0;apply()}
+    requestAnimationFrame(function(){animateTo(1,false)});
+  });
+
+  /* ================= AIへの発注文（文面は元ツールと同じ） ================= */
+  function copyPrompt(btn){
+    if(!lastData) return;
+    var text=buildPrompt(lastData);
+    function done(){var br=btn.getBoundingClientRect();sparkEmit(br.left+br.width/2,br.top+br.height/2,26,{v:1.7,life:1100});btn.textContent="コピーしました";btn.classList.add("done");setTimeout(function(){btn.textContent="AIへの発注文をコピーする";btn.classList.remove("done")},2200)}
+    function fallback(){
+      var ta=document.querySelector(".copy-fallback");
+      if(!ta){ta=document.createElement("textarea");ta.className="copy-fallback";ta.readOnly=true;ta.setAttribute("aria-label","AIへの発注文");btn.insertAdjacentElement("afterend",ta)}
+      ta.value=text;ta.focus();ta.select();var ok=false;try{ok=document.execCommand("copy")}catch(err){}
+      if(ok)done();else btn.textContent="下の文を長押ししてコピーしてください";
+    }
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(done).catch(fallback);else fallback();
+  }
+
+  /* ================= 起動とサイズ変更 ================= */
+  var rt=null;
+  window.addEventListener("resize",function(){clearTimeout(rt);rt=setTimeout(function(){
+    if(Math.abs(innerWidth-W)<2&&Math.abs(innerHeight-H)<90) return;
+    W=innerWidth;H=innerHeight;sizeSpark();paintFirst();if(res){paintResults()}apply();
+  },220)});
+  paintFirst();setDots();apply();settle();
+  if(reduce){setInterval(function(){visibleSet.forEach(function(k){if(k===0||res)fx[k].draw(fxc(k),performance.now(),99999)})},2000)}
+  requestAnimationFrame(loop);
+
+  /* ================= 光の演出 ================= */
+  var spark=document.getElementById("spark"),sctx=spark.getContext("2d"),SP=[],spOn=false,spDown=false,lastEmit=0;
+  function sizeSpark(){var pr=Math.min(1.5,window.devicePixelRatio||1);spark.width=Math.round(W*pr);spark.height=Math.round(H*pr);sctx.setTransform(pr,0,0,pr,0,0)}
+  sizeSpark();
+  function spStart(){if(!spOn){spOn=true;requestAnimationFrame(spLoop)}}
+  function sparkEmit(x,y,n,o){if(reduce) return;o=o||{};var now=performance.now();
+    for(var i=0;i<n;i++){var a=Math.random()*TAU,v=(o.v||.6)*(.3+Math.random());SP.push({x:x,y:y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-(o.up||.15),r:(o.r||1.4)*(.5+Math.random()),life:(o.life||900)*(.6+Math.random()*.8),t0:now})}
+    if(SP.length>260)SP.splice(0,SP.length-260);spStart()}
+  function sparkRing(x,y){if(reduce) return;SP.push({x:x,y:y,ring:true,life:750,t0:performance.now()});spStart()}
+  function spLoop(){sctx.clearRect(0,0,W,H);var now=performance.now();sctx.globalCompositeOperation="lighter";
+    for(var i=SP.length-1;i>=0;i--){var p=SP[i],a=(now-p.t0)/p.life;if(a>=1){SP.splice(i,1);continue}
+      if(p.ring){var rr=10+a*54;sctx.strokeStyle="rgba(255,232,180,"+(.75*(1-a))+")";sctx.lineWidth=2*(1-a)+.5;sctx.beginPath();sctx.arc(p.x,p.y,rr,0,TAU);sctx.stroke();glow(sctx,p.x,p.y,rr*.8,"255,220,160",.16*(1-a));continue}
+      p.x+=p.vx;p.y+=p.vy;p.vy+=.004;p.vx*=.985;var al=(1-a)*(a<.1?a*10:1);
+      glow(sctx,p.x,p.y,p.r*6,"255,206,130",.55*al);disc(sctx,p.x,p.y,p.r*.7,"rgba(255,250,232,"+al+")")}
+    sctx.globalCompositeOperation="source-over";
+    if(SP.length)requestAnimationFrame(spLoop);else{spOn=false;sctx.clearRect(0,0,W,H)}}
+  /* 指でふれた所に光の輪、なぞった跡に光の粒 */
+  window.addEventListener("pointerdown",function(e){spDown=true;sparkRing(e.clientX,e.clientY);sparkEmit(e.clientX,e.clientY,8,{v:.9,r:2})},{passive:true});
+  window.addEventListener("pointermove",function(e){if(!spDown) return;var n=performance.now();if(n-lastEmit<26) return;lastEmit=n;sparkEmit(e.clientX,e.clientY,3,{v:.4,life:1300,r:2.2})},{passive:true});
+  ["pointerup","pointercancel"].forEach(function(ty){window.addEventListener(ty,function(){spDown=false},{passive:true})});
+
+  /* 場面に入ってから、大事な瞬間に光がはじける */
+  function onEnter(i){
+    if(reduce||!res||hunab) return;
+    function later(ms,fn){setTimeout(function(){if(SCN[i].el.classList.contains("in"))fn()},ms)}
+    if(i===1&&geo.star)later(1000,function(){sparkEmit(geo.star.x,geo.star.y,34,{v:1.9,life:1400,r:1.6})});
+    if(i===3&&geo.gate){var g=geo.gate,p=g.sel?{x:(g.sel.a.x+g.sel.b.x)/2,y:(g.sel.a.y+g.sel.d.y)/2}:{x:g.x,y:g.y};later(650+res.toneNo*170,function(){sparkEmit(p.x,p.y,24,{v:1.3,life:1200})})}
+    if(i===4&&geo.sea&&geo.sea.img){var k=res.toneNo,z=Math.pow(1.24,k-1),q={x:geo.sea.roadX+Math.sin(k*1.7)*W*.16/z,y:geo.sea.hor+(geo.sea.near-geo.sea.hor)/z-W*.03/z};later(1000+k*260,function(){sparkEmit(q.x,q.y,20,{v:1,life:1300,up:.3})})}
+  }
+
+  /* 場面ごとの光（背景の上、文字の下） */
+  function godRays(c,x,y,t,n,dir,spread,len,a,rgb,seed){var R=rng(seed);c.save();c.globalCompositeOperation="lighter";
+    for(var i=0;i<n;i++){var ph=R()*TAU,sp=.6+R()*.8,ang=dir+(R()-.5)*spread+Math.sin(t/(5200*sp)+ph)*.06,wd=.022+R()*.045,l=len*(.6+R()*.5),al=a*(.5+.5*Math.sin(t/(2600*sp)+ph));
+      if(al<=.002) continue;var g=c.createRadialGradient(x,y,0,x,y,l);g.addColorStop(0,rgba(rgb,al));g.addColorStop(.5,rgba(rgb,al*.35));g.addColorStop(1,rgba(rgb,0));
+      c.fillStyle=g;c.beginPath();c.moveTo(x,y);c.arc(x,y,l,ang-wd,ang+wd);c.closePath();c.fill()}
+    c.restore()}
+  var GL=[[],[],[],[],[],[]];
+  function glintCross(c,x,y,s,al,rgb){c.save();c.globalCompositeOperation="lighter";glow(c,x,y,s*1.6,rgb,.45*al);
+    var g=c.createLinearGradient(x-s*3,y,x+s*3,y);g.addColorStop(0,rgba(rgb,0));g.addColorStop(.5,rgba("255,252,240",.9*al));g.addColorStop(1,rgba(rgb,0));c.fillStyle=g;c.fillRect(x-s*3,y-.6,s*6,1.2);
+    g=c.createLinearGradient(x,y-s*3,x,y+s*3);g.addColorStop(0,rgba(rgb,0));g.addColorStop(.5,rgba("255,252,240",.9*al));g.addColorStop(1,rgba(rgb,0));c.fillStyle=g;c.fillRect(x-.6,y-s*3,1.2,s*6);
+    disc(c,x,y,1.2,"rgba(255,255,250,"+al+")");c.restore()}
+  function glints(k,c,t,rate,area,rgb,max){var L=GL[k];if(L.length<(max||4)&&Math.random()<rate){var p=area();L.push({x:p.x,y:p.y,s:4+Math.random()*7,t0:t,life:1400+Math.random()*1600})}
+    for(var i=L.length-1;i>=0;i--){var g=L[i],a=(t-g.t0)/g.life;if(a>=1||a<0){L.splice(i,1);continue}var al=Math.sin(a*Math.PI);glintCross(c,g.x,g.y,g.s*(.6+.4*al),al,rgb)}}
+  var SS=[];
+  function shooting(c,t){if(SS.length<2&&Math.random()<.006){var a=.45+Math.random()*.4;SS.push({x:W*(.25+Math.random()*.85),y:H*(Math.random()*.32),a:Math.PI-a,v:W*(.012+Math.random()*.01),t0:t,life:900+Math.random()*500})}
+    c.save();c.globalCompositeOperation="lighter";
+    for(var i=SS.length-1;i>=0;i--){var s=SS[i],p=(t-s.t0)/s.life;if(p>=1||p<0){SS.splice(i,1);continue}
+      var d=p*s.life/16*s.v,hx=s.x+Math.cos(s.a)*d,hy=s.y+Math.sin(s.a)*d,tl=W*.22*Math.min(1,p*3),al=Math.sin(p*Math.PI);
+      var g=c.createLinearGradient(hx,hy,hx-Math.cos(s.a)*tl,hy-Math.sin(s.a)*tl);g.addColorStop(0,"rgba(255,250,235,"+(.9*al)+")");g.addColorStop(1,"rgba(200,220,255,0)");
+      c.strokeStyle=g;c.lineWidth=1.4;c.beginPath();c.moveTo(hx,hy);c.lineTo(hx-Math.cos(s.a)*tl,hy-Math.sin(s.a)*tl);c.stroke();glow(c,hx,hy,6,"255,245,220",.6*al)}
+    c.restore()}
+  function shafts(c,t,rgb){c.save();c.globalCompositeOperation="lighter";
+    for(var i=0;i<3;i++){var ph=i*2.1,x0=W*(.15+i*.32)+Math.sin(t/7000+ph)*W*.06,w0=W*(.06+.04*i),al=.06+.04*Math.sin(t/3100+ph);
+      var g=c.createLinearGradient(0,0,0,H*.75);g.addColorStop(0,rgba(rgb,al));g.addColorStop(1,rgba(rgb,0));c.fillStyle=g;
+      c.beginPath();c.moveTo(x0-w0,0);c.lineTo(x0+w0,0);c.lineTo(x0+w0+W*.28,H*.75);c.lineTo(x0-w0+W*.18,H*.75);c.closePath();c.fill()}
+    c.restore()}
+  var EX=[
+    function(c,t){godRays(c,geo.sun.x,geo.sun.y,t,9,Math.PI/2,2.8,H*.95,.07,"255,222,160",11)},
+    function(c,t){shooting(c,t)},
+    function(c,t){var rgb=res&&res.seal?FAM[res.seal.color].lt:"255,230,180";shafts(c,t,rgb);glints(2,c,t,.025,function(){return {x:W*(.08+Math.random()*.84),y:H*(.08+Math.random()*.5)}},rgb,4)},
+    function(c,t){glints(3,c,t,.02,function(){return {x:W*(.1+Math.random()*.8),y:H*(.38+Math.random()*.3)}},"255,214,150",3)},
+    function(c,t){var g=geo.sea,y0=g?g.hor:H*.5,y1=g?g.near:H*.75,x0=g?g.roadX:W*.5;glints(4,c,t,.035,function(){return {x:x0+(Math.random()-.5)*W*.5,y:y0+Math.random()*(y1-y0)}},"220,232,255",5)},
+    function(c,t){var s=geo.dawnSun||{x:W*.5,y:H*.44};godRays(c,s.x,s.y,t,10,-Math.PI/2,3.4,H*.7,.06,"255,232,180",55);glints(5,c,t,.02,function(){return {x:W*(.1+Math.random()*.8),y:s.y+H*(.02+Math.random()*.12)}},"255,236,190",3)}
+  ];
+})();
+</script>
+<noscript><p style="position:fixed;inset:auto 16px 16px;z-index:99;background:#0b1f1c;color:#ece6d6;padding:12px;border-radius:8px">この旅はJavaScriptを使います。表形式の<a href="https://you-no-oto.jp/maya.html">KINナビ</a>もご利用いただけます。</p></noscript>
+</body>
+</html>
