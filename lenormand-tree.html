@@ -558,7 +558,7 @@ function showSelf(){
   if(!selfOpen){
     const buy = SELF_BUY_URL ? `<a class="btn ghost" href="${SELF_BUY_URL}" target="_blank" rel="noopener">合言葉を手に入れる</a>` : '';
     E.innerHTML = `<p class="small" style="margin-top:14px">合言葉を入れると、木全体を読み解くためのAIへの発注文が開きます。合言葉（${SELF_PRICE}）は一度入れれば、次からは入れなくても開きます。</p>
-      <div class="keyrow"><input id="selfKey" type="password" placeholder="合言葉" autocomplete="off"><button class="btn" id="selfGo">開く</button></div>
+      <div class="keyrow"><input id="selfKey" type="text" placeholder="合言葉" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"><button class="btn" id="selfGo">開く</button></div>
       <p class="small" id="selfMsg"></p><div class="row">${buy}</div>`;
     const go = async ()=>{
       const v = $('selfKey').value.normalize('NFKC').replace(/\s+/g,''); if(!v) return;
