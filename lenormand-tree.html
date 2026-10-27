@@ -1,0 +1,679 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>生命の木 ルノルマン</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#04050d; --ink:#efe7d6; --sub:#b8b0a0; --gold:#e8c46a; --gold2:#fff1c2;
+  --teal:#63e6d6; --line:rgba(232,196,106,.28); --panel:rgba(8,10,28,.80);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--ink);
+  font-family:'Shippori Mincho','Hiragino Mincho ProN','Yu Mincho',serif;
+  overflow:hidden;-webkit-tap-highlight-color:transparent}
+button{font-family:inherit}
+
+/* ===== 宇宙の背景（後でマツコ/ミルの背景画に差し替え可） ===== */
+#sky{position:fixed;inset:0;z-index:0;width:100%;height:100%}
+.nebula{position:fixed;inset:-20%;z-index:0;pointer-events:none;background:
+  radial-gradient(40% 30% at 20% 25%,rgba(80,60,170,.32),transparent 70%),
+  radial-gradient(35% 25% at 85% 55%,rgba(30,120,150,.26),transparent 70%),
+  radial-gradient(55% 28% at 50% 100%,rgba(232,196,106,.20),transparent 70%)}
+.vortex{position:fixed;left:50%;bottom:-30vmin;width:130vmin;height:46vmin;transform:translateX(-50%);
+  z-index:0;pointer-events:none;border-radius:50%;opacity:.55;
+  background:repeating-radial-gradient(ellipse at center,rgba(232,196,106,.16) 0 1px,transparent 2px 12px);
+  -webkit-mask:radial-gradient(ellipse at center,#000 30%,transparent 70%);
+  mask:radial-gradient(ellipse at center,#000 30%,transparent 70%)}
+
+#bgimg{position:fixed;inset:0;z-index:0;background:center/cover no-repeat;display:none}
+#bgimg::after{content:"";position:absolute;inset:0;background:rgba(3,4,12,.42)}
+.has-bg #bgimg{display:block}
+.has-bg .nebula,.has-bg .vortex{display:none}
+.has-bg #sky{opacity:.6}
+.cardback.imgback{background-size:cover;background-position:center;box-shadow:none;border-color:rgba(232,196,106,.5)}
+.cardback.imgback::after{content:none}
+
+/* ===== 場面 ===== */
+.scene{position:fixed;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:max(28px,env(safe-area-inset-top)) 22px max(28px,env(safe-area-inset-bottom));
+  opacity:0;transform:translateY(56px);pointer-events:none;transition:opacity 1s ease,transform 1s ease;text-align:center}
+.scene.active{opacity:1;transform:none;pointer-events:auto}
+.scene.leave{opacity:0;transform:translateY(-56px)}
+
+.eyebrow{letter-spacing:.4em;font-size:12px;color:var(--gold);margin-bottom:18px}
+h1{font-size:34px;font-weight:700;letter-spacing:.18em;color:var(--gold2);
+  text-shadow:0 0 24px rgba(232,196,106,.55)}
+.lead{margin-top:22px;line-height:2.1;font-size:15px;color:var(--ink)}
+.small{font-size:12.5px;color:var(--sub);line-height:1.9}
+.btn{margin-top:30px;min-width:200px;padding:14px 28px;border-radius:40px;border:1px solid var(--gold);
+  background:linear-gradient(180deg,rgba(232,196,106,.22),rgba(232,196,106,.06));color:var(--gold2);
+  font-size:16px;letter-spacing:.15em;cursor:pointer;box-shadow:0 0 18px rgba(232,196,106,.25)}
+.btn:disabled{opacity:.35;box-shadow:none}
+.btn.ghost{background:transparent;border-color:rgba(232,196,106,.45);color:var(--ink);font-size:14px;box-shadow:none}
+
+#worry{margin-top:22px;width:min(100%,420px);height:110px;resize:none;border-radius:14px;padding:14px;
+  background:rgba(10,12,34,.75);border:1px solid var(--line);color:var(--ink);font-family:inherit;font-size:16px;line-height:1.7}
+#worry:focus{outline:none;border-color:var(--gold)}
+
+.doors{margin-top:26px;display:flex;flex-direction:column;gap:16px;width:min(100%,420px)}
+.door{padding:20px 18px;border-radius:16px;cursor:pointer;text-align:left;color:var(--ink);background:rgba(10,12,34,.7)}
+.door b{display:block;font-size:19px;letter-spacing:.12em;margin-bottom:8px}
+.door span{font-size:13px;line-height:1.85;color:var(--sub)}
+.door.down{border:1px solid rgba(232,196,106,.7);box-shadow:0 0 22px rgba(232,196,106,.18)}
+.door.down b{color:var(--gold2)}
+.door.up{border:1px solid rgba(99,230,214,.7);box-shadow:0 0 22px rgba(99,230,214,.16)}
+.door.up b{color:var(--teal)}
+
+/* ===== 木の場面 ===== */
+#s-tree{justify-content:flex-start;padding:max(10px,env(safe-area-inset-top)) 0 0}
+#treeWrap{flex:1 1 auto;min-height:0;width:100%;display:flex;justify-content:center;align-items:center;padding:6px 10px}
+#tree{height:100%;max-width:100%;overflow:visible}
+#panel{flex:0 0 auto;width:100%;max-height:44dvh;overflow-y:auto;background:var(--panel);
+  border-top:1px solid var(--line);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  padding:18px 22px max(20px,env(safe-area-inset-bottom));border-radius:20px 20px 0 0;text-align:center;
+  transition:max-height .8s ease}
+#panel.final{max-height:64dvh;text-align:left}
+#panel .stepno{font-size:12px;letter-spacing:.2em;color:var(--sub)}
+#panel h2{margin-top:6px;font-size:24px;letter-spacing:.14em}
+#panel h2 small{font-size:13px;margin-left:10px;color:var(--sub);letter-spacing:.1em}
+#panel .theme{margin-top:8px;font-size:13.5px;color:var(--gold)}
+#panel .narr{margin-top:10px;font-size:14.5px;line-height:1.95}
+#panel .btn{margin-top:16px}
+.placed{margin-top:14px;display:flex;align-items:center;justify-content:center;gap:14px;text-align:left}
+.placed .mini{width:46px;height:69px;flex:0 0 auto}
+.placed b{font-size:18px;letter-spacing:.1em}
+.placed span{font-size:13px;color:var(--sub)}
+
+/* 最終画面 */
+#panel h3{font-size:16px;color:var(--gold2);margin:20px 0 8px;letter-spacing:.12em}
+.sum{list-style:none;margin-top:10px}
+.sum li{display:flex;gap:10px;align-items:baseline;padding:7px 0;border-bottom:1px solid rgba(232,196,106,.12);font-size:14px}
+.sum .sn{width:6.2em;flex:0 0 auto;color:var(--sub);font-size:12.5px}
+.sum .kw{color:var(--sub);font-size:12px;margin-left:auto;text-align:right}
+#prompt{width:100%;height:170px;margin-top:8px;padding:12px;border-radius:12px;resize:vertical;
+  background:rgba(4,5,14,.8);border:1px solid var(--line);color:var(--ink);font-size:12.5px;line-height:1.7;font-family:inherit}
+.endDoors{display:flex;flex-direction:column;gap:12px;margin-top:6px}
+.endDoors .door{width:100%;padding:16px 16px;transition:transform .2s,box-shadow .3s}
+.endDoors .door b{font-size:17px}
+.door.yuu{border:1px solid rgba(185,168,255,.75);box-shadow:0 0 22px rgba(185,168,255,.16)}
+.door.yuu b{color:#d9ceff}
+.endDoors .door.chosen{transform:scale(1.02);box-shadow:0 0 30px rgba(255,241,194,.35)}
+.keyrow{display:flex;gap:8px;margin-top:10px}
+.keyrow input{flex:1;min-width:0;padding:12px 14px;border-radius:30px;background:rgba(4,5,14,.8);border:1px solid var(--line);color:var(--ink);font-family:inherit;font-size:16px}
+.keyrow .btn{margin-top:0;min-width:0;padding:12px 20px}
+#yuuMsg{width:100%;margin-top:8px;padding:12px;border-radius:12px;resize:none;background:rgba(4,5,14,.8);border:1px solid var(--line);color:var(--ink);font-size:13px;line-height:1.7;font-family:inherit}
+a.btn{display:inline-block;text-decoration:none;text-align:center}
+.row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.row .btn{min-width:0;margin-top:14px}
+
+/* ===== SVG ノード ===== */
+.path{stroke:rgba(232,196,106,.18);stroke-width:1.2}
+.node{transition:opacity 1.2s ease}
+.node.dim{opacity:.3}
+.node.hide{opacity:0}
+.node .halo{opacity:0;transform-box:fill-box;transform-origin:center;transition:opacity 1s}
+.node.lit .halo{opacity:.32}
+.node.active .halo{animation:pulse 2.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.25;transform:scale(.88)}50%{opacity:.75;transform:scale(1.18)}}
+.node .nm{font-size:11px;fill:var(--ink);text-anchor:middle;letter-spacing:.05em}
+.node .num{font-size:14px;font-weight:700;text-anchor:middle;fill:#fff;paint-order:stroke;stroke:rgba(0,0,0,.65);stroke-width:3px}
+#tree.bloom .node .halo{animation:bloom 2.6s ease-out 1}
+@keyframes bloom{0%{opacity:.3;transform:scale(1)}40%{opacity:.95;transform:scale(1.6)}100%{opacity:.32;transform:scale(1)}}
+
+/* ===== カード ===== */
+.cardback{position:relative;border-radius:8px;border:1px solid rgba(232,196,106,.75);
+  background:radial-gradient(circle at 50% 50%,rgba(232,196,106,.22),transparent 45%),linear-gradient(160deg,#18205a,#070a1e);
+  box-shadow:inset 0 0 0 3px #0a0d24,inset 0 0 0 4px rgba(232,196,106,.4)}
+.cardback::after{content:"✦";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:1.1em}
+.cardface{position:relative;border-radius:10px;border:1px solid rgba(232,196,106,.85);overflow:hidden;
+  background:radial-gradient(circle at 50% 40%,rgba(232,196,106,.18),transparent 55%),linear-gradient(170deg,#141a4c,#05071a);
+  box-shadow:inset 0 0 0 4px #0a0d24,inset 0 0 0 5px rgba(232,196,106,.45);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.cardface img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cardface .cn{position:absolute;top:7%;left:9%;font-size:.9em;color:var(--gold)}
+.cardface .ce{font-size:2.6em;filter:drop-shadow(0 0 10px rgba(255,241,194,.55))}
+.cardface .cm{position:absolute;bottom:7%;left:0;right:0;text-align:center;font-size:.95em;letter-spacing:.15em;color:var(--gold2)}
+.placed .mini.cardface{font-size:8px}
+
+/* ===== オーバーレイ ===== */
+.overlay{position:fixed;inset:0;z-index:5;background:rgba(3,4,12,.92);display:flex;flex-direction:column;align-items:center;
+  padding:max(18px,env(safe-area-inset-top)) 16px max(18px,env(safe-area-inset-bottom));
+  opacity:0;pointer-events:none;transition:opacity .5s ease;overflow-y:auto}
+.overlay.show{opacity:1;pointer-events:auto}
+#picker h4{font-size:16px;letter-spacing:.12em;color:var(--gold2);margin:6px 0 4px;text-align:center}
+#picker .small{text-align:center}
+#grid{margin-top:14px;display:grid;grid-template-columns:repeat(6,1fr);gap:7px;width:min(100%,420px)}
+#grid .slot{aspect-ratio:2/3;font-size:12px;cursor:pointer;transition:transform .2s}
+#grid .slot:active{transform:translateY(-4px) scale(1.04)}
+#grid .slot.gone{visibility:hidden}
+#picker .close{margin-top:16px}
+
+#reveal{justify-content:center}
+.flip{width:min(60vw,230px);aspect-ratio:2/3;perspective:1100px}
+.flip .inner{position:relative;width:100%;height:100%;transition:transform 1.1s cubic-bezier(.3,.7,.2,1);transform-style:preserve-3d}
+.flip.flipped .inner{transform:rotateY(180deg)}
+.flip .f,.flip .b{position:absolute;inset:0;-webkit-backface-visibility:hidden;backface-visibility:hidden}
+.flip .b{font-size:30px}
+.flip .f{transform:rotateY(180deg);font-size:20px}
+#revealText{margin-top:20px;text-align:center;opacity:0;transition:opacity .8s ease .9s}
+.flipped ~ #revealText,#reveal.done #revealText{opacity:1}
+#revealText b{font-size:22px;letter-spacing:.15em;color:var(--gold2)}
+#revealText p{margin-top:8px;font-size:14px;color:var(--sub)}
+
+#toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%);z-index:9;padding:10px 20px;border-radius:30px;
+  background:rgba(232,196,106,.95);color:#1a1405;font-size:14px;opacity:0;transition:opacity .4s;pointer-events:none}
+#toast.show{opacity:1}
+
+@media (prefers-reduced-motion:reduce){
+  .scene,.flip .inner,.node,#panel{transition:none}
+  .node.active .halo,#tree.bloom .node .halo{animation:none;opacity:.6}
+}
+</style>
+</head>
+<body>
+<div id="bgimg"></div>
+<canvas id="sky"></canvas>
+<div class="nebula"></div>
+<div class="vortex"></div>
+
+<!-- 1 はじまり -->
+<section class="scene active" id="s-intro">
+  <div class="eyebrow">TREE OF LIFE × LENORMAND</div>
+  <h1>生命の木</h1>
+  <p class="lead">十一の光に、カードを一枚ずつ。<br>あなたの悩みが、どこから来て<br>どこへ向かうのかを辿る旅。</p>
+  <button class="btn" data-go="s-worry">はじめる</button>
+</section>
+
+<!-- 2 悩み -->
+<section class="scene" id="s-worry">
+  <div class="eyebrow">YOUR QUESTION</div>
+  <p class="lead" style="margin-top:0">いま抱えている悩みを<br>ひとことで書いてください</p>
+  <textarea id="worry" maxlength="140" placeholder="例：今の仕事を続けるか迷っている"></textarea>
+  <p class="small" style="margin-top:10px">うまく言葉にならなくても大丈夫。</p>
+  <button class="btn" id="worryNext" disabled>次へ</button>
+</section>
+
+<!-- 3 扉 -->
+<section class="scene" id="s-door">
+  <div class="eyebrow">CHOOSE YOUR DOOR</div>
+  <p class="lead" style="margin-top:0">どちらの扉から入りますか</p>
+  <div class="doors">
+    <button class="door down" data-door="down"><b>天からの啓示</b><span>ケテルから稲妻のように降りていく道。上から届いたものが、どう形になって今の悩みになったのかを観る。</span></button>
+    <button class="door up" data-door="up"><b>自らの発生</b><span>マルクトから螺旋を描いて昇っていく道。今いる現実から、内側で何が立ち上がろうとしているのかを観る。</span></button>
+  </div>
+</section>
+
+<!-- 4 木 -->
+<section class="scene" id="s-tree">
+  <div id="treeWrap"><svg id="tree" viewBox="0 0 320 470" xmlns="http://www.w3.org/2000/svg"></svg></div>
+  <div id="panel"></div>
+</section>
+
+<!-- カードを選ぶ -->
+<div class="overlay" id="picker">
+  <h4 id="pickTitle"></h4>
+  <p class="small" id="pickSub"></p>
+  <div id="grid"></div>
+  <button class="btn ghost close" id="pickClose">もどる</button>
+</div>
+
+<!-- めくる -->
+<div class="overlay" id="reveal">
+  <div class="flip" id="flip"><div class="inner"><div class="b cardback"></div><div class="f cardface" id="face"></div></div></div>
+  <div id="revealText"><b id="rvName"></b><p id="rvKw"></p></div>
+  <button class="btn" id="placeBtn">この場所に置く</button>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* =========================================================
+   設定
+   IMG_DIR に 'lenormand/' のようにフォルダ名を入れると
+   lenormand/01.webp 〜 36.webp と back.webp を絵として表示する。
+   空のあいだは仮カード（記号）で表示。
+   ========================================================= */
+const IMG_DIR = 'lenormand/';
+const IMG_EXT = '.webp';
+
+/* ===== 最後の扉の設定（ここを書き換える） ===== */
+/* 自分で読む：合言葉のSHA-256（合言葉は passwords.md で管理） */
+const SELF_KEY_HASH = 'b3374faf5dce39a6926883307cce9b08620d36f9d57d7b3e27695b5f2de8dce7';
+/* 合言葉（自分で読む）の値段：発売記念は誕生日（11月12日）まで、13日0時から通常価格に自動で切り替わる */
+const LAUNCH_END = new Date('2026-11-13T00:00:00+09:00');
+const SELF_PRICE = Date.now() < LAUNCH_END.getTime() ? '発売記念 1,111円（11月12日まで）' : '1,480円';
+const SELF_BUY_URL  = '';   /* 合言葉を売っているnoteのURL（空なら案内文だけ出る） */
+/* 結ゆうに読んでもらう */
+const YUU_PRICE = '3,333円';
+const LINE_URL  = 'https://lin.ee/PzXz6Er';       /* 公式LINEの友だち追加URL（空ならボタンを出さない） */
+const MAIL_TO   = 'younooto.info@gmail.com';       /* 申し込み用メールアドレス（空ならボタンを出さない） */
+/* 試作確認用：ファイルに埋め込んだ絵（本番は IMG_DIR 方式に切り替える） */
+const EMBED = /*EMBED*/{};
+const srcOf = key => EMBED[key] || (IMG_DIR ? IMG_DIR + (typeof key==='number' ? pad(key) : key) + IMG_EXT : null);
+
+/*DATA-START*/
+/* ルノルマン36枚：番号, 名前, 仮の記号, キーワード */
+const CARDS = [
+ [1,'騎士','🐎','知らせ・スピード・訪れ'],
+ [2,'クローバー','☘️','小さな幸運・チャンス・軽やかさ'],
+ [3,'船','⛵','旅・移動・遠くへの憧れ'],
+ [4,'家','🏠','安心・家庭・自分の居場所'],
+ [5,'木','🌳','健康・成長・根を張る時間'],
+ [6,'雲','☁️','迷い・先が見えない・一時的な曇り'],
+ [7,'蛇','🐍','遠回り・誘惑・こじれた関係'],
+ [8,'棺','⚱️','終わり・区切り・変容'],
+ [9,'花束','💐','喜び・贈り物・好意'],
+ [10,'鎌','🌾','決断・切り離し・急な変化'],
+ [11,'鞭','⚡','葛藤・繰り返し・言い争い'],
+ [12,'鳥','🐦','会話・噂・落ち着かなさ'],
+ [13,'子供','👶','始まり・素直さ・小さな一歩'],
+ [14,'狐','🦊','用心・知恵・自分を守る'],
+ [15,'熊','🐻','力・お金・守ってくれる存在'],
+ [16,'星','⭐','希望・導き・ひらめき'],
+ [17,'コウノトリ','🕊️','変化・移り変わり・改善'],
+ [18,'犬','🐕','友情・信頼・味方'],
+ [19,'塔','🗼','組織・孤独・境界線'],
+ [20,'庭園','🌷','人の集まり・社会・公の場'],
+ [21,'山','⛰️','障害・停滞・越えるべき壁'],
+ [22,'道','🛤️','選択・分かれ道・可能性'],
+ [23,'ネズミ','🐭','消耗・不安・少しずつ減る'],
+ [24,'ハート','❤️','愛・思いやり・心'],
+ [25,'指輪','💍','約束・契約・ご縁'],
+ [26,'本','📖','秘密・学び・まだ知らないこと'],
+ [27,'手紙','✉️','連絡・書類・伝わること'],
+ [28,'紳士','🤵','男性・能動性・相手（または本人）'],
+ [29,'淑女','👒','女性・受容性・本人（または相手）'],
+ [30,'百合','⚜️','成熟・穏やかさ・品格'],
+ [31,'太陽','☀️','成功・活力・はっきりする'],
+ [32,'月','🌙','感情・評価・直感'],
+ [33,'鍵','🗝️','解決・確信・扉が開く'],
+ [34,'魚','🐟','豊かさ・お金の流れ・自由'],
+ [35,'錨','⚓','安定・続けること・腰を据える'],
+ [36,'十字架','✝️','試練・宿命・背負うもの']
+];
+
+/* セフィラ：位置・色・意味・扉ごとの語り */
+const SEPH = {
+ kether:{name:'ケテル',sub:'王冠',x:160,y:30,color:'#d9d4c8',light:'#ffffff',theme:'魂の願い・根源の意図',
+   down:'すべての源から、最初に届いた光。この悩みは、ここから始まっている。',
+   up:'昇りきった頂。あなたの内から生まれたものが、最後に還っていく願い。'},
+ chokmah:{name:'コクマー',sub:'知恵',x:265,y:80,color:'#8e94a8',light:'#eef0f6',theme:'ひらめき・動き出す力',
+   down:'光がひらめきに変わる場所。最初に動き出した衝動を観る。',
+   up:'器を満たす、新しいひらめき。内から湧き上がる最初の衝動。'},
+ binah:{name:'ビナー',sub:'理解',x:55,y:80,color:'#232870',light:'#6f78d6',theme:'形・器・受け止め方',
+   down:'ひらめきが器に注がれ、形を持ちはじめる。何がそれを受け止めたのか。',
+   up:'広がったものを形にする器。あなたが引き受けていく覚悟。'},
+ daath:{name:'ダアト',sub:'知識',x:160,y:128,color:'#141633',light:'#5b4f8f',theme:'見えていない盲点・悩みを越える鍵',
+   down:'木の全体が灯った。でも、まだ一つだけ隠れた場所がある。上と下のあいだ、深い淵に開く扉。',
+   up:'木の全体が灯った。でも、まだ一つだけ隠れた場所がある。上と下のあいだ、深い淵に開く扉。'},
+ chesed:{name:'ケセド',sub:'慈悲',x:265,y:175,color:'#1f5fc4',light:'#8fc2ff',theme:'恵み・広げるもの・与えられているもの',
+   down:'受け止めたものが広がろうとする。あなたに与えられている恵み。',
+   up:'手放したあとに広がるもの。あなたが受け取れる恵み。'},
+ geburah:{name:'ゲブラー',sub:'峻厳',x:55,y:175,color:'#b22a22',light:'#ff8a75',theme:'断つもの・境界・手放すもの',
+   down:'広がりすぎたものを断つ力。ここで何かが削られ、境界が引かれた。',
+   up:'昇るために手放すもの。ここで断ち、境界を引く。'},
+ tiphareth:{name:'ティファレト',sub:'美',x:160,y:228,color:'#c9962c',light:'#fff0b8',theme:'本当の自分・調和の中心',
+   down:'与えることと断つことが釣り合う中心。本当のあなたが立つ場所。',
+   up:'考えと感情が結び合う中心。内側から立ち上がる本当のあなた。'},
+ netzach:{name:'ネツァク',sub:'勝利',x:265,y:295,color:'#1f8a4c',light:'#8ff0b4',theme:'感情・心の欲求',
+   down:'中心の光が感情になる。心が本当は何を欲しがっているか。',
+   up:'言葉の奥にある感情。心が何を求めて動いているか。'},
+ hod:{name:'ホド',sub:'栄光',x:55,y:295,color:'#c0661c',light:'#ffc68a',theme:'思考・言葉・意味づけ',
+   down:'感情が言葉と考えになる。頭の中でどう意味づけているか。',
+   up:'無意識が言葉になる場所。あなたが自分に言い聞かせている考え。'},
+ yesod:{name:'イェソド',sub:'基礎',x:160,y:355,color:'#6a3fb8',light:'#d4b8ff',theme:'無意識・習慣・繰り返すパターン',
+   down:'考えが無意識に沈み、繰り返しのパターンになる。',
+   up:'現実の下に流れている無意識。繰り返しの癖がここに映る。'},
+ malkuth:{name:'マルクト',sub:'王国',x:160,y:420,color:'#1d5a8a',light:'#6fd0a0',theme:'今の現実・目の前の状況',
+   down:'すべてが形になった今の現実。悩みとして目の前に現れている姿。',
+   up:'ここが出発点。今あなたが立っている現実。'}
+};
+
+/* 22の小径 */
+const PATHS = [
+ ['kether','chokmah'],['kether','binah'],['kether','tiphareth'],['chokmah','binah'],['chokmah','tiphareth'],['binah','tiphareth'],
+ ['chokmah','chesed'],['binah','geburah'],['chesed','geburah'],['chesed','tiphareth'],['geburah','tiphareth'],
+ ['chesed','netzach'],['geburah','hod'],['tiphareth','netzach'],['tiphareth','hod'],['tiphareth','yesod'],
+ ['netzach','hod'],['netzach','yesod'],['hod','yesod'],['netzach','malkuth'],['hod','malkuth'],['yesod','malkuth']
+];
+
+const ORDER = {
+ down:['kether','chokmah','binah','chesed','geburah','tiphareth','netzach','hod','yesod','malkuth','daath'],
+ up:['malkuth','yesod','hod','netzach','tiphareth','geburah','chesed','binah','chokmah','kether','daath']
+};
+const DOOR = {
+ down:{name:'天からの啓示',color:'#e8c46a',desc:'ケテルから稲妻の順に降りる道。上から届いたものが、どう形になって今の悩みになったかを読む'},
+ up:{name:'自らの発生',color:'#63e6d6',desc:'マルクトから螺旋で昇る道。今の現実から、内側で何が立ち上がろうとしているかを読む'}
+};
+const PILLARS = [
+ ['慈悲の柱',['chokmah','chesed','netzach']],
+ ['峻厳の柱',['binah','geburah','hod']],
+ ['均衡の柱',['kether','daath','tiphareth','yesod','malkuth']]
+];
+
+/*DATA-END*/
+
+/* ===== 状態 ===== */
+const st = {worry:'',door:null,order:[],step:0,placed:{},deck:[],picking:null,side:1};
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const card = n => CARDS[n-1];
+const pad = n => String(n).padStart(2,'0');
+
+/* ===== 場面移動 ===== */
+let current = 's-intro';
+function go(id){
+  const a = $(current), b = $(id);
+  a.classList.remove('active'); a.classList.add('leave');
+  setTimeout(()=>a.classList.remove('leave'),1000);
+  b.classList.add('active'); current = id;
+}
+document.querySelectorAll('[data-go]').forEach(el=>el.addEventListener('click',()=>go(el.dataset.go)));
+
+$('worry').addEventListener('input',e=>{$('worryNext').disabled = !e.target.value.trim();});
+$('worryNext').addEventListener('click',()=>{st.worry = $('worry').value.trim(); go('s-door');});
+document.querySelectorAll('[data-door]').forEach(el=>el.addEventListener('click',()=>{
+  st.door = el.dataset.door; startTree(); go('s-tree');
+}));
+
+/* ===== カードの見た目 ===== */
+function faceHTML(n){
+  const c = card(n), src = srcOf(n);
+  if(src) return `<img src="${src}" alt="${c[1]}">`;
+  return `<span class="cn">${c[0]}</span><span class="ce">${c[2]}</span><span class="cm">${c[1]}</span>`;
+}
+
+/* ===== 木を描く ===== */
+function buildTree(){
+  let defs = '<defs><filter id="glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="7"/></filter>'+
+             '<filter id="lineglow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>';
+  for(const k in SEPH){const s=SEPH[k];
+    defs += `<radialGradient id="rg-${k}" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="${s.light}"/><stop offset="1" stop-color="${s.color}"/></radialGradient>`;}
+  defs += '</defs>';
+  const lines = PATHS.map(([a,b])=>`<line class="path" x1="${SEPH[a].x}" y1="${SEPH[a].y}" x2="${SEPH[b].x}" y2="${SEPH[b].y}"/>`).join('');
+  let nodes = '';
+  for(const k in SEPH){const s=SEPH[k];
+    const dash = k==='daath' ? ' stroke-dasharray="3 3"' : '';
+    nodes += `<g class="node dim${k==='daath'?' hide':''}" id="n-${k}" transform="translate(${s.x} ${s.y})">
+      <circle class="halo" r="30" fill="${s.light}" filter="url(#glow)"/>
+      <circle r="20" fill="url(#rg-${k})" stroke="rgba(255,241,194,.65)" stroke-width="1"${dash}/>
+      <text class="num" y="5"></text>
+      <text class="nm" y="34">${s.name}</text></g>`;}
+  $('tree').innerHTML = defs + '<g>'+lines+'</g><g id="traces"></g><g>'+nodes+'</g>';
+}
+
+function trace(a,b){
+  const A=SEPH[a], B=SEPH[b], up = st.door==='up';
+  let d;
+  if(up){
+    const mx=(A.x+B.x)/2, my=(A.y+B.y)/2, dx=B.x-A.x, dy=B.y-A.y, len=Math.hypot(dx,dy)||1;
+    st.side *= -1; const off = 42*st.side;
+    d = `M${A.x} ${A.y} Q${mx-dy/len*off} ${my+dx/len*off} ${B.x} ${B.y}`;
+  }else{
+    d = `M${A.x} ${A.y} L${B.x} ${B.y}`;
+  }
+  const p = document.createElementNS('http://www.w3.org/2000/svg','path');
+  p.setAttribute('d',d); p.setAttribute('fill','none');
+  p.setAttribute('stroke',DOOR[st.door].color); p.setAttribute('stroke-width','2.4');
+  p.setAttribute('stroke-linecap','round'); p.setAttribute('filter','url(#lineglow)');
+  $('traces').appendChild(p);
+  const L = p.getTotalLength();
+  p.style.strokeDasharray = L; p.style.strokeDashoffset = L;
+  p.getBoundingClientRect();
+  p.style.transition = 'stroke-dashoffset 1.3s ease';
+  p.style.strokeDashoffset = 0;
+}
+
+/* ===== 進行 ===== */
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function startTree(){
+  st.order = ORDER[st.door]; st.step = 0; st.placed = {}; st.side = 1;
+  st.deck = shuffle(CARDS.map(c=>c[0]));
+  preloadCards();
+  buildTree(); buildGrid();
+  $('panel').classList.remove('final');
+  setTimeout(showStep,700);
+}
+
+function showStep(){
+  const k = st.order[st.step], s = SEPH[k];
+  document.querySelectorAll('.node.active').forEach(n=>n.classList.remove('active'));
+  const node = $('n-'+k);
+  if(k==='daath'){ node.classList.remove('hide'); }
+  if(st.step>0 && k!=='daath') trace(st.order[st.step-1],k);
+  setTimeout(()=>{node.classList.remove('dim'); node.classList.add('active');}, k==='daath'?200:900);
+  renderStepPanel(false);
+}
+
+function headHTML(){
+  const k = st.order[st.step], s = SEPH[k];
+  return `<div class="stepno">${st.step+1} / 11　${DOOR[st.door].name}</div>
+    <h2 style="color:${k==='daath'?'#b9a8ff':s.light}">${s.name}<small>${s.sub}</small></h2>
+    <p class="theme">この場所が映すもの：${s.theme}</p>`;
+}
+
+function renderStepPanel(placed){
+  const k = st.order[st.step], s = SEPH[k], P = $('panel');
+  if(!placed){
+    const extra = k==='daath' ? '<br>あなたにまだ見えていない盲点と、悩みを越える鍵。' : '';
+    P.innerHTML = headHTML()+`<p class="narr">${s[st.door]}${extra}</p><button class="btn" id="pickBtn">カードを選ぶ</button>`;
+    $('pickBtn').onclick = openPicker;
+  }else{
+    const c = card(st.placed[k]);
+    const label = st.step<9 ? '次の光へ' : st.step===9 ? 'まだ、隠れた場所がある' : '木全体を読む';
+    P.innerHTML = headHTML()+`<div class="placed"><div class="mini cardface">${faceHTML(c[0])}</div>
+      <div><b>${c[0]}　${c[1]}</b><br><span>${c[3]}</span></div></div>
+      <button class="btn" id="nextBtn">${label}</button>`;
+    $('nextBtn').onclick = next;
+  }
+  P.scrollTop = 0;
+}
+
+function next(){
+  st.step++;
+  if(st.step < st.order.length) showStep(); else finish();
+}
+
+/* ===== カードを選ぶ ===== */
+function buildGrid(){
+  const g = $('grid'); g.innerHTML = '';
+  st.deck.forEach(n=>{
+    const d = document.createElement('div');
+    d.className = 'slot cardback'; d.dataset.n = n;
+    paintBack(d);
+    d.onclick = ()=>pick(n,d);
+    g.appendChild(d);
+  });
+}
+function openPicker(){
+  const s = SEPH[st.order[st.step]];
+  const left = 36 - Object.keys(st.placed).length;
+  $('pickTitle').textContent = `${s.name}に置く一枚を選んで`;
+  $('pickSub').textContent = `心を静めて、気になる一枚に触れてください（残り${left}枚）`;
+  $('picker').classList.add('show');
+}
+$('pickClose').onclick = ()=>$('picker').classList.remove('show');
+
+function pick(n,el){
+  st.picking = {n,el};
+  $('face').innerHTML = faceHTML(n);
+  $('rvName').textContent = `${n}　${card(n)[1]}`;
+  $('rvKw').textContent = card(n)[3];
+  $('flip').classList.remove('flipped'); $('reveal').classList.remove('done');
+  $('picker').classList.remove('show');
+  $('reveal').classList.add('show');
+  setTimeout(()=>{$('flip').classList.add('flipped');$('reveal').classList.add('done');},450);
+}
+$('placeBtn').onclick = ()=>{
+  const {n,el} = st.picking, k = st.order[st.step];
+  st.placed[k] = n; el.classList.add('gone');
+  document.querySelector(`#n-${k} .num`).textContent = n;
+  $('n-'+k).classList.add('lit');
+  $('reveal').classList.remove('show');
+  renderStepPanel(true);
+};
+
+/* ===== 最後：木全体 ===== */
+function finish(){
+  document.querySelectorAll('.node').forEach(n=>{n.classList.remove('active','dim','hide');n.classList.add('lit');});
+  const t = $('tree'); t.classList.remove('bloom'); t.getBoundingClientRect(); t.classList.add('bloom');
+  const P = $('panel'); P.classList.add('final');
+  const items = st.order.map(k=>{const c=card(st.placed[k]);
+    return `<li><span class="sn">${SEPH[k].name}</span><span>${c[0]} ${c[1]}</span><span class="kw">${c[3]}</span></li>`;}).join('');
+  P.innerHTML = `<div class="stepno" style="text-align:center">${DOOR[st.door].name}</div>
+    <h2 style="text-align:center;color:var(--gold2)">あなたの生命の木</h2>
+    <p class="small" style="margin-top:10px">悩み：${esc(st.worry)}</p>
+    <ul class="sum">${items}</ul>
+    <h3 style="text-align:center">この木を、どう読みますか</h3>
+    <div class="endDoors">
+      <button class="door down" data-end="self"><b>自分で読む</b><span>AIへの発注文で、木全体を一つの物語として読み解く。何度でも、聞きたいだけ。${SELF_PRICE}</span></button>
+      <button class="door yuu" data-end="yuu"><b>結ゆうに読んでもらう</b><span>あなたの木を結ゆうが読み解き、鑑定書にしてお届けします。${YUU_PRICE}</span></button>
+    </div>
+    <div id="endBody"></div>
+    <div class="row"><button class="btn ghost" id="againDoor">同じ悩みで、もう一つの扉へ</button>
+    <button class="btn ghost" id="again">最初から</button></div>`;
+  P.querySelectorAll('[data-end]').forEach(b=>b.onclick=()=>{
+    P.querySelectorAll('[data-end]').forEach(x=>x.classList.toggle('chosen',x===b));
+    b.dataset.end==='self' ? showSelf() : showYuu();
+  });
+  $('againDoor').onclick = ()=>{st.door = st.door==='down'?'up':'down'; startTree();};
+  $('again').onclick = ()=>location.reload();
+  P.scrollTop = 0;
+}
+
+/* ===== 最後の扉：自分で読む（鍵付き） ===== */
+let selfOpen = false;
+try{ selfOpen = localStorage.getItem('lt_self') === SELF_KEY_HASH; }catch(e){}
+async function sha256(t){
+  const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t));
+  return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+function showSelf(){
+  const E = $('endBody');
+  if(!selfOpen){
+    const buy = SELF_BUY_URL ? `<a class="btn ghost" href="${SELF_BUY_URL}" target="_blank" rel="noopener">合言葉を手に入れる</a>` : '';
+    E.innerHTML = `<p class="small" style="margin-top:14px">合言葉を入れると、木全体を読み解くためのAIへの発注文が開きます。合言葉（${SELF_PRICE}）は一度入れれば、次からは入れなくても開きます。</p>
+      <div class="keyrow"><input id="selfKey" type="password" placeholder="合言葉" autocomplete="off"><button class="btn" id="selfGo">開く</button></div>
+      <p class="small" id="selfMsg"></p><div class="row">${buy}</div>`;
+    const go = async ()=>{
+      const v = $('selfKey').value.normalize('NFKC').replace(/\s+/g,''); if(!v) return;
+      if(await sha256(v) === SELF_KEY_HASH){
+        selfOpen = true; try{ localStorage.setItem('lt_self', SELF_KEY_HASH); }catch(e){}
+        showSelf();
+      }else $('selfMsg').textContent = '合言葉が違うようです';
+    };
+    $('selfGo').onclick = go;
+    $('selfKey').onkeydown = e=>{ if(e.key==='Enter') go(); };
+    return;
+  }
+  E.innerHTML = `<p class="small" style="margin-top:14px">下の文章をまるごとコピーして、ChatGPTやGeminiなどに貼ってください。木全体を一つの物語として読んでくれます。</p>
+    <textarea id="prompt" readonly></textarea>
+    <div class="row"><button class="btn" id="copyBtn">コピーする</button></div>`;
+  $('prompt').value = buildPrompt();
+  $('copyBtn').onclick = ()=>copy($('prompt').value, $('prompt'));
+}
+
+/* ===== 最後の扉：結ゆうに読んでもらう ===== */
+function placementCode(){
+  return (st.door==='down'?'D':'U') + '-' + st.order.map(k=>pad(st.placed[k])).join('-');
+}
+function yuuMessage(){
+  return ['【生命の木 鑑定の申し込み】',
+    '悩み：' + st.worry,
+    '扉：' + DOOR[st.door].name,
+    '配置コード：' + placementCode()].join('\n');
+}
+function showYuu(){
+  const E = $('endBody'), msg = yuuMessage();
+  const line = LINE_URL ? `<a class="btn" href="${LINE_URL}" target="_blank" rel="noopener">公式LINEを開く</a>` : '';
+  const mail = MAIL_TO ? `<a class="btn ghost" href="mailto:${MAIL_TO}?subject=${encodeURIComponent('生命の木 鑑定の申し込み')}&body=${encodeURIComponent(msg)}">メールで送る</a>` : '';
+  E.innerHTML = `<p class="small" style="margin-top:14px">あなたの木は、下の文章にまとめてあります。コピーして結ゆうに送ってください。引いたカードがそのまま鑑定書になります。</p>
+    <textarea id="yuuMsg" readonly style="height:120px"></textarea>
+    <div class="row"><button class="btn" id="yuuCopy">コピーする</button></div>
+    <div class="row">${line}${mail}</div>
+    <p class="small" style="margin-top:12px">鑑定料 ${YUU_PRICE}（前払い）。お申し込みのあと、お支払い方法をご案内します。お支払いを確認してから2日以内に、鑑定書をお届けします。</p>`;
+  $('yuuMsg').value = msg;
+  $('yuuCopy').onclick = ()=>copy(msg, $('yuuMsg'));
+}
+
+function buildPrompt(){
+  const L = [];
+  L.push('あなたは生命の木（カバラ）とルノルマンカードの読み手です。以下のデータだけを根拠に、相談者の悩みを読み解いてください。');
+  L.push('');
+  L.push('【悩み】'); L.push(st.worry); L.push('');
+  L.push('【選んだ扉】'); L.push(`${DOOR[st.door].name}（${DOOR[st.door].desc}）`); L.push('');
+  L.push('【配置】（灯った順）');
+  st.order.forEach((k,i)=>{const s=SEPH[k],c=card(st.placed[k]);
+    L.push(`${i+1} ${s.name}（${s.sub}／${s.theme}）：${c[0]} ${c[1]}（${c[3]}）`);});
+  L.push('');
+  L.push('【道の組み合わせ】（ルノルマンは2枚を組にして読む）');
+  const seq = st.order.filter(k=>k!=='daath');
+  for(let i=0;i<seq.length-1;i++){const a=seq[i],b=seq[i+1];
+    L.push(`${SEPH[a].name}→${SEPH[b].name}：${card(st.placed[a])[1]}×${card(st.placed[b])[1]}`);}
+  L.push('');
+  L.push('【三本の柱】');
+  PILLARS.forEach(([nm,ks])=>L.push(`${nm}：`+ks.map(k=>`${SEPH[k].name}=${card(st.placed[k])[1]}`).join('、')));
+  L.push('');
+  L.push('【読み方のルール】');
+  L.push('ここに書かれたカードと配置だけを根拠にする。書かれていないカードや意味を創作しない');
+  L.push('ルノルマンは具体的なカードなので、マルクトに近いほど現実の出来事として、ケテルに近いほど象徴として読む');
+  L.push('扉の向きに沿って、灯った順に一つの物語として繋げて読む');
+  L.push('三本の柱は、与える力（慈悲）と断つ力（峻厳）のどちらに偏っているかを見るのに使う');
+  L.push('イェソドは特に丁寧に読む。本人が気づかないまま繰り返している癖やパターンとして、具体的な言葉にする');
+  L.push('イェソドを読むときは、ホド→イェソド（考えが無意識に沈む道）と、イェソド→マルクト（無意識が現実に現れる道）の二組を必ず使う');
+  L.push('無意識のパターンは、指摘して終わらせず、気づきのきっかけを一つだけそっと添える。こうしなさいと指示はしない');
+  L.push('ダアトは最後に、本人がまだ見えていない盲点と、悩みを越える鍵として読む');
+  L.push('吉凶を断定せず、傾向で伝える。最後の活かし方も、助言や指示ではなく、本人が自分で動き出すためのきっかけとして短く添える');
+  L.push('読み始める前に、悩みについて一つだけ質問して確認してから読む');
+  return L.join('\n');
+}
+
+function copy(text, box){
+  const done = ()=>toast('コピーしました');
+  if(navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(text).then(done).catch(()=>fallback());
+  }else fallback();
+  function fallback(){const t=box;t.removeAttribute('readonly');t.select();
+    try{document.execCommand('copy');done();}catch(e){toast('長押しでコピーしてください');}
+    t.setAttribute('readonly','');}
+}
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800);}
+
+/* 絵を先に読み込んでおく（めくった瞬間に絵が間に合うように） */
+let preloaded = false;
+function preloadCards(){
+  if(preloaded || !IMG_DIR) return; preloaded = true;
+  CARDS.forEach(c=>{ const i = new Image(); i.src = srcOf(c[0]); });
+}
+
+/* ===== 絵の反映（裏面・背景） ===== */
+function paintBack(el){
+  const b = srcOf('back');
+  if(b){ el.style.backgroundImage = `url(${b})`; el.classList.add('imgback'); }
+}
+(function(){
+  paintBack(document.querySelector('.flip .b'));
+  const bg = srcOf('bg');
+  if(bg){ const d = $('bgimg'); d.style.backgroundImage = `url(${bg})`; document.body.classList.add('has-bg'); }
+})();
+
+/* ===== 星空 ===== */
+(function(){
+  const cv=$('sky'), cx=cv.getContext('2d'); let W,H,stars=[];
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function size(){const r=devicePixelRatio||1;W=innerWidth;H=innerHeight;cv.width=W*r;cv.height=H*r;cx.setTransform(r,0,0,r,0,0);
+    stars=Array.from({length:Math.round(W*H/2600)},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.3+.2,p:Math.random()*6.28,s:.5+Math.random()*1.5,g:Math.random()<.12}));}
+  function draw(t){cx.clearRect(0,0,W,H);
+    for(const s of stars){const a=.35+.65*Math.abs(Math.sin(s.p+t/1000*s.s*.6));
+      cx.fillStyle=s.g?`rgba(255,226,150,${a})`:`rgba(230,235,255,${a})`;cx.beginPath();cx.arc(s.x,s.y,s.r,0,6.283);cx.fill();}
+    if(!still) requestAnimationFrame(draw);}
+  addEventListener('resize',size); size(); requestAnimationFrame(draw);
+})();
+</script>
+</body>
+</html>

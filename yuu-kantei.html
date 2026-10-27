@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>生命の木 鑑定士の机</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root{--bg:#04050d;--ink:#efe7d6;--sub:#b8b0a0;--gold:#e8c46a;--gold2:#fff1c2;--line:rgba(232,196,106,.28);--panel:rgba(12,14,36,.92)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);font-family:'Shippori Mincho','Hiragino Mincho ProN','Yu Mincho',serif}
+body{padding:20px 16px 60px;-webkit-text-size-adjust:100%}
+button,input,textarea{font-family:inherit}
+.desk{max-width:860px;margin:0 auto}
+.desk h1{font-size:21px;letter-spacing:.2em;color:var(--gold2);text-align:center;margin:6px 0 4px}
+.desk .lead{text-align:center;font-size:12px;color:var(--sub);margin-bottom:20px}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px 16px 20px;margin-bottom:16px}
+.step h2{font-size:15px;letter-spacing:.1em;color:var(--gold);margin-bottom:10px}
+.step h2 span{display:inline-block;width:24px;height:24px;line-height:24px;text-align:center;border-radius:50%;border:1px solid var(--gold);margin-right:8px;font-size:12px}
+.note{font-size:12.5px;color:var(--sub);line-height:1.8}
+label{display:block;font-size:12.5px;color:var(--sub);margin:12px 0 4px}
+input[type=text],input[type=password],textarea{width:100%;padding:11px 13px;border-radius:10px;background:rgba(4,5,14,.85);border:1px solid var(--line);color:var(--ink);font-size:16px;line-height:1.75}
+textarea{resize:vertical}
+input:focus,textarea:focus{outline:none;border-color:var(--gold)}
+.btn{margin-top:12px;padding:12px 22px;border-radius:30px;border:1px solid var(--gold);cursor:pointer;
+  background:linear-gradient(180deg,rgba(232,196,106,.22),rgba(232,196,106,.06));color:var(--gold2);font-size:15px;letter-spacing:.1em}
+.btn.ghost{background:transparent;color:var(--ink);border-color:rgba(232,196,106,.45)}
+.btn:disabled{opacity:.4}
+.row{display:flex;flex-wrap:wrap;gap:10px}
+.err{color:#ff9d8a;font-size:13px;margin-top:8px;min-height:1em}
+.hidden{display:none !important}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);padding:10px 20px;border-radius:30px;background:rgba(232,196,106,.95);color:#1a1405;font-size:14px;opacity:0;transition:opacity .4s;pointer-events:none;z-index:9}
+#toast.show{opacity:1}
+#gate{max-width:360px;margin:16vh auto 0;text-align:center}
+#gate h1{font-size:20px;letter-spacing:.25em;color:var(--gold2);margin-bottom:18px}
+
+/* ===== 鑑定書プレビュー（A4のページを縮小して表示） ===== */
+#preview{max-width:794px;margin:0 auto}
+.pv{position:relative;margin:0 auto 14px;overflow:hidden;border:1px solid rgba(232,196,106,.35);border-radius:4px}
+.pv > .page{position:absolute;top:0;left:0;transform-origin:0 0}
+
+/* ===== A4ページ（794×1123px） ===== */
+.page{width:794px;height:1123px;overflow:hidden;position:relative;color:var(--ink);
+  font-family:'Shippori Mincho','Hiragino Mincho ProN','Yu Mincho',serif;
+  background:
+   radial-gradient(60% 26% at 50% 0%,rgba(232,196,106,.13),transparent 70%),
+   radial-gradient(55% 26% at 50% 100%,rgba(80,60,170,.20),transparent 70%),
+   linear-gradient(180deg,#070a1f,#04050d)}
+.page .frame{position:absolute;inset:14px;border:1px solid rgba(232,196,106,.45);border-radius:4px;pointer-events:none}
+.page .frame::after{content:"";position:absolute;inset:5px;border:1px solid rgba(232,196,106,.18);border-radius:3px}
+.page .inner{position:absolute;top:58px;left:62px;right:62px;bottom:62px}
+.page .folio{position:absolute;bottom:26px;left:0;right:0;text-align:center;font-size:10px;letter-spacing:.4em;color:rgba(232,196,106,.6)}
+.sh-eyebrow{text-align:center;letter-spacing:.5em;font-size:10.5px;color:var(--gold)}
+.sh-title{text-align:center;font-size:30px;letter-spacing:.3em;color:var(--gold2);margin:12px 0 4px}
+.sh-for{text-align:center;font-size:16px;letter-spacing:.15em;margin-top:8px}
+.sh-meta{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin:20px auto 0;max-width:540px;font-size:14px;line-height:1.7}
+.sh-meta dt{color:var(--gold)}
+.sh-tree{text-align:center;margin:14px 0 0}
+.sh-tree img{width:250px;height:367px}
+.sh-cards{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:12px 0 0}
+.sh-card{text-align:center;font-size:11px;line-height:1.45}
+.sh-card .im{height:126px;border-radius:5px;overflow:hidden;border:1px solid rgba(232,196,106,.5);background:#0a0d24}
+.sh-card .im img{width:100%;height:100%;object-fit:cover;display:block}
+.sh-card .sp{color:var(--gold);margin-top:4px}
+.sh-sep{text-align:center;color:var(--gold);letter-spacing:1em;margin:6px 0 4px;font-size:12px}
+.blk h3{font-size:17px;letter-spacing:.18em;color:var(--gold2);margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid rgba(232,196,106,.3)}
+.blk p{font-size:14.5px;line-height:2.05;margin-bottom:12px;text-align:justify}
+.sh-advice{margin-top:24px;padding:22px 26px 14px;border:1px solid rgba(232,196,106,.6);border-radius:10px;background:rgba(232,196,106,.06)}
+.sh-advice h3{font-size:17px;letter-spacing:.22em;color:var(--gold2);text-align:center;margin:0 0 12px;border:none;padding:0}
+.sh-sign{text-align:right;margin-top:22px;font-size:16px;letter-spacing:.3em;color:var(--gold2)}
+.sh-sign small{display:block;font-size:10.5px;letter-spacing:.3em;color:var(--sub);margin-top:4px}
+.empty{color:var(--sub) !important;text-align:center !important}
+#capture{position:absolute;left:-12000px;top:0}
+</style>
+</head>
+<body>
+
+<!-- 合言葉 -->
+<div id="gate">
+  <h1>鑑定士の机</h1>
+  <input type="password" id="gateKey" placeholder="合言葉" autocomplete="off">
+  <button class="btn" id="gateGo">開く</button>
+  <p class="err" id="gateErr"></p>
+</div>
+
+<div class="desk hidden" id="desk">
+  <h1>生命の木 鑑定士の机</h1>
+  <p class="lead">結ゆう専用</p>
+
+  <section class="step">
+    <h2><span>1</span>届いたメッセージを貼る</h2>
+    <p class="note">お客さんから届いた申し込み文を、そのまま全部貼ってください。悩みと配置コードを読み取ります。</p>
+    <textarea id="inMsg" rows="5" placeholder="【生命の木 鑑定の申し込み】&#10;悩み：…&#10;扉：…&#10;配置コード：D-01-23-…"></textarea>
+    <label for="inName">お名前（鑑定書に「〇〇 様」と入ります。空でもOK）</label>
+    <input type="text" id="inName" autocomplete="off">
+    <div class="row"><button class="btn" id="readBtn">木を再現する</button></div>
+    <p class="err" id="readErr"></p>
+  </section>
+
+  <section class="step hidden" id="stepPrompt">
+    <h2><span>2</span>クレイかマツコに読んでもらう</h2>
+    <p class="note">発注文をコピーして、クレイかマツコに貼ってください。章立てが決まっているので、毎回同じ形の鑑定文が返ってきます。</p>
+    <textarea id="kPrompt" rows="6" readonly></textarea>
+    <div class="row"><button class="btn" id="kCopy">発注文をコピー</button></div>
+  </section>
+
+  <section class="step hidden" id="stepText">
+    <h2><span>3</span>読みとアドバイスを入れる</h2>
+    <label for="aiText">返ってきた鑑定文を貼る（【見出し】の行が章の見出しになります）</label>
+    <textarea id="aiText" rows="9"></textarea>
+    <label for="advice">結からのアドバイス</label>
+    <textarea id="advice" rows="5"></textarea>
+    <div class="row"><button class="btn" id="previewBtn">鑑定書の見た目を確かめる</button></div>
+  </section>
+
+  <section class="step hidden" id="stepPdf">
+    <h2><span>4</span>鑑定書をPDFにする</h2>
+    <p class="note">PDFを作ったあと、「送る・保存する」からLINEやファイルに渡せます。</p>
+    <div class="row">
+      <button class="btn" id="makePdf">PDFを作る</button>
+      <button class="btn hidden" id="sharePdf">送る・保存する</button>
+      <button class="btn ghost hidden" id="dlPdf">ダウンロード</button>
+    </div>
+    <p class="note" id="pdfMsg" style="margin-top:8px"></p>
+  </section>
+
+  <div id="preview"></div>
+</div>
+
+<div id="capture"></div>
+<div id="toast"></div>
+
+<script>
+/* ===== 設定 ===== */
+const DESK_KEY_HASH = 'd4603b00df6cfa5f064b4a8d1c06c48397d6a093b5e14a9dcbae35cb4c0f7c2e'; /* 仮の合言葉 tsukue-yuu */
+const IMG_DIR = 'lenormand/', IMG_EXT = '.webp';
+const EMBED = {};
+const pad = n => String(n).padStart(2,'0');
+
+/* ルノルマン36枚：番号, 名前, 仮の記号, キーワード */
+const CARDS = [
+ [1,'騎士','🐎','知らせ・スピード・訪れ'],
+ [2,'クローバー','☘️','小さな幸運・チャンス・軽やかさ'],
+ [3,'船','⛵','旅・移動・遠くへの憧れ'],
+ [4,'家','🏠','安心・家庭・自分の居場所'],
+ [5,'木','🌳','健康・成長・根を張る時間'],
+ [6,'雲','☁️','迷い・先が見えない・一時的な曇り'],
+ [7,'蛇','🐍','遠回り・誘惑・こじれた関係'],
+ [8,'棺','⚱️','終わり・区切り・変容'],
+ [9,'花束','💐','喜び・贈り物・好意'],
+ [10,'鎌','🌾','決断・切り離し・急な変化'],
+ [11,'鞭','⚡','葛藤・繰り返し・言い争い'],
+ [12,'鳥','🐦','会話・噂・落ち着かなさ'],
+ [13,'子供','👶','始まり・素直さ・小さな一歩'],
+ [14,'狐','🦊','用心・知恵・自分を守る'],
+ [15,'熊','🐻','力・お金・守ってくれる存在'],
+ [16,'星','⭐','希望・導き・ひらめき'],
+ [17,'コウノトリ','🕊️','変化・移り変わり・改善'],
+ [18,'犬','🐕','友情・信頼・味方'],
+ [19,'塔','🗼','組織・孤独・境界線'],
+ [20,'庭園','🌷','人の集まり・社会・公の場'],
+ [21,'山','⛰️','障害・停滞・越えるべき壁'],
+ [22,'道','🛤️','選択・分かれ道・可能性'],
+ [23,'ネズミ','🐭','消耗・不安・少しずつ減る'],
+ [24,'ハート','❤️','愛・思いやり・心'],
+ [25,'指輪','💍','約束・契約・ご縁'],
+ [26,'本','📖','秘密・学び・まだ知らないこと'],
+ [27,'手紙','✉️','連絡・書類・伝わること'],
+ [28,'紳士','🤵','男性・能動性・相手（または本人）'],
+ [29,'淑女','👒','女性・受容性・本人（または相手）'],
+ [30,'百合','⚜️','成熟・穏やかさ・品格'],
+ [31,'太陽','☀️','成功・活力・はっきりする'],
+ [32,'月','🌙','感情・評価・直感'],
+ [33,'鍵','🗝️','解決・確信・扉が開く'],
+ [34,'魚','🐟','豊かさ・お金の流れ・自由'],
+ [35,'錨','⚓','安定・続けること・腰を据える'],
+ [36,'十字架','✝️','試練・宿命・背負うもの']
+];
+
+/* セフィラ：位置・色・意味・扉ごとの語り */
+const SEPH = {
+ kether:{name:'ケテル',sub:'王冠',x:160,y:30,color:'#d9d4c8',light:'#ffffff',theme:'魂の願い・根源の意図',
+   down:'すべての源から、最初に届いた光。この悩みは、ここから始まっている。',
+   up:'昇りきった頂。あなたの内から生まれたものが、最後に還っていく願い。'},
+ chokmah:{name:'コクマー',sub:'知恵',x:265,y:80,color:'#8e94a8',light:'#eef0f6',theme:'ひらめき・動き出す力',
+   down:'光がひらめきに変わる場所。最初に動き出した衝動を観る。',
+   up:'器を満たす、新しいひらめき。内から湧き上がる最初の衝動。'},
+ binah:{name:'ビナー',sub:'理解',x:55,y:80,color:'#232870',light:'#6f78d6',theme:'形・器・受け止め方',
+   down:'ひらめきが器に注がれ、形を持ちはじめる。何がそれを受け止めたのか。',
+   up:'広がったものを形にする器。あなたが引き受けていく覚悟。'},
+ daath:{name:'ダアト',sub:'知識',x:160,y:128,color:'#141633',light:'#5b4f8f',theme:'見えていない盲点・悩みを越える鍵',
+   down:'木の全体が灯った。でも、まだ一つだけ隠れた場所がある。上と下のあいだ、深い淵に開く扉。',
+   up:'木の全体が灯った。でも、まだ一つだけ隠れた場所がある。上と下のあいだ、深い淵に開く扉。'},
+ chesed:{name:'ケセド',sub:'慈悲',x:265,y:175,color:'#1f5fc4',light:'#8fc2ff',theme:'恵み・広げるもの・与えられているもの',
+   down:'受け止めたものが広がろうとする。あなたに与えられている恵み。',
+   up:'手放したあとに広がるもの。あなたが受け取れる恵み。'},
+ geburah:{name:'ゲブラー',sub:'峻厳',x:55,y:175,color:'#b22a22',light:'#ff8a75',theme:'断つもの・境界・手放すもの',
+   down:'広がりすぎたものを断つ力。ここで何かが削られ、境界が引かれた。',
+   up:'昇るために手放すもの。ここで断ち、境界を引く。'},
+ tiphareth:{name:'ティファレト',sub:'美',x:160,y:228,color:'#c9962c',light:'#fff0b8',theme:'本当の自分・調和の中心',
+   down:'与えることと断つことが釣り合う中心。本当のあなたが立つ場所。',
+   up:'考えと感情が結び合う中心。内側から立ち上がる本当のあなた。'},
+ netzach:{name:'ネツァク',sub:'勝利',x:265,y:295,color:'#1f8a4c',light:'#8ff0b4',theme:'感情・心の欲求',
+   down:'中心の光が感情になる。心が本当は何を欲しがっているか。',
+   up:'言葉の奥にある感情。心が何を求めて動いているか。'},
+ hod:{name:'ホド',sub:'栄光',x:55,y:295,color:'#c0661c',light:'#ffc68a',theme:'思考・言葉・意味づけ',
+   down:'感情が言葉と考えになる。頭の中でどう意味づけているか。',
+   up:'無意識が言葉になる場所。あなたが自分に言い聞かせている考え。'},
+ yesod:{name:'イェソド',sub:'基礎',x:160,y:355,color:'#6a3fb8',light:'#d4b8ff',theme:'無意識・習慣・繰り返すパターン',
+   down:'考えが無意識に沈み、繰り返しのパターンになる。',
+   up:'現実の下に流れている無意識。繰り返しの癖がここに映る。'},
+ malkuth:{name:'マルクト',sub:'王国',x:160,y:420,color:'#1d5a8a',light:'#6fd0a0',theme:'今の現実・目の前の状況',
+   down:'すべてが形になった今の現実。悩みとして目の前に現れている姿。',
+   up:'ここが出発点。今あなたが立っている現実。'}
+};
+
+/* 22の小径 */
+const PATHS = [
+ ['kether','chokmah'],['kether','binah'],['kether','tiphareth'],['chokmah','binah'],['chokmah','tiphareth'],['binah','tiphareth'],
+ ['chokmah','chesed'],['binah','geburah'],['chesed','geburah'],['chesed','tiphareth'],['geburah','tiphareth'],
+ ['chesed','netzach'],['geburah','hod'],['tiphareth','netzach'],['tiphareth','hod'],['tiphareth','yesod'],
+ ['netzach','hod'],['netzach','yesod'],['hod','yesod'],['netzach','malkuth'],['hod','malkuth'],['yesod','malkuth']
+];
+
+const ORDER = {
+ down:['kether','chokmah','binah','chesed','geburah','tiphareth','netzach','hod','yesod','malkuth','daath'],
+ up:['malkuth','yesod','hod','netzach','tiphareth','geburah','chesed','binah','chokmah','kether','daath']
+};
+const DOOR = {
+ down:{name:'天からの啓示',color:'#e8c46a',desc:'ケテルから稲妻の順に降りる道。上から届いたものが、どう形になって今の悩みになったかを読む'},
+ up:{name:'自らの発生',color:'#63e6d6',desc:'マルクトから螺旋で昇る道。今の現実から、内側で何が立ち上がろうとしているかを読む'}
+};
+const PILLARS = [
+ ['慈悲の柱',['chokmah','chesed','netzach']],
+ ['峻厳の柱',['binah','geburah','hod']],
+ ['均衡の柱',['kether','daath','tiphareth','yesod','malkuth']]
+];
+
+
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const card = n => CARDS[n-1];
+const imgOf = n => EMBED[String(n)] || (IMG_DIR + pad(n) + IMG_EXT);
+const k = {worry:'',door:null,order:[],placed:{},name:''};
+
+/* ===== 合言葉 ===== */
+async function sha256(t){
+  const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t));
+  return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+function openDesk(){ $('gate').classList.add('hidden'); $('desk').classList.remove('hidden'); }
+try{ if(localStorage.getItem('yuu_desk') === DESK_KEY_HASH) openDesk(); }catch(e){}
+async function tryGate(){
+  const v = $('gateKey').value.trim(); if(!v) return;
+  if(await sha256(v) === DESK_KEY_HASH){ try{ localStorage.setItem('yuu_desk', DESK_KEY_HASH); }catch(e){} openDesk(); }
+  else $('gateErr').textContent = '合言葉が違うようです';
+}
+$('gateGo').onclick = tryGate;
+$('gateKey').onkeydown = e=>{ if(e.key==='Enter') tryGate(); };
+
+/* ===== 1 読み取り ===== */
+function parse(text){
+  const t = text.replace(/[－ー―‐−]/g,'-').replace(/[０-９]/g,c=>String.fromCharCode(c.charCodeAt(0)-0xFEE0)).replace(/[Ｄｄ]/g,'D').replace(/[Ｕｕ]/g,'U');
+  const m = t.match(/([DU])\s*-\s*(\d{1,2}(?:\s*-\s*\d{1,2}){10})/i);
+  if(!m) return {err:'配置コードが見つかりません（D-01-02-… の形）'};
+  const door = m[1].toUpperCase()==='D' ? 'down' : 'up';
+  const nums = m[2].split('-').map(s=>parseInt(s.trim(),10));
+  if(nums.some(n=>!(n>=1&&n<=36))) return {err:'1〜36以外の番号が入っています'};
+  if(new Set(nums).size!==11) return {err:'同じカードが重なっています'};
+  const w = t.match(/悩み\s*[：:]\s*(.+)/);
+  return {door, nums, worry: w ? w[1].trim() : ''};
+}
+$('readBtn').onclick = ()=>{
+  const r = parse($('inMsg').value);
+  if(r.err){ $('readErr').textContent = r.err; return; }
+  $('readErr').textContent = '';
+  k.door = r.door; k.worry = r.worry || '（悩みの記載なし）'; k.order = ORDER[r.door];
+  k.placed = {}; k.order.forEach((s,i)=>k.placed[s]=r.nums[i]);
+  k.name = $('inName').value.trim();
+  $('kPrompt').value = buildKanteiPrompt();
+  ['stepPrompt','stepText'].forEach(id=>$(id).classList.remove('hidden'));
+  resetPdf(); $('preview').innerHTML = '';
+  $('stepPrompt').scrollIntoView({behavior:'smooth'});
+};
+
+/* ===== 2 鑑定書用の発注文 ===== */
+const CHAPTERS = {
+ down:[
+  ['はじめに','相談者の悩みを受け止め、この木がどんな物語を語っているかを短く予告する（3〜4文）'],
+  ['天から届いたもの','ケテル・コクマー・ビナー。魂の願いが、どんなひらめきになり、どんな形で受け止められたか'],
+  ['広げる力と断つ力','ケセド・ゲブラー。与えられている恵みと、断つもの・境界'],
+  ['本当のあなた','ティファレト。調和の中心に置かれたカードが映す、本来の姿'],
+  ['心と頭','ネツァク・ホド。感情が求めているものと、頭の中での意味づけ'],
+  ['無意識のくせ','イェソド。この鑑定で最も丁寧に書く章'],
+  ['今の現実','マルクト。悩みとして目の前に現れている姿'],
+  ['木のバランス','三本の柱'],
+  ['隠された鍵','ダアト'],
+  ['きっかけ','鑑定の結び']
+ ],
+ up:[
+  ['はじめに','相談者の悩みを受け止め、この木がどんな物語を語っているかを短く予告する（3〜4文）'],
+  ['今の現実','マルクト。出発点として、今立っている現実'],
+  ['無意識のくせ','イェソド。この鑑定で最も丁寧に書く章'],
+  ['頭と心','ホド・ネツァク。自分に言い聞かせている考えと、その奥の感情'],
+  ['本当のあなた','ティファレト。内側から立ち上がろうとしている本来の姿'],
+  ['断つ力と広げる力','ゲブラー・ケセド。昇るために手放すものと、その先で受け取れる恵み'],
+  ['魂の願い','ビナー・コクマー・ケテル。器、ひらめき、そして還っていく願い'],
+  ['木のバランス','三本の柱'],
+  ['隠された鍵','ダアト'],
+  ['きっかけ','鑑定の結び']
+ ]
+};
+function buildKanteiPrompt(){
+  const L = [], D = DOOR[k.door], seq = k.order.filter(s=>s!=='daath');
+  L.push('あなたは生命の木（カバラ）とルノルマンカードの熟練した鑑定士です。以下の配置だけを根拠に、相談者へ渡す鑑定書の本文を書いてください。');
+  L.push('');
+  L.push('【悩み】'); L.push(k.worry); L.push('');
+  L.push('【選んだ扉】'); L.push(`${D.name}（${D.desc}）`); L.push('');
+  L.push('【配置】（灯った順）');
+  k.order.forEach((s,i)=>{const S=SEPH[s],c=card(k.placed[s]);
+    L.push(`${i+1} ${S.name}（${S.sub}／${S.theme}）：${c[0]} ${c[1]}（${c[3]}）`);});
+  L.push('');
+  L.push('【道の組み合わせ】（ルノルマンは2枚を組にして読む）');
+  for(let i=0;i<seq.length-1;i++){const a=seq[i],b=seq[i+1];
+    L.push(`${SEPH[a].name}→${SEPH[b].name}：${card(k.placed[a])[1]}×${card(k.placed[b])[1]}`);}
+  L.push('');
+  L.push('【三本の柱】');
+  PILLARS.forEach(([nm,ks])=>L.push(`${nm}：`+ks.map(s=>`${SEPH[s].name}=${card(k.placed[s])[1]}`).join('、')));
+  L.push('');
+  L.push('【鑑定書の章立て】（この順番・この見出しで書く）');
+  CHAPTERS[k.door].forEach(([h,d])=>L.push(`【${h}】${d}`));
+  L.push('');
+  L.push('【読み方】');
+  L.push('ここに書かれたカードと配置だけを根拠にする。書かれていないカードや意味を創作しない');
+  L.push('ルノルマンは具体的なカードなので、木の高さで訳し変える。マルクトに近いほど現実の出来事や人として、ケテルに近いほど象徴や魂の願いとして読む');
+  L.push('例：家のカードなら、マルクトでは実際の家や職場、ティファレトでは心の居場所、ケテルでは魂が還る場所として読む');
+  L.push('各章では、そのセフィラのカードを読むだけでなく、前後のセフィラとの組み合わせ（道）を使って、一つの物語として次の章へ繋げる');
+  L.push('【無意識のくせ】の章は最も丁寧に書く。本人が気づかないまま繰り返している癖やパターンを、具体的な場面が浮かぶ言葉にする。ホド→イェソド（考えが無意識に沈む道）と、イェソド→マルクト（無意識が現実に現れる道）の二組を必ず使う。指摘で終わらせず、気づきのきっかけを一つだけそっと添える');
+  L.push('【木のバランス】では、慈悲の柱（与える・広げる）と峻厳の柱（断つ・境界）のどちらに偏っているか、均衡の柱に何が並んでいるかを読む');
+  L.push('【隠された鍵】では、ダアトのカードを、本人がまだ見えていない盲点と、悩みを越える鍵として読む');
+  L.push('【きっかけ】は、助言や指示ではなく、本人が自分で動き出すためのきっかけを2〜3文で添える。木全体を一言で表す比喩で締めてもよい');
+  L.push('');
+  L.push('【書き方】');
+  L.push('相談者に直接語りかける「あなた」の文体で、やわらかく、温かく、言い切りすぎない');
+  L.push('吉凶を断定しない。傾向として伝える');
+  L.push('セフィラ名とカード名は本文に出してよい（相談者が自分の木と照らし合わせられるように）');
+  L.push('全体で2,500〜3,500字程度');
+  L.push('見出しは【】で囲んだ行にする。#、*、-、番号付きの箇条書きなどの記号は使わず、段落の文章で書く');
+  L.push('質問は返さず、このまま鑑定書の本文だけを書く。前置きや後書き、この指示文への言及は書かない');
+  return L.join('\n');
+}
+$('kCopy').onclick = ()=>copy($('kPrompt').value, $('kPrompt'));
+
+/* ===== 3 鑑定書を組む ===== */
+function cleanAI(t){
+  return t.replace(/\r/g,'')
+    .replace(/^\s*#{1,6}\s*(.+)$/gm,'【$1】')
+    .replace(/\*\*(.+?)\*\*/g,'$1')
+    .replace(/^\s*[-*・]\s+/gm,'')
+    .replace(/^\s*【\s*(.+?)\s*】\s*$/gm,'【$1】');
+}
+/* 文章を「見出し」「段落」のかたまりに分ける */
+function blocksOf(t, withHeads){
+  const out = [], lines = cleanAI(t).split('\n'); let buf = [];
+  const flush = ()=>{ if(buf.length){ out.push({t:'p',s:buf.join('\n')}); buf=[]; } };
+  for(const ln of lines){
+    const h = ln.match(/^【(.+)】$/);
+    if(withHeads && h){ flush(); out.push({t:'h',s:h[1]}); continue; }
+    if(!ln.trim()){ flush(); continue; }
+    buf.push(ln.trim());
+  }
+  flush(); return out;
+}
+const pHTML = s => `<p>${esc(s).replace(/\n/g,'<br>')}</p>`;
+
+/* 木を画像にする（PDFでもきれいに出るように） */
+function treeImg(){
+  let s = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 470" width="640" height="940"><defs>';
+  for(const key in SEPH){const S=SEPH[key];
+    s += `<radialGradient id="g-${key}" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="${S.light}"/><stop offset="1" stop-color="${S.color}"/></radialGradient>`;}
+  s += '<filter id="gl" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="6"/></filter></defs>';
+  s += PATHS.map(([a,b])=>`<line stroke="rgba(232,196,106,.3)" stroke-width="1.2" x1="${SEPH[a].x}" y1="${SEPH[a].y}" x2="${SEPH[b].x}" y2="${SEPH[b].y}"/>`).join('');
+  const seq = k.order.filter(x=>x!=='daath'), col = DOOR[k.door].color;
+  for(let i=0;i<seq.length-1;i++){const A=SEPH[seq[i]],B=SEPH[seq[i+1]];
+    s += `<line stroke="${col}" stroke-opacity=".8" stroke-width="2.2" stroke-linecap="round" x1="${A.x}" y1="${A.y}" x2="${B.x}" y2="${B.y}"/>`;}
+  for(const key in SEPH){const S=SEPH[key], n=k.placed[key];
+    s += `<g transform="translate(${S.x} ${S.y})"><circle r="27" fill="${S.light}" opacity=".3" filter="url(#gl)"/>
+      <circle r="19" fill="url(#g-${key})" stroke="rgba(255,241,194,.7)" stroke-width="1"${key==='daath'?' stroke-dasharray="3 3"':''}/>
+      <text y="5" text-anchor="middle" font-size="13" font-weight="700" fill="#fff" stroke="rgba(0,0,0,.7)" stroke-width="3" paint-order="stroke" font-family="serif">${n}</text>
+      <text y="33" text-anchor="middle" font-size="11" fill="#efe7d6" font-family="serif">${S.name}</text></g>`;}
+  s += '</svg>';
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
+}
+
+function newPage(no){
+  const pg = document.createElement('div'); pg.className = 'page';
+  pg.innerHTML = `<div class="frame"></div><div class="inner"></div><div class="folio">${no}</div>`;
+  return pg;
+}
+/* ページに流し込む：入りきらなければ次のページへ */
+function buildPages(){
+  const D = DOOR[k.door];
+  const d = new Date(), ds = `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;
+  const box = $('capture'); box.innerHTML = '';
+  const pages = []; let no = 1;
+  let pg = newPage(no); box.appendChild(pg); pages.push(pg);
+  let inner = pg.querySelector('.inner');
+  const cards = k.order.map(s=>{const c=card(k.placed[s]);
+    return `<div class="sh-card"><div class="im"><img src="${imgOf(c[0])}" alt=""></div>
+      <div class="sp">${SEPH[s].name}</div><div>${c[0]} ${c[1]}</div></div>`;}).join('');
+  inner.innerHTML = `
+    <div class="sh-eyebrow">TREE OF LIFE × LENORMAND</div>
+    <div class="sh-title">生命の木 鑑定書</div>
+    ${k.name ? `<div class="sh-for">${esc(k.name)} 様</div>` : ''}
+    <dl class="sh-meta"><dt>ご相談</dt><dd>${esc(k.worry)}</dd><dt>扉</dt><dd>${D.name}</dd><dt>鑑定日</dt><dd>${ds}</dd></dl>
+    <div class="sh-tree"><img src="${treeImg()}" alt=""></div>
+    <div class="sh-cards">${cards}</div>
+    <div class="sh-sep">✦ ✦ ✦</div>`;
+
+  /* 本文のかたまり（見出しは次の段落とくっつけて離さない） */
+  const ai = blocksOf($('aiText').value, true), html = [];
+  if(!ai.length) html.push(`<div class="blk"><p class="empty">ここに鑑定文が入ります</p></div>`);
+  for(let i=0;i<ai.length;i++){
+    if(ai[i].t==='h'){
+      const nx = ai[i+1] && ai[i+1].t==='p' ? pHTML(ai[++i].s) : '';
+      html.push(`<div class="blk"><h3>${esc(ai[i - (nx?1:0)].s)}</h3>${nx}</div>`);
+    }else html.push(`<div class="blk">${pHTML(ai[i].s)}</div>`);
+  }
+  const adv = blocksOf($('advice').value, false);
+  html.push(`<div class="blk"><section class="sh-advice"><h3>結からのアドバイス</h3>${adv.length ? adv.map(b=>pHTML(b.s)).join('') : '<p class="empty">ここに結からのアドバイスが入ります</p>'}</section></div>`);
+  html.push(`<div class="blk"><div class="sh-sign">結ゆう<small>YUU</small></div></div>`);
+
+  const limit = () => inner.clientHeight;
+  for(const h of html){
+    const tmp = document.createElement('div'); tmp.innerHTML = h; const el = tmp.firstElementChild;
+    inner.appendChild(el);
+    if(inner.scrollHeight > limit() + 1){
+      inner.removeChild(el);
+      pg = newPage(++no); box.appendChild(pg); pages.push(pg);
+      inner = pg.querySelector('.inner');
+      inner.appendChild(el);
+      const h3 = el.querySelector('h3'); if(h3 && !el.querySelector('.sh-advice')) h3.style.marginTop = '0';
+    }
+  }
+  return pages;
+}
+
+async function renderPreview(){
+  await document.fonts.ready;
+  const pages = buildPages();
+  await Promise.all([...$('capture').querySelectorAll('img')].map(im=>im.complete ? 0 : new Promise(r=>{im.onload=im.onerror=r;})));
+  const pv = $('preview'); pv.innerHTML = '';
+  const w = Math.min(pv.clientWidth || 794, 794), sc = w/794;
+  pages.forEach(p=>{
+    const wrap = document.createElement('div'); wrap.className = 'pv';
+    wrap.style.width = w+'px'; wrap.style.height = Math.round(1123*sc)+'px';
+    const c = p.cloneNode(true); c.style.transform = `scale(${sc})`;
+    wrap.appendChild(c); pv.appendChild(wrap);
+  });
+  return pages;
+}
+$('previewBtn').onclick = async ()=>{
+  k.name = $('inName').value.trim();
+  await renderPreview(); resetPdf();
+  $('stepPdf').classList.remove('hidden');
+  $('preview').scrollIntoView({behavior:'smooth'});
+};
+
+/* ===== 4 PDF ===== */
+let pdfBlob = null;
+function fileName(){ const d=new Date(); return `生命の木鑑定書_${k.name?k.name+'様_':''}${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}.pdf`; }
+function resetPdf(){ pdfBlob = null; $('sharePdf').classList.add('hidden'); $('dlPdf').classList.add('hidden'); $('pdfMsg').textContent=''; }
+$('makePdf').onclick = async ()=>{
+  const btn = $('makePdf'); btn.disabled = true; $('pdfMsg').textContent = 'PDFを作っています…';
+  try{
+    k.name = $('inName').value.trim();
+    const pages = await renderPreview();
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({orientation:'portrait',unit:'mm',format:'a4',compress:true});
+    for(let i=0;i<pages.length;i++){
+      const cv = await html2canvas(pages[i],{scale:2,backgroundColor:'#04050d',useCORS:true,logging:false});
+      if(i>0) pdf.addPage();
+      pdf.addImage(cv.toDataURL('image/jpeg',0.86),'JPEG',0,0,210,297);
+    }
+    pdfBlob = pdf.output('blob');
+    const f = new File([pdfBlob], fileName(), {type:'application/pdf'});
+    const canShare = navigator.canShare && navigator.canShare({files:[f]});
+    $('sharePdf').classList.toggle('hidden', !canShare);
+    $('dlPdf').classList.remove('hidden');
+    $('pdfMsg').textContent = `できました（${pages.length}ページ）`;
+  }catch(e){
+    $('pdfMsg').textContent = 'PDFを作れませんでした：' + e.message;
+  }finally{ btn.disabled = false; }
+};
+$('sharePdf').onclick = async ()=>{
+  if(!pdfBlob) return;
+  try{ await navigator.share({files:[new File([pdfBlob], fileName(), {type:'application/pdf'})]}); }catch(e){}
+};
+$('dlPdf').onclick = ()=>{
+  if(!pdfBlob) return;
+  const a = document.createElement('a'); a.href = URL.createObjectURL(pdfBlob); a.download = fileName();
+  document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();}, 4000);
+};
+
+function copy(text, box){
+  const done = ()=>toast('コピーしました');
+  if(navigator.clipboard && window.isSecureContext){ navigator.clipboard.writeText(text).then(done).catch(fb); } else fb();
+  function fb(){ box.removeAttribute('readonly'); box.select(); try{document.execCommand('copy');done();}catch(e){toast('選んでコピーしてください');} box.setAttribute('readonly',''); }
+}
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),1800);}
+</script>
+</body>
+</html>
