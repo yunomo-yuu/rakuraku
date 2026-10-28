@@ -433,7 +433,7 @@ function buildPages(){
   }
   const adv = blocksOf($('advice').value, false);
   html.push(`<div class="blk"><section class="sh-advice"><h3>結からのアドバイス</h3>${adv.length ? adv.map(b=>pHTML(b.s)).join('') : '<p class="empty">ここに結からのアドバイスが入ります</p>'}</section></div>`);
-  html.push(`<div class="blk"><div class="sh-sign">結ゆう<small>YUU</small></div></div>`);
+  html.push(`<div class="blk"><p style="margin-top:18px;font-size:11.5px;text-align:center;color:var(--sub)">この鑑定書は、AIが読み解いたところから、結が詰まりをほどいていく形でお作りしています。</p><div class="sh-sign">結ゆう<small>YUU</small></div></div>`);
 
   const limit = () => inner.clientHeight;
   for(const h of html){
