@@ -42,13 +42,16 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .header-main { display: flex; align-items: center; gap: 18px; }
 .brand { display: flex; align-items: center; gap: 14px; }
 .brand-mark {
-  display: grid;
-  place-items: center;
+  display: block;
   width: 42px;
   height: 42px;
-  border: 1px solid var(--ink);
-  border-radius: 58% 42% 55% 45% / 46% 55% 45% 54%;
-  font: 22px var(--serif);
+  flex: 0 0 42px;
+  border: 0;
+  border-radius: 12px;
+  background: url('yui-mark-96.png?v=1') center / contain no-repeat;
+  font-size: 0;
+  color: transparent;
+  overflow: hidden;
 }
 .brand-name { font: 18px var(--serif); letter-spacing: .18em; }
 .brand-sub { font-size: 10px; letter-spacing: .14em; opacity: .62; }
