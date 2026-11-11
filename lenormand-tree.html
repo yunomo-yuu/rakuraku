@@ -193,6 +193,7 @@ a.btn{display:inline-block;text-decoration:none;text-align:center}
   <h1>生命の木</h1>
   <p class="lead">十一の光に、カードを一枚ずつ。<br>あなたの悩みが、どこから来て<br>どこへ向かうのかを辿る旅。</p>
   <button class="btn" data-go="s-worry">はじめる</button>
+  <button class="btn ghost" id="resumeBtn" style="display:none;margin-top:14px">前回の木をひらく</button>
 </section>
 
 <!-- 2 悩み -->
@@ -528,6 +529,7 @@ $('placeBtn').onclick = ()=>{
 
 /* ===== 最後：木全体 ===== */
 function finish(){
+  saveTree();
   document.querySelectorAll('.node').forEach(n=>{n.classList.remove('active','dim','hide');n.classList.add('lit');});
   const t = $('tree'); t.classList.remove('bloom'); t.getBoundingClientRect(); t.classList.add('bloom');
   const P = $('panel'); P.classList.add('final');
@@ -543,6 +545,7 @@ function finish(){
       <button class="door yuu" data-end="yuu"><b>結ゆうに読んでもらう</b><span>AIが読み解いたところから、結が詰まりをほどいていきます。鑑定書にしてお届けします。${YUU_PRICE}</span></button>
     </div>
     <div id="endBody"></div>
+    <p class="small" style="margin-top:18px;text-align:center">この木は、この端末の中に覚えてあります。ページを閉じても、はじめの画面の「前回の木をひらく」から戻れます。</p>
     <div class="row"><button class="btn ghost" id="againDoor">同じ悩みで、もう一つの扉へ</button>
     <button class="btn ghost" id="again">最初から</button></div>
     <div class="row"><a class="btn ghost" href="https://you-no-oto.jp/uranai.html">占いの部屋へもどる</a></div>`;
@@ -554,6 +557,37 @@ function finish(){
   $('again').onclick = ()=>location.reload();
   P.scrollTop = 0;
 }
+
+/* ===== 引いた木を端末に覚えておく（外には送らない） ===== */
+const SAVE_KEY = 'lt_tree';
+function saveTree(){
+  try{ localStorage.setItem(SAVE_KEY, JSON.stringify({worry:st.worry, door:st.door, placed:st.placed})); }catch(e){}
+}
+function loadTree(){
+  try{
+    const d = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null');
+    if(!d || !ORDER[d.door] || typeof d.worry !== 'string') return null;
+    const ns = ORDER[d.door].map(k=>d.placed && d.placed[k]);
+    if(ns.some(n=>!Number.isInteger(n) || n<1 || n>36) || new Set(ns).size !== ns.length) return null;
+    return d;
+  }catch(e){ return null; }
+}
+function restoreTree(d){
+  st.worry = d.worry; st.door = d.door; st.order = ORDER[d.door];
+  st.step = st.order.length; st.placed = d.placed; st.side = 1;
+  st.deck = shuffle(CARDS.map(c=>c[0]));
+  preloadCards(); buildTree(); buildGrid();
+  st.order.forEach((k,i)=>{
+    document.querySelector(`#n-${k} .num`).textContent = st.placed[k];
+    if(i>0 && k!=='daath') trace(st.order[i-1],k);
+  });
+  go('s-tree'); finish();
+}
+(function(){
+  const d = loadTree(); if(!d) return;
+  const b = $('resumeBtn'); b.style.display = '';
+  b.onclick = ()=>restoreTree(d);
+})();
 
 /* ===== 最後の扉：自分で読む（鍵付き） ===== */
 let selfOpen = false;
