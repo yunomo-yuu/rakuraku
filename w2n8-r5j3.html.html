@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex,nofollow">
+<meta name="rakuraku-version" content="アセスメント v10.4（2026-11-27：v10.3にコピー対策を統合、手動コピー欄の後始末を修正、AIプロンプトのコピー判定を修正）">
 <title>らくらくアセスメント｜らくるん可愛い版</title>
 <style>
   :root{--ink:#22304a;--indigo:#3a5ba0;--indigo-deep:#2b4577;--paper:#f6f7f9;--line:#c9d2e0;--muted:#6b7891;
@@ -132,8 +133,45 @@
   .mini-heart{color:#e77cae;font-size:14px;}
 
 </style>
+<script>
+/* iOS Safari / Android / desktop fallback, usable from file:// */
+var crossCopySeq=0;
+function crossCopyReset(){
+ crossCopySeq++;
+ var box=document.getElementById('cross-copy-box'),ta=document.getElementById('cross-copy-text');
+ if(ta)ta.value='';
+ if(box)box.style.display='none';
+}
+function crossManualCopy(text,seq){
+ if(seq!==undefined&&seq!==crossCopySeq)return 'stale';
+ var box=document.getElementById('cross-copy-box'),ta=document.getElementById('cross-copy-text');
+ if(!box||!ta)return false;
+ box.style.display='block';ta.value=text;
+ document.getElementById('cross-copy-msg').textContent='コピーが制限されました。下の欄からコピーしてください。';
+ ta.focus();ta.select();try{ta.setSelectionRange(0,ta.value.length);}catch(e){}
+ box.scrollIntoView({block:'center'});return 'manual';
+}
+function crossCopyText(text){
+ crossCopyReset();
+ var seq=crossCopySeq;
+ text=String(text||''); if(!text)return Promise.resolve(false);
+ // First attempt the synchronous user-gesture method (file:// compatible).
+ var ta=document.createElement('textarea'),ok=false;
+ ta.value=text;ta.setAttribute('readonly','');
+ ta.style.cssText='position:fixed;top:0;left:0;width:2px;height:2px;opacity:0.01;';
+ document.body.appendChild(ta);ta.focus();ta.select();
+ try{ta.setSelectionRange(0,ta.value.length);ok=document.execCommand('copy');}catch(e){}
+ ta.remove();if(ok)return Promise.resolve(true);
+ if(navigator.clipboard&&typeof navigator.clipboard.writeText==='function'){
+  try{return navigator.clipboard.writeText(text).then(function(){return seq===crossCopySeq?true:'stale';},function(){return crossManualCopy(text,seq);});}
+  catch(e){}
+ }
+ return Promise.resolve(crossManualCopy(text,seq));
+}
+</script>
 </head>
 <body>
+<div id="cross-copy-box" role="status" aria-live="polite" style="display:none;position:relative;margin:12px auto;padding:12px;border:2px solid #b79acb;background:#fff7fb;border-radius:12px;max-width:820px;z-index:10"><strong id="cross-copy-msg">手動コピー</strong><textarea id="cross-copy-text" readonly aria-label="コピー用テキスト" style="display:block;width:100%;height:160px;margin-top:8px;font-size:16px;line-height:1.6"></textarea><small>自動コピーできない場合は、文字欄を長押し→「すべて選択」→「コピー」してください。</small></div>
 <div class="wrap">
   <div class="rakurun-hero">
     <div class="hero-kicker">CARE PLAN THINKING NAVIGATOR ♡</div>
@@ -1069,12 +1107,7 @@
     try{ok=document.execCommand('copy');}catch(e){ok=false;}
     document.body.removeChild(tmp);return ok;
   }
-  function copyText(text){
-    if(navigator.clipboard&&navigator.clipboard.writeText){
-      return navigator.clipboard.writeText(text).then(function(){return true;},function(){return copyFallback(text);});
-    }
-    return Promise.resolve(copyFallback(text));
-  }
+  function copyText(text){ return crossCopyText(text); }
   window.__rakuCopyText=copyText;
   var COPY_FAIL='コピーできませんでした。出力欄の文章を長押し（または選択）して、手動でコピーしてください。';
   var lastFreeNote='';
@@ -1145,7 +1178,7 @@
     var o0=document.getElementById('output');
     if(o0.dataset.stale==='1'&&!confirm('入力が変わったあと作り直していない、古い内容です。このままコピーしますか？'))return;
     var orig=btn.textContent;
-    copyText(text).then(function(ok){if(!ok){alert(COPY_FAIL);return;}btn.textContent='コピーしました';setTimeout(function(){btn.textContent=orig;},1200);});
+    copyText(text).then(function(ok){if(ok==='manual'||ok==='stale')return;if(!ok){alert(COPY_FAIL);return;}btn.textContent='コピーしました';setTimeout(function(){btn.textContent=orig;},1200);});
   });
 
   document.getElementById('make').addEventListener('click',function(){
@@ -1218,8 +1251,9 @@
     var o=document.getElementById('output');o.select();o.setSelectionRange(0,99999);
     if(o.dataset.stale==='1'&&!confirm('入力が変わったあと作り直していない、古い内容です。このままコピーしますか？'))return;
     var cb=document.getElementById('copy'),co=cb.textContent;
-    copyText(o.value).then(function(ok){if(!ok){alert(COPY_FAIL);return;}cb.textContent='コピーしました';setTimeout(function(){cb.textContent=co;},1200);});});
+    copyText(o.value).then(function(ok){if(ok==='manual'||ok==='stale')return;if(!ok){alert(COPY_FAIL);return;}cb.textContent='コピーしました';setTimeout(function(){cb.textContent=co;},1200);});});
   function clearScreen(){
+    crossCopyReset();
     [].slice.call(document.querySelectorAll('.opt.on,.chip.on')).forEach(function(x){x.classList.remove('on');});
     [].slice.call(document.querySelectorAll('.panel')).forEach(function(x){x.classList.remove('active');});
     [].slice.call(document.querySelectorAll('.subblk')).forEach(function(x){x.classList.remove('on');});
@@ -1269,7 +1303,7 @@
     });
     var texts={};
     [].slice.call(document.querySelectorAll('input[type="text"][id], textarea[id]')).forEach(function(inp){
-      if(inp.id==='output'||inp.id==='ai-output')return;
+      if(inp.id==='output'||inp.id==='ai-output'||inp.id==='cross-copy-text')return;
       if(inp.value)texts[inp.id]=inp.value;
     });
     var srcOn=document.querySelector('#ai-src-chips .ai-src.on');
@@ -1303,7 +1337,7 @@
     });
     Object.keys(st.texts||{}).forEach(function(id){
       var inp=document.getElementById(id);
-      if(inp&&inp.id!=='output'&&inp.id!=='ai-output'){inp.value=st.texts[id];inp.dispatchEvent(new Event('input'));}
+      if(inp&&inp.id!=='output'&&inp.id!=='ai-output'&&inp.id!=='cross-copy-text'){inp.value=st.texts[id];inp.dispatchEvent(new Event('input'));}
     });
     var srcVal=(typeof st.aiSource==='string')?st.aiSource:'';
     [].slice.call(document.querySelectorAll('#ai-src-chips .ai-src')).forEach(function(x){x.classList.toggle('on',!!srcVal&&x.dataset.src===srcVal);});
@@ -1378,7 +1412,7 @@
   function copySavedRecord(id,btn){
     var r=loadSavedRecords().filter(function(x){return x.id===id;})[0];
     if(!r)return;
-    copyText(r.text).then(function(ok){if(!ok){alert(COPY_FAIL);return;}
+    copyText(r.text).then(function(ok){if(ok==='manual'||ok==='stale')return;if(!ok){alert(COPY_FAIL);return;}
       btn.classList.add('copied');btn.textContent='コピー済';
       setTimeout(function(){btn.classList.remove('copied');btn.textContent='コピー';},1400);});
   }
@@ -1567,6 +1601,7 @@
     if(t.dataset.stale==='1'){ alert('入力が変わったあと、プロンプトが作り直されていません。〈AI用プロンプトを作る〉をもう一度押してください。'); return; }
     var b=document.getElementById('ai-copy'); var o=b.textContent;
     window.__rakuCopyText(t.value).then(function(ok){
+      if(ok==='manual'||ok==='stale')return;
       if(!ok){alert('コピーできませんでした。プロンプト欄の文章を長押し（または選択）して、手動でコピーしてください。');return;}
       b.textContent='コピーしました'; setTimeout(function(){b.textContent=o;},1400);
     });

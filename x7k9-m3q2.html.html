@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex,nofollow">
+<meta name="rakuraku-version" content="経過記録 v3.5（2026-11-27：v3.4にコピー対策を統合、手動コピー欄の後始末を修正）">
 <title>らくらく経過記録</title>
 <style>
   :root{
@@ -134,6 +135,12 @@
 </head>
 <body>
 <div class="wrap">
+  <div id="android-copy-notice" role="status" aria-live="polite" style="display:none;margin:10px 0;padding:12px;border:1px solid #dfa2c3;border-radius:10px;font-size:14px;line-height:1.7;"></div>
+  <div id="android-copy-manual-wrap" style="display:none;margin:10px 0;padding:12px;background:#fff;border:1px solid #eadcf1;border-radius:12px;">
+    <div style="font-weight:bold;margin-bottom:7px;">手動コピー用（文章はそのままです）</div>
+    <textarea id="android-copy-manual" readonly style="display:block;width:100%;height:165px;font-size:14px;" aria-label="長押ししてすべて選択、コピー"></textarea>
+    <div style="font-size:12px;margin-top:5px;">長押し → すべて選択 → コピー。コピー後は別のアプリに貼り付けできます。</div>
+  </div>
   <div class="rakurun-hero">
     <div class="hero-kicker">CARE RECORD QUICK MAKER ♡</div>
     <h1>らくらく経過記録</h1>
@@ -586,16 +593,66 @@
     out.value=o;out.scrollIntoView({behavior:'smooth',block:'center'});
   });
 
+  // Android / file:// / Drive経由でも失敗が分かるコピー処理
+  var copySeq=0;
+  function copyReset(){
+    copySeq++;
+    var ta=document.getElementById('android-copy-manual');
+    if(ta)ta.value='';
+    document.getElementById('android-copy-manual-wrap').style.display='none';
+    document.getElementById('android-copy-notice').style.display='none';
+  }
+  function copyCompatible(text) {
+    copyReset();
+    var seq=copySeq;
+    var notice=document.getElementById('android-copy-notice');
+    function setNotice(message, success){
+      notice.textContent=message;
+      notice.style.display='block';
+      notice.style.background=success?'#e9f8f2':'#fff0f6';
+      notice.style.borderColor=success?'#9bccb2':'#dfa2c3';
+    }
+    function legacyCopy(){
+      var ta=document.createElement('textarea');
+      ta.value=text;
+      ta.setAttribute('readonly','');
+      ta.style.cssText='position:fixed;left:0;top:0;width:1px;height:1px;opacity:.01;z-index:-1;';
+      document.body.appendChild(ta);
+      ta.focus();ta.select();ta.setSelectionRange(0,ta.value.length);
+      var ok=false;
+      try {ok=document.execCommand('copy');} catch(e){}
+      document.body.removeChild(ta);
+      return ok;
+    }
+    function manualCopy(){
+      if(seq!==copySeq)return; // クリア後に前の利用者の文章を出さない
+      var ta=document.getElementById('android-copy-manual');
+      var wrap=document.getElementById('android-copy-manual-wrap');
+      ta.value=text;
+      wrap.style.display='block';
+      setNotice('自動コピーが制限されています。下の文字欄を長押しして「すべて選択」→「コピー」を選んでね。',false);
+      ta.focus();ta.select();ta.setSelectionRange(0,ta.value.length);
+      wrap.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+    if(!text){setNotice('コピーする文章がありません。先に文章を作成してね。',false);return;}
+    // file:// など非セキュアコンテキストでは Clipboard API が使えない場合がある。
+    // Androidでは同期コピーをユーザー操作内で先に実行すると成功しやすい。
+    if(legacyCopy()){setNotice('コピーしました ✓',true);return;}
+    if(navigator.clipboard && typeof navigator.clipboard.writeText==='function'){
+      try {
+        navigator.clipboard.writeText(text).then(function(){
+          if(seq===copySeq)setNotice('コピーしました ✓',true);
+        }).catch(manualCopy);
+      } catch(e){manualCopy();}
+    } else {manualCopy();}
+  }
   document.getElementById('copy').addEventListener('click',function(){
-    var o=document.getElementById('output');
-    o.select();o.setSelectionRange(0,99999);
-    if(navigator.clipboard){navigator.clipboard.writeText(o.value);}else{document.execCommand('copy');}
-    var c=document.getElementById('copied');c.style.display='inline';
-    setTimeout(function(){c.style.display='none';},1600);
+    copyCompatible(document.getElementById('output').value);
   });
 
   document.getElementById('clear').addEventListener('click',function(){
     if(!confirm('入力内容を消して、次の利用者の記録に移りますか？'))return;
+    copyReset();
     ['n-who','n-whyfree','n-saw','n-act','n-res','s-who','s-body','k-biko','g-join','g-month',
      'b-what','b-how','b-biko','b-reason','q-why','q-city','q-date','y-in','y-out','y-time','y-hosp',
      't-hosp','t-dr','t-give','t-get','r-out','r-last','r-hosp','r-who','r-body','output','ai-input']
@@ -716,12 +773,9 @@
     var memo=document.getElementById('ai-input').value.trim();
     if(!memo){alert('先に、整えたい記録の下書きを入力してください。');return;}
     var hintPart='';
-    if(cfg.hasHint){ hintPart = document.getElementById('ai-hint').checked ? AI_HINT_ON : AI_HINT_OFF; }
+    if(cfg.hasHint){hintPart = document.getElementById('ai-hint').checked ? AI_HINT_ON : AI_HINT_OFF;}
     var full=cfg.lead+AI_COMMON_RULES+hintPart+'\n【下書き】\n'+memo;
-    if(navigator.clipboard){navigator.clipboard.writeText(full);}
-    else{var ta=document.createElement('textarea');ta.value=full;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);}
-    var c=document.getElementById('ai-copied');c.style.display='inline';
-    setTimeout(function(){c.style.display='none';},1600);
+    copyCompatible(full);
   });
 
   window.addEventListener('beforeunload',function(e){
